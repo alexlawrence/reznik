@@ -1,9 +1,9 @@
 {
     "author": "Alex Lawrence <info@alex-lawrence.com>",
     "name": "reznik",
-    "description": "Generates and verifies AMD module dependency trees",
+    "description": "Generates AMD dependency lists from existing JavaScript file structures",
     "homepage": "http://www.github.com/alexlawrence/reznik.js",
-    "version": "0.5",
+    "version": "0.6",
     "main" : "./src/index.js",
     "engines": {
         "node": "0.6"
