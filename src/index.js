@@ -10,20 +10,20 @@ cli.initialize();
 
 if (cli.options.basePath) {
     var files = filesystem.getAllFiles(cli.options.basePath);
-    var result = readAndEvaluateFiles(cli.options.basePath, files);
+    var evaluationResult = readAndEvaluateFiles(cli.options.basePath, files);
     if (cli.options.verify) {
-        verification.checkMissingDependencies(result);
-        verification.checkCircularDependencies(result);
+        verification.checkMissingDependencies(evaluationResult);
+        verification.checkCircularDependencies(evaluationResult);
     }
     if (cli.options.flatten) {
         if (!cli.options.verify) {
-            util.executeAndIgnoreErrors(function() { flatten.flattenDependencies(result.modules); });
+            util.executeAndIgnoreErrors(function() { flatten.flattenDependencies(evaluationResult.modules); });
         }
         else {
-            flatten.flattenDependencies(result.modules);
+            flatten.flattenDependencies(evaluationResult.modules);
         }
     }
-    console.log(reporter.to(cli.options.output || 'json', result));
+    console.log(reporter.to(cli.options.output || 'json', evaluationResult));
 }
 
 function readAndEvaluateFiles(basePath, relativeFilenames) {
