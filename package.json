@@ -1,0 +1,11 @@
+{
+    "author": "Alex Lawrence <info@alex-lawrence.com>",
+    "name": "reznik",
+    "description": "Generates definition and dependency maps for AMD modules",
+    "homepage": "...",
+    "version": "0.1",
+    "main" : "./src/index.js",
+    "engines": {
+        "node": "0.6"
+    }
+}
