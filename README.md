@@ -84,5 +84,5 @@ Example command line call:
 
 ###Code usage
 
-reznik.js currently only exposes one method: *run(basePath, options)*
-The options are the same as the command line arguments as object without hyphens in the keys *{option: value}*).
+reznik.js currently only exposes one method: *run(basePath, options)*.
+The options are the same as the command line arguments with object notation (*{option: value}*).
