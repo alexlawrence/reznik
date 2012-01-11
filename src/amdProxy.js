@@ -1,3 +1,4 @@
+var util = require('./util.js');
 var moduleCache, errors, moduleIdFromFilename, relativeFilename;
 
 var evaluateFiles = function(files) {
@@ -6,7 +7,7 @@ var evaluateFiles = function(files) {
     files.forEach(function(file) {
         relativeFilename = file.relativeFilename;
         moduleIdFromFilename = getModuleIdFromFilename(relativeFilename);
-        executeAndIgnoreErrors(function() {
+        util.executeAndIgnoreErrors(function() {
             eval(file.contents);
         });
     });
@@ -18,13 +19,6 @@ var evaluateFiles = function(files) {
 
 function resetState() {
     moduleCache = {}, errors = [], moduleIdFromFilename = '', relativeFilename = '';
-}
-
-function executeAndIgnoreErrors(callback) {
-    try{
-        callback();
-    }
-    catch (error) {}
 }
 
 var getModuleIdFromFilename = function(relativeFilename) {

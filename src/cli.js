@@ -1,15 +1,32 @@
-if (process.argv.length > 0) {
+var initialize = function() {
+    var args = process.argv.splice(2);
+    var options = argumentsToOptions(args);
 
-    if (process.argv.length == 2) {
-        console.log('Parameters: <mode> <base path> <space separated list of filenames (optional)>');
+    if (options.help) {
+        console.log('options: -basePath=path ' +
+            '-flatten=true/false (default: false) -verify=true/false (default: false) ' +
+            '-output=json/xml/plain (default: json)');
         process.exit();
     }
-    if (process.argv.length < 4) {
-        console.log('Invalid count of parameters');
-        process.exit();
-    }
-    exports.active = true;
-    exports.flattened = process.argv[2] === 'flattened';
-    exports.basePath = process.argv[3];
-    exports.relativeFilenames = process.argv.slice(4);
+
+    exports.options = options;
 }
+
+var argumentsToOptions = function(args) {
+    var options = {};
+    args.forEach(function(argument) {
+        if (argument.indexOf('-') !== 0) {
+            return;
+        }
+        var separatorIndex = argument.indexOf('=');
+        if (separatorIndex == -1) {
+            separatorIndex = argument.length;
+        }
+        var optionName = argument.substring(1, separatorIndex);
+        var optionValue = argument.substring(separatorIndex + 1) || 'true';
+        options[optionName] = optionValue;
+    });
+    return options;
+};
+
+exports.initialize = initialize;

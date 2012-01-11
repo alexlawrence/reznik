@@ -4,7 +4,7 @@ describe('filesystem', function() {
 
     describe('readFiles', function() {
 
-        it('should throw an error if passing an invalid base path', function() {
+        it('should throw an error when passing an invalid base path', function() {
             expect(function() {
                 subject.readFiles('../....../.....', []);
             }).toThrow();
@@ -14,7 +14,7 @@ describe('filesystem', function() {
             }).toThrow();
         });
 
-        it('should not throw an error if passing a valid base path', function() {
+        it('should not throw an error when passing a valid base path', function() {
             expect(function() {
                 subject.readFiles(__dirname + '/testFiles/readFiles', []);
             }).not.toThrow();
@@ -46,7 +46,7 @@ describe('filesystem', function() {
 
     describe('getAllFiles', function() {
 
-        it('should throw an error if passing an invalid base path', function() {
+        it('should throw an error when passing an invalid base path', function() {
             expect(function() {
                 subject.getAllFiles('../....../.....');
             }).toThrow();
@@ -56,7 +56,7 @@ describe('filesystem', function() {
             }).toThrow();
         });
 
-        it('should not throw an error if passing a valid base path', function() {
+        it('should not throw an error when passing a valid base path', function() {
             expect(function() {
                 subject.getAllFiles(__dirname + '/testFiles');
             }).not.toThrow();

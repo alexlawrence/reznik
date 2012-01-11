@@ -100,7 +100,7 @@ describe('amdProxy', function() {
                 expect(result.modules.one[2]).toBe('four/four/four');
             });
 
-            it('should return an error if a module does not provide an id', function() {
+            it('should return an error when a module does not provide an id', function() {
                 var files = [];
                 files.push({
                     relativeFilename: 'one.js',
@@ -118,7 +118,7 @@ describe('amdProxy', function() {
                 expect(result.errors[1]).toBe('anonymous module definition in two.js');
             });
 
-            it('should not include its dependencies if a module does not provide an id', function() {
+            it('should not include its dependencies when a module does not provide an id', function() {
                 var files = [];
                 files.push({
                     relativeFilename: 'one.js',
@@ -143,7 +143,7 @@ describe('amdProxy', function() {
                 expect(global.executedFiles.one).toBeTruthy();
             });
 
-            it('should execute the factory of a module even if it has no dependencies', function() {
+            it('should execute the factory of a module even when it has no dependencies', function() {
                 global.executedFiles = { one: false };
                 var files = [];
                 files.push({
@@ -176,7 +176,7 @@ describe('amdProxy', function() {
                 expect(result.modules.one[2]).toBe('four/four/four');
             });
 
-            it('should not return an error if a module id matches the relative filepath', function() {
+            it('should not return an error when a module id matches the relative filepath', function() {
                 var files = [];
                 files.push({
                     relativeFilename: 'path/to/one/module.js',
@@ -188,7 +188,7 @@ describe('amdProxy', function() {
                 expect(result.errors.length).toBe(0);
             });
 
-            it('should return an error if a module id does not match the relative filepath', function() {
+            it('should return an error when a module id does not match the relative filepath', function() {
                 var files = [];
                 files.push({
                     relativeFilename: 'path/to/one/module.js',
@@ -201,7 +201,7 @@ describe('amdProxy', function() {
                 expect(result.errors[0]).toBe('mismatching module id and relative filepath in path/to/one/module.js');
             });
 
-            it('should correct the relative filepath and not throw an error if using windows path (\\)', function() {
+            it('should correct the relative filepath and not throw an error when using windows path (\\)', function() {
                 var files = [];
                 files.push({
                     relativeFilename: 'path\\to\\one\\module.js',
@@ -213,7 +213,7 @@ describe('amdProxy', function() {
                 expect(result.errors.length).toBe(0);
             });
 
-            it('should return an error if a module contains multiple identical defines', function() {
+            it('should return an error when a module contains multiple identical defines', function() {
                 var files = [];
                 files.push({
                     relativeFilename: 'path/to/one/module.js',
@@ -265,7 +265,7 @@ describe('amdProxy', function() {
                 expect(global.executedFiles).toBeTruthy();
             });
 
-            it('should execute the factory if the module has no dependencies', function() {
+            it('should execute the factory when the module has no dependencies', function() {
                 global.executedFiles = { one: false };
                 var files = [];
                 files.push({
