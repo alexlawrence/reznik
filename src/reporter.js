@@ -28,11 +28,12 @@ var toPlain = function(evaluationResult) {
     var output = '';
     output += 'modules:\n';
     iteration.forEachModule(evaluationResult.modules, function(moduleId, dependencyIds) {
-        output += moduleId;
-        if (dependencyIds.length > 0) {
-            output += ' ' + dependencyIds.join(',');
+        dependencyIds.forEach(function(dependencyId) {
+            output += moduleId + ' ' + dependencyId + '\n';
+        });
+        if (dependencyIds.length === 0) {
+            output += moduleId + '\n';
         }
-        output += '\n';
     });
     output += 'errors:\n';
     evaluationResult.errors.forEach(function(error) {

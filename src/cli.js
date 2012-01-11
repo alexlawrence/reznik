@@ -3,9 +3,12 @@ var initialize = function() {
     var options = argumentsToOptions(args);
 
     if (options.help) {
-        console.log('options: -basePath=path ' +
-            '-flatten=true/false (default: false) -verify=true/false (default: false) ' +
-            '-output=json/xml/plain (default: json)');
+        console.log('\n' +
+            'options:                   \n' +
+            ' -basePath=path            (base path for AMD modules)\n' +
+            ' -flatten=true/false       (default false)\n' +
+            ' -verify=true/false        (default false)\n' +
+            ' -output=json/xml/plain    (default json)\n');
         process.exit();
     }
 
@@ -30,3 +33,4 @@ var argumentsToOptions = function(args) {
 };
 
 exports.initialize = initialize;
+exports.argumentsToOptions = argumentsToOptions;

@@ -1,36 +1,39 @@
 var cli = require('../src/cli.js');
 
-describe('cli.initialize', function() {
+describe('cli', function() {
 
-    it('should convert command line arguments into string options (starting from index 2)', function() {
+    describe('argumentsToOptions', function() {
 
-        process.argv[2] = '-option=value';
-        process.argv[3] = '-option2=value2';
+        it('should convert command line arguments into string options (starting from index 2)', function() {
 
-        cli.initialize();
-        
-        expect(cli.options.option).toBe('value');
-        expect(cli.options.option2).toBe('value2');
+            var args = ['-option=value', '-option2=value2'];
 
-    });
+            var options = cli.argumentsToOptions(args);
 
-    it('should set the value of options to "true" if no value is provided', function() {
+            expect(options.option).toBe('value');
+            expect(options.option2).toBe('value2');
 
-        process.argv[2] = '-option';
+        });
 
-        cli.initialize();
+        it('should set the value of options to "true" if no value is provided', function() {
 
-        expect(cli.options.option).toBe('true');
+            var args = ['-option'];
 
-    });
+            var options = cli.argumentsToOptions(args);
 
-    it('should not add an option if it doesn´t start with "-"', function() {
+            expect(options.option).toBe('true');
 
-        process.argv[2] = 'option=value';
+        });
 
-        cli.initialize();
+        it('should not add an option if it doesn´t start with "-"', function() {
 
-        expect(cli.options.option).toBeUndefined();
+            var args = ['option=value'];
+
+            var options = cli.argumentsToOptions(args);
+
+            expect(options.option).toBeUndefined();
+
+        });
 
     });
 

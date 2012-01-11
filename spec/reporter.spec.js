@@ -20,7 +20,8 @@ describe('reporter', function() {
             expect(result).toBe(
                 'modules:\n' +
                 'm/a m/b\n' +
-                'm/b m/c,m/d\n' +
+                'm/b m/c\n' +
+                'm/b m/d\n' +
                 'm/c m/d\n' +
                 'm/d\n' +
                 'errors:\n');

@@ -20,5 +20,11 @@ var checkCircularDependencies = function(evaluationResult) {
     }
 };
 
+var executeAllAvailableChecks = function(evaluationResult) {
+    checkMissingDependencies(evaluationResult);
+    checkCircularDependencies(evaluationResult);
+}
+
 exports.checkMissingDependencies = checkMissingDependencies;
 exports.checkCircularDependencies = checkCircularDependencies;
+exports.executeAllAvailableChecks = executeAllAvailableChecks;
