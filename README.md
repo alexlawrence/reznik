@@ -1,13 +1,13 @@
 #reznik
 
-Generates [AMD][https://github.com/amdjs/amdjs-api/wiki/AMD] dependency lists from existing JavaScript file structures.
+Generates [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) dependency lists from existing JavaScript file structures.
 
 ###Why
 
 When using the Async Module Definition for JavaScript there are mainly two possibilities for production environments:
 
 * Load each required script asynchronously with the help of script loaders such as [require.js][http://requirejs.org/]
-* Use tools such as the [r.js][https://github.com/jrburke/r.js] optimizer on build time to combine all scripts into one big file
+* Use tools such as the [r.js](https://github.com/jrburke/r.js) optimizer on build time to combine all scripts into one big file
 
 Both strategies are valid and have their own use cases.
 However with reznik you can load AMD modules and all their dependencies **synchronously**.
@@ -22,7 +22,7 @@ Whenever a page needs a JavaScript all its dependencies can be read from the lis
 
 ###Restrictions
 
-* An AMD compliant shim such as [almond.js][https://github.com/jrburke/almond] is required for use in production environment
+* An AMD compliant shim such as [almond.js](https://github.com/jrburke/almond) is required for use in production environment
 * All AMD modules must have ids matching the filename (without extension) including the relative path starting from the base path of your JavaScript directory.
 * Only top level *require()* and *define()* calls are supported. No code must be executed before these calls. This is because reznik does not fake any DOM context.
 
