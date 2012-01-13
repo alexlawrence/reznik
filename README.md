@@ -1,42 +1,61 @@
-#reznik.js
+#reznik
 
-Generates AMD dependency lists from existing JavaScript file structures.
+Generates AMD moudle dependency lists from existing JavaScript file structures.
 
-###Scenario
+###Why
 
-When using Async Module Definitions for JavaScript there basically two possibilities for production environments:
+When using the Async Module Definition for JavaScript there are basically two possibilities for production environments:
 
-* Load each required scripts asynchronously with the help of script loaders (e.g. require.js)
+* Load each required script asynchronously with the help of script loaders such as require.js
 * Use tools such as the r.js optimizer on build time to combine all scripts into one big file
 
 Both strategies are valid and have their own use cases.
-However with reznik.js you gain the possibility to load modules and all their dependencies **synchronously**.
+However with reznik you can load AMD modules and all their dependencies **synchronously**.
 
 ###How it works
 
-reznik.js runs in node.js and generates a list of all existing AMD modules and their dependencies.
-This is done by evaluating each JavaScript file and intercepting the *define()* and *require()* calls.
-In addition the module can perform code analysis like searching for missing and circular dependencies.
-The list generation is meant to be done on build time or on deployment of an application.
-Whenever a page includes a JavaScript all dependencies can be read from the list and can implicitly be included.
+The module runs in node.js and generates a list of all existing AMD modules and their dependencies.
+This is done by executing each JavaScript file with vm.runInNewContext() and intercepting the *define()* and *require()* calls.
+Additionally reznik can perform code analysis like checking for missing and circular dependencies.
+The generation is meant to be done on build time or on deployment of an application.
+Whenever a page needs a JavaScript all its dependencies can be read from the list and can implicitly be included.
 
-###Requirements
+###Restrictions
 
-reznik.js requires an AMD compliant shim such as almond.js for use in production environment. This setup works best when
-using an AMD compliant script loader such as require.js in development environment. All AMD modules must have ids matching
-the filename without extension including the relative path starting from the base path of your JavaScript directory.
+reznik has some restrictions on using the AMD format:
 
-Example: 
+* An AMD compliant shim such as almond.js is required for use in production environment
+* All AMD modules must have ids matching the filename (without extension) including the relative path starting from the base path of your JavaScript directory.
+* Only top level *require()* and *define()* calls are supported. No code must be executed before these calls. This is because reznik does not fake any DOM context.
+
+####Example for a valid module id:
+
 * Base path for JavaScript: */projects/website/javascripts*
 * Absolute module path: */projects/website/javascripts/tools/dom.js*
 * Required module id: *tools/dom*
 
+####Example for unsupported define call:
+
+```javascript
+(function() {
+
+    var body = document.getElementsByTagName('body').item(0); 
+    define('someModule', function() {
+        return {};
+    });
+
+}());
+````
+
+When evaluating this file the *define()* call is never reached because accessing a non existing document will produce
+an error and cause reznik to stop evaluating. Normally a module definition shouldn´t look like this anyways.
+
 ###Output
 
-The generated lst can be output as JSON, XML or plain text. It contains all defined modules, all of their dependencies
+The generated list can be output as JSON, XML or plain text. It contains all defined modules, all of their dependencies
 and all errors occurred during the evaluation.
 
-Example:
+Example modules:
 
 ```javascript
 // a.js
@@ -53,7 +72,11 @@ define('b', ['d'], function() {
 define('c', function() {
     // factory
 });
+```
 
+Resulting output:
+
+```javascript
 // JSON output
 {
   "modules": {
@@ -69,9 +92,9 @@ define('c', function() {
 
 ###Command line usage
 
-For most cases the command line tool is sufficient. Just call *node reznik* with the following options (in the format *-option=value*):
+For most cases using command line tool is sufficient. Just call *node reznik* with the following options (in the format *-option=value*):
 
-* basePath: The base path to all JavaScript files and starting point from which module names are generated. *(required)*
+* basePath: The base path to all JavaScript files and starting point from which module ids are generated. *(required)*
 * flatten: Flag to indicate whether all implicit dependencies should be resolved. Makes it easier for an application to
 decide which scripts to include *(optional, true/false, default: false)*
 * verify: Flag to indicate whether to perform code analysis. Currently implemented: missing dependencies check,
@@ -80,9 +103,9 @@ circular dependencies check *(optional, true/false, default: false)*
 
 Example command line call:
 
-> node reznik -basePath=/projects/website/javascripts -flatten=true -verify=true -output=xml
+    node reznik -basePath=/projects/website/javascripts -flatten=true -verify=true -output=xml
 
 ###Code usage
 
-reznik.js currently only exposes one method: *run(basePath, options)*.
+The module only exposes one method: *run(basePath, options)*.
 The options are the same as the command line arguments with object notation (*{option: value}*).

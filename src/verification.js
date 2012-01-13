@@ -1,4 +1,4 @@
-var iteration = require('../src/iteration.js');
+var iteration = require('./iteration.js');
 
 var checkMissingDependencies = function(evaluationResult) {
     var errors = evaluationResult.errors, modules = evaluationResult.modules;

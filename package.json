@@ -2,7 +2,7 @@
     "author": "Alex Lawrence <info@alex-lawrence.com>",
     "name": "reznik",
     "description": "Generates AMD dependency lists from existing JavaScript file structures",
-    "homepage": "http://www.github.com/alexlawrence/reznik.js",
+    "homepage": "http://www.github.com/alexlawrence/reznik",
     "version": "0.6",
     "main" : "./src/index.js",
     "engines": {

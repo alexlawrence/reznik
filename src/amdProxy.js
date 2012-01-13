@@ -1,23 +1,30 @@
 var util = require('./util.js');
+var isArray = require('util').isArray;
+var vm = require('vm');
+
 var moduleCache, errors, moduleIdFromFilename, relativeFilename;
 
 var evaluateFiles = function(files) {
     files = files || [];
     resetState();
+    var information = [], start = new Date();
     files.forEach(function(file) {
         relativeFilename = file.relativeFilename;
         moduleIdFromFilename = getModuleIdFromFilename(relativeFilename);
         util.executeAndIgnoreErrors(function() {
-            eval(file.contents);
+            vm.runInNewContext(file.contents, { require: requireProxy, define: defineProxy });
         });
     });
+    information.push('evaluated ' + files.length + ' files');
+    information.push('ran for ' + (new Date() - start) + ' ms');
     return {
         modules: moduleCache,
-        errors: errors
+        errors: errors,
+        information: information
     };
 };
 
-function resetState() {
+var resetState = function() {
     moduleCache = {}, errors = [], moduleIdFromFilename = '', relativeFilename = '';
 }
 
@@ -25,7 +32,7 @@ var getModuleIdFromFilename = function(relativeFilename) {
     return relativeFilename.substring(0, relativeFilename.indexOf('js') - 1).replace(/\\/g, '/');
 }
 
-var define = function(moduleId, dependencies, factory) {
+var defineProxy = function(moduleId, dependencies, factory) {
     var matches;
     for (var key in errorChecksForDefine) {
         matches = errorChecksForDefine[key];
@@ -35,11 +42,9 @@ var define = function(moduleId, dependencies, factory) {
         }
     }
     if (typeof dependencies === 'function') {
-        factory = dependencies;
         dependencies = [];
     }
     moduleCache[moduleId] = dependencies;
-    factory();
 };
 
 var errorChecksForDefine = {
@@ -54,14 +59,16 @@ var errorChecksForDefine = {
     }
 };
 
-var require = function(dependencies, callback) {
+var requireProxy = function(dependencies) {
+    if (!isArray(dependencies)) {
+        return;
+    }
     if (moduleCache[moduleIdFromFilename]) {
         moduleCache[moduleIdFromFilename] = moduleCache[moduleIdFromFilename].concat(dependencies);
     }
     else {
         moduleCache[moduleIdFromFilename] = dependencies;
     }
-    callback();
 };
 
 exports.evaluateFiles = evaluateFiles;

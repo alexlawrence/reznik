@@ -15,7 +15,7 @@ function run(basePath, options) {
         verification.executeAllAvailableChecks(evaluationResult);
     }
     if (options.flatten) {
-        if (!options.verify) {
+        if (options.verify) {
             util.executeAndIgnoreErrors(function() { flatten.flattenDependencies(evaluationResult.modules); });
         }
         else {

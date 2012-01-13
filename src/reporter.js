@@ -16,28 +16,32 @@ var toXML = function(evaluationResult) {
     });
     output += '</modules>';
     output += '<errors>';
-    evaluationResult.errors.forEach(function(error) {
+    evaluationResult.errors && evaluationResult.errors.forEach(function(error) {
         output += '<error>' + error + '</error>';
     });
     output += '</errors>';
+    output += '<information>';
+    evaluationResult.information && evaluationResult.information.forEach(function(message) {
+        output += '<message>' + message + '</message>';
+    });
+    output += '</information>';
     output += '</evaluationResult>';
     return output;
 };
 
 var toPlain = function(evaluationResult) {
     var output = '';
-    output += 'modules:\n';
+    output += '#modules\n';
     iteration.forEachModule(evaluationResult.modules, function(moduleId, dependencyIds) {
-        dependencyIds.forEach(function(dependencyId) {
-            output += moduleId + ' ' + dependencyId + '\n';
-        });
-        if (dependencyIds.length === 0) {
-            output += moduleId + '\n';
-        }
+        output += moduleId + ':' + dependencyIds.join(',') + '\n';
     });
-    output += 'errors:\n';
-    evaluationResult.errors.forEach(function(error) {
+    output += '#errors\n';
+    evaluationResult.errors && evaluationResult.errors.forEach(function(error) {
         output += error + '\n';
+    });
+    output += '#information\n';
+    evaluationResult.information && evaluationResult.information.forEach(function(message) {
+        output += message + '\n';
     });
     return output;
 }
