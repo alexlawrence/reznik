@@ -15,12 +15,7 @@ function run(basePath, options) {
         verification.executeAllAvailableChecks(evaluationResult);
     }
     if (options.flatten) {
-        if (options.verify) {
-            util.executeAndIgnoreErrors(function() { flatten.flattenDependencies(evaluationResult.modules); });
-        }
-        else {
-            flatten.flattenDependencies(evaluationResult.modules);
-        }
+        util.executeAndIgnoreErrors(function() { flatten.flattenDependencies(evaluationResult.modules); });
     }
     return reporter.to(options.output || 'json', evaluationResult);
 }
