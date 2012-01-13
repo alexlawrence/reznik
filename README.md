@@ -6,7 +6,7 @@ Generates [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) dependency lists fr
 
 When using the Async Module Definition for JavaScript there are mainly two possibilities for production environments:
 
-* Load each required script asynchronously with the help of script loaders such as [require.js][http://requirejs.org/]
+* Load each required script asynchronously with the help of script loaders such as [require.js](http://requirejs.org/)
 * Use tools such as the [r.js](https://github.com/jrburke/r.js) optimizer on build time to combine all scripts into one big file
 
 Both strategies are valid and have their own use cases.
