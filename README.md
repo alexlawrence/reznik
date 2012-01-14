@@ -7,10 +7,11 @@ Generates [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) dependency lists fr
 When using the Async Module Definition for JavaScript there are mainly two possibilities for production environments:
 
 * Load each required script asynchronously with the help of script loaders such as [require.js](http://requirejs.org/)
-* Use tools such as the [r.js](https://github.com/jrburke/r.js) optimizer on build time to combine all scripts into one big file
+* Use tools such as the [r.js](https://github.com/jrburke/r.js) optimizer on build time to combine all scripts into one
+big file or predefined bundles
 
 Both strategies are valid and have their own use cases.
-However with reznik you can load AMD modules and all their dependencies **synchronously**.
+However with reznik you can extend your application to load any AMD module and all its dependencies **synchronously**.
 
 ###How it works
 
@@ -19,6 +20,7 @@ This is done by executing each JavaScript file with *vm.runInNewContext()* and i
 Additionally reznik can perform code analysis like checking for missing and circular dependencies.
 The generation is meant to be done on build time or on deployment of an application.
 Whenever a page needs a JavaScript all its dependencies can be read from the list and can implicitly be included.
+How this can exactly be implemented depends on your application stack.
 
 ###Restrictions
 
