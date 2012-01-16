@@ -1,4 +1,4 @@
-reznik.js
+reznik
 
 Copyright (c) 2011 Alex Lawrence
 
