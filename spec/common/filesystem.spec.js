@@ -90,7 +90,18 @@ describe('filesystem', function() {
             expect(files.length).toBe(0);
         });
 
-        it('should return a list containing all files excluding directories to exclude if given', function() {
+        it('should return a list containing all files excluding a single directories to exclude', function() {
+            var files = subject.getAllFiles({
+                basePath: __dirname + '/testFiles/getAllFiles',
+                directoriesToExclude: ['subDirectory']
+            });
+            expect(files[0]).toBe('1.js');
+            expect(files[1]).toBe('2.js');
+            expect(files[2]).toBe('3.js');
+            expect(files.length).toBe(3);
+        });
+
+        it('should return a list containing all files excluding a single directories to exclude', function() {
             var files = subject.getAllFiles({
                 basePath: __dirname + '/testFiles/getAllFiles',
                 directoriesToExclude: ['subDirectory']
