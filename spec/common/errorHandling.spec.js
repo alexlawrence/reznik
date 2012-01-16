@@ -1,4 +1,4 @@
-var subject = require('../src/util.js');
+var subject = require('../../src/common/errorHandling.js');
 
 describe('util', function() {
 

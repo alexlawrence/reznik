@@ -1,5 +1,7 @@
 var fs = require('fs');
 
+var encoding = 'utf-8';
+
 var readFiles = function(basePath, relativeFilenames) {
     var stat = fs.lstatSync(basePath);
     if (!stat.isDirectory()) {
@@ -9,7 +11,7 @@ var readFiles = function(basePath, relativeFilenames) {
     relativeFilenames.forEach(function(relativeFilename) {
         files.push({
           relativeFilename: relativeFilename,
-          contents: fs.readFileSync(basePath + '/' + relativeFilename, 'utf-8')
+          contents: fs.readFileSync(basePath + '/' + relativeFilename, encoding)
         });
     });
     return files;
@@ -24,10 +26,8 @@ var getAllFiles = function(basePath, fileEnding) {
         if (stat.isDirectory()) {
             files = files.concat(getAllFiles(basePath, fileEnding, currentPath + item));
         }
-        else {
-            if (!fileEnding || item.toLowerCase().indexOf('.' + fileEnding) > 0) {
-                files.push(currentPath + item);
-            }
+        else if (!fileEnding || item.toLowerCase().indexOf('.' + fileEnding) > 0) {
+            files.push(currentPath + item);
         }
     });
     return files;

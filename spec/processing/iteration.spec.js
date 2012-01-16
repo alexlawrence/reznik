@@ -1,4 +1,4 @@
-var subject = require('../src/iteration.js');
+var subject = require('../../src/processing/iteration.js');
 
 describe('iteration', function() {
 
@@ -17,7 +17,7 @@ describe('iteration', function() {
 
         });
 
-        it('should pass module id and dependency id array as arguments to the callback', function() {
+        it('should pass the module id and the dependency id array to the callback', function() {
 
             var spy = jasmine.createSpy();
             var modules = { a: ['b'], b: ['c'], c: ['a', 'd'] };

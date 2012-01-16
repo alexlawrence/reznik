@@ -1,10 +1,10 @@
-var subject = require('../src/verification.js');
+var subject = require('../../src/processing/verification.js');
 
 describe('verification', function() {
 
     describe('checkMissingDependencies', function() {
 
-        it('should not add an error to the evaluation result when no modules available', function() {
+        it('should not add an error when no modules are available', function() {
 
             var result = {
                 modules: {},
@@ -16,7 +16,19 @@ describe('verification', function() {
             expect(result.errors.length).toBe(0);
         });
 
-        it('should add an error to the evaluation result when a module´s dependency is undefined', function() {
+        it('should not add an error when all dependencies are available', function() {
+
+            var result = {
+                modules: {'a': ['b', 'c'], 'b': ['c'], 'c': []},
+                errors: []
+            };
+
+            subject.checkMissingDependencies(result);
+
+            expect(result.errors.length).toBe(0);
+        });
+
+        it('should add an error when a module´s dependency is undefined', function() {
 
             var result = {
                 modules: {'a': ['b']},
@@ -45,7 +57,7 @@ describe('verification', function() {
 
         });
 
-        it('should add an error when modules depend directly on each other', function() {
+        it('should add an error when modules directly depend on each other', function() {
 
             var result = {
                 modules: {'a': ['b'], 'b': ['a']},
@@ -58,7 +70,7 @@ describe('verification', function() {
 
         });
 
-        it('should add an error when modules depend implicitly on each other', function() {
+        it('should add an error when modules implicitly depend on each other', function() {
 
             var result = {
                 modules: {'a': ['b'], 'b': ['c'], 'c': ['d', 'e'], 'd': [], 'e': ['a']},

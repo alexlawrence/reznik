@@ -1,4 +1,4 @@
-var util = require('./util.js');
+var errorHandling = require('../common/errorHandling.js');
 var isArray = require('util').isArray;
 var vm = require('vm');
 
@@ -11,7 +11,7 @@ var evaluateFiles = function(files) {
     files.forEach(function(file) {
         relativeFilename = file.relativeFilename;
         moduleIdFromFilename = getModuleIdFromFilename(relativeFilename);
-        util.executeAndIgnoreErrors(function() {
+        errorHandling.executeAndIgnoreErrors(function() {
             vm.runInNewContext(file.contents, { require: requireProxy, define: defineProxy });
         });
     });

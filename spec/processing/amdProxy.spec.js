@@ -1,4 +1,5 @@
-var subject = require('../src/amdProxy.js');
+var subject = require('../../src/processing/amdProxy.js');
+var isArray = require('util').isArray;
 
 describe('amdProxy', function() {
 
@@ -12,8 +13,7 @@ describe('amdProxy', function() {
 
             it('should return an object containing an empty array of errors', function() {
                 var result = subject.evaluateFiles();
-                expect(typeof result.errors.length).toBe('number');
-                expect(result.errors.length).toBe(0);
+                expect(isArray(result.errors)).toBeTruthy();
             });
 
             it('should return an object containing a empty hash array of modules', function() {
@@ -31,15 +31,15 @@ describe('amdProxy', function() {
                 var files = [];
                 files.push({
                     relativeFilename: 'one.js',
-                    contents: 'global.executedFiles.one = true;'
+                    contents: 'executedFiles.one = true;'
                 });
                 files.push({
                     relativeFilename: 'two.js',
-                    contents: 'global.executedFiles.two = true;'
+                    contents: 'executedFiles.two = true;'
                 });
                 files.push({
                     relativeFilename: 'three.js',
-                    contents: 'global.executedFiles.three = true;'
+                    contents: 'executedFiles.three = true;'
                 });
 
                 subject.evaluateFiles(files);
@@ -67,15 +67,30 @@ describe('amdProxy', function() {
                 expect(function() { subject.evaluateFiles(files); }).not.toThrow();
             });
 
-            it ('should abort a single file evaluation after the first javascript error', function() {
+            it ('should abort each individual script execution after the first javascript error', function() {
                 var files = [];
                 files.push({
                     relativeFilename: 'one.js',
-                    contents: 'foobar.foobar = "foobar"; define("a", function() {});'
+                    contents: 'foobar.foobar = "foobar"; define("one", function() {});'
                 });
                 var evaluationResult = subject.evaluateFiles(files);
 
-                expect(evaluationResult.modules['a']).toBeUndefined();
+                expect(evaluationResult.modules['one']).toBeUndefined();
+            });
+
+            it ('should not abort consecutive script execution after javascript errors', function() {
+                var files = [];
+                files.push({
+                    relativeFilename: 'one.js',
+                    contents: 'foobar.foobar = "foobar"; define("one", function() {});'
+                });
+                files.push({
+                    relativeFilename: 'two.js',
+                    contents: 'define("two", function() {});'
+                });
+                var evaluationResult = subject.evaluateFiles(files);
+
+                expect(evaluationResult.modules['two']).toBeDefined();
             });
 
         });
@@ -142,16 +157,15 @@ describe('amdProxy', function() {
             });
 
             it('should not execute the factory of a module', function() {
-                global.executedFiles = { one: false };
                 var files = [];
                 files.push({
                     relativeFilename: 'one.js',
-                    contents: 'define("one", ["two", "three"], function() { global.executedFiles.one = true; });'
+                    contents: 'define("one", ["two", "three"], function() { require(["four"], function() {}); });'
                 });
 
-                subject.evaluateFiles(files);
+                var evaluationResult = subject.evaluateFiles(files);
 
-                expect(global.executedFiles.one).toBeFalsy();
+                expect(evaluationResult.modules['one'].length).toBe(2);
             });
 
             it('should not execute the factory of a module when it has no dependencies', function() {
@@ -159,29 +173,12 @@ describe('amdProxy', function() {
                 var files = [];
                 files.push({
                     relativeFilename: 'one.js',
-                    contents: 'define("one", function() { global.executedFiles.one = true; });'
+                    contents: 'define("one", function() { require(["two"], function() {}); });'
                 });
 
-                subject.evaluateFiles(files);
+                var evaluationResult = subject.evaluateFiles(files);
 
-                expect(global.executedFiles.one).toBeFalsy();
-            });
-
-            it('should not add nested requires inside the factory to the module dependencies', function() {
-                var files = [];
-                files.push({
-                    relativeFilename: 'one.js',
-                    contents: 'define("one", function() { ' +
-                        'require(["two/two/two"], function() {});' +
-                        'require(["three/three/three"], function() {});' +
-                        'require(["four/four/four"], function() {});' +
-                        '});'
-                });
-
-                var result = subject.evaluateFiles(files);
-
-                expect(result.modules.one).toBeDefined();
-                expect(result.modules.one.length).toBe(0);
+                expect(evaluationResult.modules['one'].length).toBe(0);
             });
 
             it('should not return an error when a module id matches the relative filepath', function() {
@@ -258,42 +255,21 @@ describe('amdProxy', function() {
                 });
 
                 var result = subject.evaluateFiles(files);
+
                 expect(result.modules['path/to/module/one'][0]).toBe('two');
                 expect(result.modules['path/to/module/one'][1]).toBe('three');
             });
 
-            it('should execute the factory', function() {
-                global.executedFiles = { one: false };
+            it('should not execute the factory', function() {
                 var files = [];
                 files.push({
                     relativeFilename: 'path/to/module/one.js',
-                    contents: 'require(["two", "three"], function() { global.executedFiles.one = true; });'
+                    contents: 'require(["two", "three"], function() { require(["four"], function() {}); });'
                 });
 
-                expect(global.executedFiles).toBeTruthy();
-            });
+                var evaluationResult = subject.evaluateFiles(files);
 
-            it('should execute the factory when the module has no dependencies', function() {
-                global.executedFiles = { one: false };
-                var files = [];
-                files.push({
-                    relativeFilename: 'path/to/module/one.js',
-                    contents: 'require(function() { global.executedFiles.one = true; });'
-                });
-
-                expect(global.executedFiles).toBeTruthy();
-            });
-
-            it('should not include dependencies from nested requires', function() {
-                var files = [];
-                files.push({
-                    relativeFilename: 'path/to/module/one.js',
-                    contents: 'require(["two"], function() { require(["three"], function() {}); });'
-                });
-
-                var result = subject.evaluateFiles(files);
-                expect(result.modules['path/to/module/one'].length).toBe(1);
-                expect(result.modules['path/to/module/one'][0]).toBe('two');
+                expect(evaluationResult.modules['path/to/module/one'].length).toBe(2);
             });
 
             it('should not evaluate CommonJS require calls', function() {

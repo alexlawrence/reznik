@@ -1,31 +1,26 @@
-var initialize = function() {
+var argumentPrefix = '-', separator = '=';
+
+var initialize = function(setup) {
     var args = process.argv.splice(2);
     var options = argumentsToOptions(args);
-
     if (options.help) {
-        console.log('\n' +
-            'options:                   \n' +
-            ' -basePath=path            (base path for AMD modules)\n' +
-            ' -flatten=true/false       (default false)\n' +
-            ' -verify=true/false        (default false)\n' +
-            ' -output=json/xml/plain    (default json)\n');
+        console.log(setup.helpMessage || 'no help available');
         process.exit();
     }
-
     exports.options = options;
 }
 
 var argumentsToOptions = function(args) {
     var options = {};
     args.forEach(function(argument) {
-        if (argument.indexOf('-') !== 0) {
+        if (argument.indexOf(argumentPrefix) !== 0) {
             return;
         }
-        var separatorIndex = argument.indexOf('=');
+        var separatorIndex = argument.indexOf(separator);
         if (separatorIndex == -1) {
             separatorIndex = argument.length;
         }
-        var optionName = argument.substring(1, separatorIndex);
+        var optionName = argument.substring(argumentPrefix.length, separatorIndex);
         var optionValue = argument.substring(separatorIndex + 1) || 'true';
         options[optionName] = optionValue;
     });

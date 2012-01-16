@@ -1,10 +1,10 @@
-var cli = require('../src/cli.js');
+var cli = require('../../src/common/cli.js');
 
 describe('cli', function() {
 
     describe('argumentsToOptions', function() {
 
-        it('should convert command line arguments into string options (starting from index 2)', function() {
+        it('should convert command line arguments into string options', function() {
 
             var args = ['-option=value', '-option2=value2'];
 
@@ -25,7 +25,7 @@ describe('cli', function() {
 
         });
 
-        it('should not add an option if it doesn´t start with "-"', function() {
+        it('should not add an option if it does not start with "-"', function() {
 
             var args = ['option=value'];
 
