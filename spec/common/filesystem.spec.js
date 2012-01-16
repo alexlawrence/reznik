@@ -58,30 +58,47 @@ describe('filesystem', function() {
 
         it('should not throw an error when passing a valid base path', function() {
             expect(function() {
-                subject.getAllFiles(__dirname + '/testFiles');
+                subject.getAllFiles({ basePath: __dirname + '/testFiles' });
             }).not.toThrow();
         });
 
         it('should return a list containing all files in the top level directory', function() {
-            var files = subject.getAllFiles(__dirname + '/testFiles/getAllFiles');
+            var files = subject.getAllFiles({ basePath: __dirname + '/testFiles/getAllFiles' });
             expect(files[0]).toBe('1.js');
             expect(files[1]).toBe('2.js');
             expect(files[2]).toBe('3.js');
         });
 
         it('should return a list containing all files including subdirectories', function() {
-            var files = subject.getAllFiles(__dirname + '/testFiles/getAllFiles');
+            var files = subject.getAllFiles({ basePath: __dirname + '/testFiles/getAllFiles' });
             expect(files[3]).toBe('subDirectory/1.js');
             expect(files[4]).toBe('subDirectory/2.js');
             expect(files[5]).toBe('subDirectory/3.js');
         });
 
         it('should return a list containing all files matching the file ending when given', function() {
-            var files = subject.getAllFiles(__dirname + '/testFiles/getAllFiles', 'js');
+            var files = subject.getAllFiles({
+                basePath: __dirname + '/testFiles/getAllFiles',
+                fileEnding: 'js'
+            });
             expect(files.length).toBe(6);
 
-            var files = subject.getAllFiles(__dirname + '/testFiles/getAllFiles', 'foobar');
+            var files = subject.getAllFiles({
+                basePath: __dirname + '/testFiles/getAllFiles',
+                fileEnding: 'foobar'
+            });
             expect(files.length).toBe(0);
+        });
+
+        it('should return a list containing all files excluding directories to exclude if given', function() {
+            var files = subject.getAllFiles({
+                basePath: __dirname + '/testFiles/getAllFiles',
+                directoriesToExclude: ['subDirectory']
+            });
+            expect(files[0]).toBe('1.js');
+            expect(files[1]).toBe('2.js');
+            expect(files[2]).toBe('3.js');
+            expect(files.length).toBe(3);
         });
 
     });

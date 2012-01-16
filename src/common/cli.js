@@ -1,4 +1,4 @@
-var argumentPrefix = '-', separator = '=';
+var argumentPrefix = '-', separator = '=', arraySeparator = ',';
 
 var initialize = function(setup) {
     var args = process.argv.splice(2);
@@ -22,6 +22,11 @@ var argumentsToOptions = function(args) {
         }
         var optionName = argument.substring(argumentPrefix.length, separatorIndex);
         var optionValue = argument.substring(separatorIndex + 1) || 'true';
+
+        if (optionValue.indexOf(arraySeparator) > -1) {
+            optionValue = optionValue.split(arraySeparator);
+        }
+
         options[optionName] = optionValue;
     });
     return options;

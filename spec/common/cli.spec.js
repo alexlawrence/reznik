@@ -1,4 +1,5 @@
 var cli = require('../../src/common/cli.js');
+var isArray = require('util').isArray;
 
 describe('cli', function() {
 
@@ -33,6 +34,15 @@ describe('cli', function() {
 
             expect(options.option).toBeUndefined();
 
+        });
+
+        it('should convert a comma separated list into an array', function() {
+
+            var args = ['-excludeDirectories=_cache,search'];
+
+            var options = cli.argumentsToOptions(args);
+
+            expect(isArray(options.excludeDirectories)).toBeTruthy();
         });
 
     });

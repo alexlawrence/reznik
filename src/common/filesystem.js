@@ -17,20 +17,34 @@ var readFiles = function(basePath, relativeFilenames) {
     return files;
 };
 
-var getAllFiles = function(basePath, fileEnding) {
-    var currentPath = arguments[2] ? arguments[2] + '/' : '';
+var getAllFiles = function(options, currentPath) {
+    currentPath = currentPath ? currentPath + '/' : '';
+    var directoriesToExclude = options.directoriesToExclude || [];
     var files = [];
-    var items = fs.readdirSync(basePath + '/' + currentPath);
-    items.forEach(function(item) {
-        var stat = fs.lstatSync(basePath + '/' + currentPath + item);
+    var fsItems = fs.readdirSync(options.basePath + '/' + currentPath);
+    fsItems.forEach(function(fsItem) {
+        var relativeItemName = currentPath + fsItem;
+        var fullItemName = options.basePath + '/' + relativeItemName;
+        var stat = fs.lstatSync(fullItemName);
+        var directoryShouldBeExcluded = directoriesToExclude.indexOf(relativeItemName) > -1;
         if (stat.isDirectory()) {
-            files = files.concat(getAllFiles(basePath, fileEnding, currentPath + item));
+            if (!directoryShouldBeExcluded) {
+                files = files.concat(getAllFiles(options, relativeItemName));
+            }
         }
-        else if (!fileEnding || item.toLowerCase().indexOf('.' + fileEnding) > 0) {
-            files.push(currentPath + item);
+        else if (matchesFileEnding(fsItem, options.fileEnding)) {
+            files.push(currentPath + fsItem);
         }
     });
     return files;
+}
+
+var matchesFileEnding = function(file, ending) {
+    if (!ending) {
+        return true;
+    }
+    var endingPlusDot = '.' + ending;
+    return file.toLowerCase().indexOf(endingPlusDot) === file.length - endingPlusDot.length;
 }
 
 exports.readFiles = readFiles;
