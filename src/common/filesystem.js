@@ -49,3 +49,4 @@ var matchesFileEnding = function(file, ending) {
 
 exports.readFiles = readFiles;
 exports.getAllFiles = getAllFiles;
+exports.matchesFileEnding = matchesFileEnding;

@@ -1,115 +1,183 @@
 var subject = require('../../src/common/filesystem.js');
+var horaa = require('horaa');
+var fs = horaa('fs');
 
 describe('filesystem', function() {
 
     describe('readFiles', function() {
 
         it('should throw an error when passing an invalid base path', function() {
+
+            fs.hijack('lstatSync', function() {
+                return {
+                    isDirectory: function() { return false; }
+                };
+            });
+
             expect(function() {
                 subject.readFiles('../....../.....', []);
             }).toThrow();
 
             expect(function() {
-                subject.readFiles('../...adsasda.s.aadsdas', []);
+                subject.readFiles('cli.spec.js', []);
             }).toThrow();
+
+            fs.restore('lstatSync');
         });
 
         it('should not throw an error when passing a valid base path', function() {
+
+            fs.hijack('lstatSync', function() {
+                return {
+                    isDirectory: function() { return true; }
+                };
+            });
+
             expect(function() {
-                subject.readFiles(__dirname + '/testFiles/readFiles', []);
+                subject.readFiles('testFiles', []);
             }).not.toThrow();
+
+            fs.restore('lstatSync');
         });
 
-        it('should return correct the filepath names when given multiple files', function() {
-            var files = subject.readFiles(__dirname + '/testFiles/readFiles',
+        it('should return the correct filepath names when given multiple files', function() {
+
+            fs.hijack('lstatSync', function() {
+                return {
+                    isDirectory: function() { return true; }
+                };
+            });
+
+            fs.hijack('readFileSync', function() {
+                return 'content';
+            })
+
+            var files = subject.readFiles('testFiles',
                 ['1.js', '2.js', '3.js', 'subDirectory/1.js', 'subDirectory/2.js', 'subDirectory/3.js']);
 
             expect(files.length).toBe(6);
             expect(files[5].relativeFilename).toBe('subDirectory/3.js');
-        });
 
-        it('should return correct file contents when given multiple files', function() {
-            var files = subject.readFiles(__dirname + '/testFiles/readFiles',
-                ['1.js', '2.js', '3.js', 'subDirectory/1.js', 'subDirectory/2.js', 'subDirectory/3.js']);
-
-            expect(files.length).toBe(6);
-            expect(files[5].contents).toBe('3');
-        });
-
-        it('should return correct file contents when given files with special characters', function() {
-            var files = subject.readFiles(__dirname + '/testFiles/readFiles', ['utf-8.js']);
-
-            expect(files[0].contents).toBe('äöü');
+            fs.restore('readFileSync');
         });
 
     });
 
     describe('getAllFiles', function() {
 
-        it('should throw an error when passing an invalid base path', function() {
-            expect(function() {
-                subject.getAllFiles('../....../.....');
-            }).toThrow();
-
-            expect(function() {
-                subject.getAllFiles('../...adsasda.s.aadsdas');
-            }).toThrow();
-        });
-
-        it('should not throw an error when passing a valid base path', function() {
-            expect(function() {
-                subject.getAllFiles({ basePath: __dirname + '/testFiles' });
-            }).not.toThrow();
+        afterEach(function() {
+            fs.restore('readdirSync');
+            fs.restore('lstatSync');
         });
 
         it('should return a list containing all files in the top level directory', function() {
-            var files = subject.getAllFiles({ basePath: __dirname + '/testFiles/getAllFiles' });
+            fs.hijack('readdirSync', function() {
+                return ['1.js', '2.js', '3.js'];
+            });
+            fs.hijack('lstatSync', function() {
+                return {
+                    isDirectory: function() { return false; }
+                };
+            });
+
+            var files = subject.getAllFiles({ basePath: 'testFiles' });
             expect(files[0]).toBe('1.js');
             expect(files[1]).toBe('2.js');
             expect(files[2]).toBe('3.js');
         });
 
         it('should return a list containing all files including subdirectories', function() {
-            var files = subject.getAllFiles({ basePath: __dirname + '/testFiles/getAllFiles' });
+            var subDirectory = 'subDirectory';
+
+            fs.hijack('readdirSync', function(directory) {
+                return directory.indexOf(subDirectory) === -1 ? ['1.js', '2.js', '3.js', subDirectory] :
+                    ['1.js', '2.js', '3.js'];
+            });
+            fs.hijack('lstatSync', function(item) {
+                return {
+                    isDirectory: function() {
+                        return item.indexOf(subDirectory) === item.length - subDirectory.length;
+                    }
+                };
+            });
+
+            var files = subject.getAllFiles({ basePath: 'testFiles' });
             expect(files[3]).toBe('subDirectory/1.js');
             expect(files[4]).toBe('subDirectory/2.js');
             expect(files[5]).toBe('subDirectory/3.js');
         });
 
-        it('should return a list containing all files matching the file ending when given', function() {
-            var files = subject.getAllFiles({
-                basePath: __dirname + '/testFiles/getAllFiles',
-                fileEnding: 'js'
+        it('should return a list containing all files excluding a single directory to exclude when given', function() {
+            var subDirectory = 'subDirectory';
+
+            fs.hijack('readdirSync', function(directory) {
+                return directory.indexOf(subDirectory) === -1 ? ['1.js', '2.js', '3.js', subDirectory] :
+                    ['1.js', '2.js', '3.js'];
             });
-            expect(files.length).toBe(6);
+            fs.hijack('lstatSync', function(item) {
+                return {
+                    isDirectory: function() {
+                        return item.indexOf(subDirectory) === item.length - subDirectory.length;
+                    }
+                };
+            });
+
+            var files = subject.getAllFiles({
+                basePath: 'testFiles',
+                directoriesToExclude: ['subDirectory']
+            });
+            expect(files[0]).toBe('1.js');
+            expect(files[1]).toBe('2.js');
+            expect(files[2]).toBe('3.js');
+            expect(files.length).toBe(3);
+        });
+
+        it('should return a list containing all files excluding directories array to exclude when given', function() {
+            var subDirectory = 'subDirectory';
+
+            fs.hijack('readdirSync', function(directory) {
+                return directory.indexOf(subDirectory) === -1 ? ['1.js', '2.js', '3.js', subDirectory] :
+                    ['1.js', '2.js', '3.js'];
+            });
+            fs.hijack('lstatSync', function(item) {
+                return {
+                    isDirectory: function() {
+                        return item.indexOf(subDirectory) === item.length - subDirectory.length;
+                    }
+                };
+            });
 
             var files = subject.getAllFiles({
                 basePath: __dirname + '/testFiles/getAllFiles',
+                directoriesToExclude: ['subDirectory']
+            });
+            expect(files[0]).toBe('1.js');
+            expect(files[1]).toBe('2.js');
+            expect(files[2]).toBe('3.js');
+            expect(files.length).toBe(3);
+        });
+
+        it('should return a list containing all files matching the file ending when given', function() {
+            fs.hijack('readdirSync', function() {
+                return ['1.js', '2.js', '3.js'];
+            });
+            fs.hijack('lstatSync', function() {
+                return {
+                    isDirectory: function() { return false; }
+                };
+            });
+
+            var files = subject.getAllFiles({
+                basePath: 'testFiles',
+                fileEnding: 'js'
+            });
+            expect(files.length).toBe(3);
+
+            var files = subject.getAllFiles({
+                basePath: 'testFiles',
                 fileEnding: 'foobar'
             });
             expect(files.length).toBe(0);
-        });
-
-        it('should return a list containing all files excluding a single directories to exclude', function() {
-            var files = subject.getAllFiles({
-                basePath: __dirname + '/testFiles/getAllFiles',
-                directoriesToExclude: ['subDirectory']
-            });
-            expect(files[0]).toBe('1.js');
-            expect(files[1]).toBe('2.js');
-            expect(files[2]).toBe('3.js');
-            expect(files.length).toBe(3);
-        });
-
-        it('should return a list containing all files excluding a single directories to exclude', function() {
-            var files = subject.getAllFiles({
-                basePath: __dirname + '/testFiles/getAllFiles',
-                directoriesToExclude: ['subDirectory']
-            });
-            expect(files[0]).toBe('1.js');
-            expect(files[1]).toBe('2.js');
-            expect(files[2]).toBe('3.js');
-            expect(files.length).toBe(3);
         });
 
     });

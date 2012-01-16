@@ -7,6 +7,7 @@ var errorHandling = require('./common/errorHandling.js');
 var isArray = require('util').isArray;
 
 function run(basePath, options) {
+    options = options || {};
     var filepaths = filesystem.getAllFiles({
         basePath: basePath,
         directoriesToExclude: options.directoriesToExclude,
