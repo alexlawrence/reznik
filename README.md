@@ -112,7 +112,7 @@ list. Makes it easier for an application to decide which scripts to include *(op
 * **verify**: Flag to indicate whether to perform code analysis. Currently implemented: missing dependencies check,
 circular dependencies check *(optional, true/false, default: false)*
 * **output**: Output type of the list to generate *(optional, json/plain, default: json)*
-* **exclude**: One string or a comma separated list of strings that are matched against all files and directories.
+* **exclude**: A single string or a comma separated list of strings that are matched against all files and directories.
 All matches are excluded from the evaluation.
 
 Example command line call:
