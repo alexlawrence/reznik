@@ -1,6 +1,6 @@
 {
     "author": "Alex Lawrence <info@alex-lawrence.com>",
-    "contributors": ["Florian Fanderl"],
+    "contributors": ["Florian Fanderl <florian.fanderl@googlemail.com>"],
     "name": "reznik",
     "description": "Tool to generate and analyze AMD module dependency lists",
     "version": "0.5.1",

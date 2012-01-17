@@ -8,9 +8,10 @@ var isArray = require('util').isArray;
 
 function run(basePath, options) {
     options = options || {};
+    options.exclude = isArray(options.exclude) ? options.exclude : [options.exclude];
     var filepaths = filesystem.getAllFiles({
         basePath: basePath,
-        directoriesToExclude: options.directoriesToExclude,
+        exclude: options.exclude,
         fileEnding: 'js'
     });
     var files = filesystem.readFiles(basePath, filepaths);

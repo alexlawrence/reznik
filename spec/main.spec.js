@@ -7,7 +7,6 @@ var filesystem = horaa(__dirname + '/../src/common/filesystem.js');
 var transformation = horaa(__dirname + '/../src/processing/transformation.js');
 var reporter = horaa(__dirname + '/../src/processing/reporter.js');
 var verification = horaa(__dirname + '/../src/processing/verification.js');
-var errorHandling = horaa(__dirname + '/../src/common/errorHandling.js');
 
 var executeOrIgnore = function(callback) {
     try{
@@ -42,19 +41,19 @@ describe('main', function() {
             it('should call filesystem.getAllFiles with given basePath, directoriesToExclude and fileEnding if given', function() {
 
                 var basePath = 'testPath';
-                var directoriesToExclude = ['foo', 'bar'];
+                var exclude = ['foo', 'bar'];
                 var fileEnding = 'js';
 
                 filesystem.restore('getAllFiles');
                 filesystem.hijack('getAllFiles', function(options) {
                     expect(options.basePath).toBe(basePath);
-                    expect(options.directoriesToExclude).toBe(directoriesToExclude);
+                    expect(options.exclude).toBe(directoriesToExclude);
                     expect(options.fileEnding).toBe(fileEnding);
                 });
 
                 executeOrIgnore(function() {
                     subject.run(basePath, {
-                        directoriesToExclude: directoriesToExclude, fileEnding: fileEnding
+                        exclude: exclude, fileEnding: fileEnding
                     });
                 });
             });

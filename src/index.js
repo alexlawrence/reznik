@@ -7,7 +7,7 @@ var cliHelpMessage = '\n' +
     ' -flattened=true/false                 (default false)\n' +
     ' -inverted=true/false                  (default false)\n' +
     ' -verify=true/false                    (default false)\n' +
-    ' -directoriesToExclude=[dir1],[dir2]   (default empty)\n' +
+    ' -exclude=[string1],[string2]          (default empty, one or more strings to match)\n' +
     ' -output=json/plain                    (default json)\n';
 
 cli.initialize({helpMessage: cliHelpMessage});

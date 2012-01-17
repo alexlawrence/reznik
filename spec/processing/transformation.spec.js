@@ -1,4 +1,7 @@
+require('../../src/common/occurrencesOf.js');
+
 var subject = require('../../src/processing/transformation.js');
+
 
 describe('flatten', function() {
 
@@ -68,6 +71,19 @@ describe('flatten', function() {
             expect(modulesFlattened.a[0]).toBe('b');
             expect(modulesFlattened.a[1]).toBe('c');
             expect(modulesFlattened.a[2]).toBe('d');
+
+        });
+
+        it('should not add duplicates of dependencies to the modules', function() {
+
+            var modules = { a: ['b', 'c', 'd'], b: ['c'], c: ['d'], d: [] };
+
+            var modulesFlattened = subject.generateFlattenedModuleList(modules);
+
+            expect(modulesFlattened.a.length).toBe(3);
+            expect(modulesFlattened.a.occurrencesOf('b')).toBe(1);
+            expect(modulesFlattened.a.occurrencesOf('c')).toBe(1);
+            expect(modulesFlattened.a.occurrencesOf('d')).toBe(1);
 
         });
 

@@ -4,7 +4,9 @@ var generateFlattenedModuleList = function(modules) {
     var modulesFlattened = {};
     iteration.forEachModule(modules, function(moduleId) { modulesFlattened[moduleId] = []; });
     iteration.forEachModuleDependencyRecursive(modules, function(moduleId, dependencyId) {
-        modulesFlattened[moduleId].push(dependencyId);
+        if (modulesFlattened[moduleId].indexOf(dependencyId) === -1) {
+            modulesFlattened[moduleId].push(dependencyId);
+        }
     });
     return modulesFlattened;
 };

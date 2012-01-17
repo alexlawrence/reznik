@@ -19,18 +19,21 @@ var readFiles = function(basePath, relativeFilenames) {
 
 var getAllFiles = function(options, currentPath) {
     currentPath = currentPath ? currentPath + '/' : '';
-    var directoriesToExclude = options.directoriesToExclude || [];
+    var exclude = options.exclude || [];
     var files = [];
     var fsItems = fs.readdirSync(options.basePath + '/' + currentPath);
     fsItems.forEach(function(fsItem) {
         var relativeItemName = currentPath + fsItem;
         var fullItemName = options.basePath + '/' + relativeItemName;
+        var itemShouldBeExcluded = exclude.some(function(value) {
+            return relativeItemName.indexOf(value) > -1;
+        });
+        if (itemShouldBeExcluded) {
+            return;
+        }
         var stat = fs.lstatSync(fullItemName);
-        var directoryShouldBeExcluded = directoriesToExclude.indexOf(relativeItemName) > -1;
         if (stat.isDirectory()) {
-            if (!directoryShouldBeExcluded) {
-                files = files.concat(getAllFiles(options, relativeItemName));
-            }
+            files = files.concat(getAllFiles(options, relativeItemName));
         }
         else if (matchesFileEnding(fsItem, options.fileEnding)) {
             files.push(currentPath + fsItem);

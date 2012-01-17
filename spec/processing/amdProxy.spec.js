@@ -110,6 +110,19 @@ describe('amdProxy', function() {
                 expect(result.modules.one.length).toBe(0);
             });
 
+            it('should convert the module id to lowercase', function() {
+                var files = [];
+                files.push({
+                    relativeFilename: 'hereAreSomeCases.js',
+                    contents: 'define("hereAreSomeCases", function() {});'
+                });
+
+                var result = subject.evaluateFiles(files);
+
+                expect(result.modules.hereAreSomeCases).toBeUndefined();
+                expect(result.modules.herearesomecases).toBeDefined();
+            });
+
             it('should include a module in the result with its dependencies', function() {
                 var files = [];
                 files.push({
@@ -124,6 +137,22 @@ describe('amdProxy', function() {
                 expect(result.modules.one[0]).toBe('two');
                 expect(result.modules.one[1]).toBe('three');
                 expect(result.modules.one[2]).toBe('four/four/four');
+            });
+
+            it('should include the dependencies of a module as lowercase ids', function() {
+                var files = [];
+                files.push({
+                    relativeFilename: 'one.js',
+                    contents: 'define("one", ["caseTwo", "caseThree", "four/four/CaSeFoUr"], function() {});'
+                });
+
+                var result = subject.evaluateFiles(files);
+
+                expect(result.modules.one).toBeDefined();
+                expect(result.modules.one.length).toBe(3);
+                expect(result.modules.one[0]).toBe('casetwo');
+                expect(result.modules.one[1]).toBe('casethree');
+                expect(result.modules.one[2]).toBe('four/four/casefour');
             });
 
             it('should return an error when a module does not provide an id', function() {
@@ -247,7 +276,7 @@ describe('amdProxy', function() {
                 expect(result.modules['path/to/module/one']).toBeDefined();
             });
 
-            it('should include all dependencies for implicit module ids', function() {
+            it('should include all dependencies for the implicit module ids', function() {
                 var files = [];
                 files.push({
                     relativeFilename: 'path/to/module/one.js',
@@ -258,6 +287,19 @@ describe('amdProxy', function() {
 
                 expect(result.modules['path/to/module/one'][0]).toBe('two');
                 expect(result.modules['path/to/module/one'][1]).toBe('three');
+            });
+
+            it('should include all dependencies as lowercase module ids', function() {
+                var files = [];
+                files.push({
+                    relativeFilename: 'path/to/module/one.js',
+                    contents: 'require(["caseTwo", "CASETHREE"], function() {});'
+                });
+
+                var result = subject.evaluateFiles(files);
+
+                expect(result.modules['path/to/module/one'][0]).toBe('casetwo');
+                expect(result.modules['path/to/module/one'][1]).toBe('casethree');
             });
 
             it('should not execute the factory', function() {

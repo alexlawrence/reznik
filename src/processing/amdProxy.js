@@ -26,31 +26,40 @@ var evaluateFiles = function(files) {
 
 var resetState = function() {
     moduleCache = {}, errors = [], moduleIdFromFilename = '', relativeFilename = '';
-}
+};
 
 var getModuleIdFromFilename = function(relativeFilename) {
-    return relativeFilename.substring(0, relativeFilename.indexOf('js') - 1).replace(/\\/g, '/');
-}
+    return relativeFilename.substring(0, relativeFilename.indexOf('js') - 1).replace(/\\/g, '/').toLowerCase();
+};
 
 var defineProxy = function(moduleId, dependencies, factory) {
+    if (typeof moduleId !== 'string') {
+        return pushError('anonymous module definition', relativeFilename);
+    }
+    moduleId = moduleId.toLowerCase();
     var matches;
     for (var key in errorChecksForDefine) {
         matches = errorChecksForDefine[key];
         if (errorChecksForDefine.hasOwnProperty(key) && matches(moduleId)) {
-            errors.push(key + ' in ' + relativeFilename);
-            return;
+            return pushError(key, relativeFilename);
         }
     }
     if (typeof dependencies === 'function') {
         dependencies = [];
     }
+    else {
+        dependencies = dependencies.map(function(dependency) {
+            return dependency.toLowerCase();
+        });
+    }
     moduleCache[moduleId] = dependencies;
 };
 
+var pushError =function(message, filename) {
+    errors.push(message + ' in ' + filename);
+};
+
 var errorChecksForDefine = {
-    'anonymous module definition': function(moduleId) {
-        return typeof moduleId !== 'string';
-    },
     'mismatching module id and relative filepath': function(moduleId) {
         return moduleId !== moduleIdFromFilename;
     },
@@ -63,12 +72,10 @@ var requireProxy = function(dependencies) {
     if (!isArray(dependencies)) {
         return;
     }
-    if (moduleCache[moduleIdFromFilename]) {
-        moduleCache[moduleIdFromFilename] = moduleCache[moduleIdFromFilename].concat(dependencies);
-    }
-    else {
-        moduleCache[moduleIdFromFilename] = dependencies;
-    }
+    dependencies = dependencies.map(function(dependency) {
+        return dependency.toLowerCase();
+    });
+    moduleCache[moduleIdFromFilename] = (moduleCache[moduleIdFromFilename] || []).concat(dependencies);
 };
 
 exports.evaluateFiles = evaluateFiles;

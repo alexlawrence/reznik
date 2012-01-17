@@ -1,3 +1,4 @@
+require('../../src/common/occurrencesOf.js');
 var subject = require('../../src/common/filesystem.js');
 var horaa = require('horaa');
 var fs = horaa('fs');
@@ -107,36 +108,11 @@ describe('filesystem', function() {
             expect(files[5]).toBe('subDirectory/3.js');
         });
 
-        it('should return a list containing all files excluding a single directory to exclude when given', function() {
+        it('should return a list containing all files excluding any items matching strings to exclude', function() {
             var subDirectory = 'subDirectory';
 
             fs.hijack('readdirSync', function(directory) {
-                return directory.indexOf(subDirectory) === -1 ? ['1.js', '2.js', '3.js', subDirectory] :
-                    ['1.js', '2.js', '3.js'];
-            });
-            fs.hijack('lstatSync', function(item) {
-                return {
-                    isDirectory: function() {
-                        return item.indexOf(subDirectory) === item.length - subDirectory.length;
-                    }
-                };
-            });
-
-            var files = subject.getAllFiles({
-                basePath: 'testFiles',
-                directoriesToExclude: ['subDirectory']
-            });
-            expect(files[0]).toBe('1.js');
-            expect(files[1]).toBe('2.js');
-            expect(files[2]).toBe('3.js');
-            expect(files.length).toBe(3);
-        });
-
-        it('should return a list containing all files excluding directories array to exclude when given', function() {
-            var subDirectory = 'subDirectory';
-
-            fs.hijack('readdirSync', function(directory) {
-                return directory.indexOf(subDirectory) === -1 ? ['1.js', '2.js', '3.js', subDirectory] :
+                return directory.indexOf(subDirectory) === -1 ? ['1.js', '2.js', '3.js', '_cache.specs.js', subDirectory] :
                     ['1.js', '2.js', '3.js'];
             });
             fs.hijack('lstatSync', function(item) {
@@ -149,12 +125,11 @@ describe('filesystem', function() {
 
             var files = subject.getAllFiles({
                 basePath: __dirname + '/testFiles/getAllFiles',
-                directoriesToExclude: ['subDirectory']
+                exclude: ['subDirectory', 'specs.js']
             });
-            expect(files[0]).toBe('1.js');
-            expect(files[1]).toBe('2.js');
-            expect(files[2]).toBe('3.js');
-            expect(files.length).toBe(3);
+
+            expect(files.occurrencesOf('_cache.specs.js')).toBe(0);
+            expect(files.occurrencesOf('subDirectory/1.js')).toBe(0);
         });
 
         it('should return a list containing all files matching the file ending when given', function() {
