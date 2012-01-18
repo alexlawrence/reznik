@@ -3,7 +3,7 @@
     "contributors": ["Florian Fanderl <florian.fanderl@googlemail.com>"],
     "name": "reznik",
     "description": "Tool to generate and analyze AMD module dependency lists",
-    "version": "0.5.4",
+    "version": "0.5.7",
     "homepage": "http://www.github.com/alexlawrence/reznik",
     "main" : "./src/index.js",
     "engines": {
