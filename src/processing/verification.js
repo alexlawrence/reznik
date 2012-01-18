@@ -1,3 +1,5 @@
+'use strict';
+
 var iteration = require('./iteration.js');
 
 var checkMissingDependencies = function(evaluationResult) {

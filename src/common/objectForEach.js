@@ -1,14 +1,12 @@
-var isArray = require('util').isArray;
-
 var forEach = function(object, callback) {
-    if (isArray(object)) {
-        object.forEach(callback);
+    if (Array.isArray(object)) {
+        return object.forEach(callback);
     }
-    for (property in object) {
+    for (var property in object) {
         if (object.hasOwnProperty(property)) {
             callback(object[property], property, object);
         }
     }
-}
+};
 
 exports.forEach = forEach;

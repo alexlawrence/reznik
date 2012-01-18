@@ -1,7 +1,8 @@
-require('../../src/common/occurrencesOf.js');
+'use strict';
+
+require('../../src/common/arrayOccurrencesOf.js');
 
 var subject = require('../../src/processing/transformation.js');
-
 
 describe('flatten', function() {
 

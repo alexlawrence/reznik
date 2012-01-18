@@ -1,3 +1,5 @@
+'use strict';
+
 var subject = require('../../src/processing/iteration.js');
 
 describe('iteration', function() {

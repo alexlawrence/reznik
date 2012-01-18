@@ -1,12 +1,15 @@
-var subject = require('../src/main.js')
+'use strict';
+
+var subject = require('../../src/processing/main.js');
 
 var horaa = require('horaa');
 
-var amdProxy = horaa(__dirname + '/../src/processing/amdProxy.js');
-var filesystem = horaa(__dirname + '/../src/common/filesystem.js');
-var transformation = horaa(__dirname + '/../src/processing/transformation.js');
-var reporter = horaa(__dirname + '/../src/processing/reporter.js');
-var verification = horaa(__dirname + '/../src/processing/verification.js');
+var amdProxy = horaa(__dirname + '/../../src/processing/amdProxy.js');
+var filesystem = horaa(__dirname + '/../../src/common/filesystem.js');
+var transformation = horaa(__dirname + '/../../src/processing/transformation.js');
+var jsonReporter = horaa(__dirname + '/../../src/reporting/jsonReporter.js');
+var htmlReporter = horaa(__dirname + '/../../src/reporting/htmlReporter.js');
+var verification = horaa(__dirname + '/../../src/processing/verification.js');
 
 var executeOrIgnore = function(callback) {
     try{
@@ -218,33 +221,41 @@ describe('main', function() {
 
         });
 
-        describe('reporter', function() {
+        describe('reporting', function() {
 
-            it('should call the reporter with json as type if output option not given', function() {
+            it('should call the jsonReporter if output option not given', function() {
 
-                reporter.hijack('to', function(type) {
+                var spy = jasmine.createSpy();
 
-                    expect(type).toBe('json');
-
-                });
+                jsonReporter.hijack('render', spy);
 
                 subject.run('foobar');
 
-                reporter.restore('to');
+                expect(spy).toHaveBeenCalled();
+
+                jsonReporter.restore('render');
 
             });
 
-            it('should call the reporter with output option as type if given', function() {
+            it('should call the htmlReporter if output option is set to "html"', function() {
 
-                reporter.hijack('to', function(type) {
+                var spy = jasmine.createSpy();
 
-                    expect(type).toBe('custom');
+                htmlReporter.hijack('render', spy);
 
-                });
+                subject.run('foobar', {output: 'html'});
 
-                subject.run('foobar', { output: 'custom' });
+                expect(spy).toHaveBeenCalled();
 
-                reporter.restore('to');
+                htmlReporter.restore('render');
+
+            });
+
+            it('should not throw an error if output option is set to an invalid reporter', function() {
+
+                expect(function() {
+                    subject.run('foobar', {output: 'foobar'});
+                }).not.toThrow();
 
             });
 

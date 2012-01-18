@@ -1,5 +1,6 @@
+'use strict';
+
 var cli = require('../../src/common/cli.js');
-var isArray = require('util').isArray;
 
 describe('cli', function() {
 
@@ -42,7 +43,7 @@ describe('cli', function() {
 
             var options = cli.argumentsToOptions(args);
 
-            expect(isArray(options.excludeDirectories)).toBeTruthy();
+            expect(Array.isArray(options.excludeDirectories)).toBeTruthy();
         });
 
     });

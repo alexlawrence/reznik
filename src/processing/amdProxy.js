@@ -1,5 +1,6 @@
+'use strict';
+
 var errorHandling = require('../common/errorHandling.js');
-var isArray = require('util').isArray;
 var vm = require('vm');
 
 var moduleCache, errors, moduleIdFromFilename, relativeFilename;
@@ -69,7 +70,7 @@ var errorChecksForDefine = {
 };
 
 var requireProxy = function(dependencies) {
-    if (!isArray(dependencies)) {
+    if (!Array.isArray(dependencies)) {
         return;
     }
     dependencies = dependencies.map(function(dependency) {

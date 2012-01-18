@@ -1,11 +1,7 @@
-var iteration = require('./iteration.js');
-var forEach = require('../common/iteration.js').forEach;
+var forEach = require('../common/objectForEach.js').forEach;
+var iteration = require('../processing/iteration.js');
 
-var toJSON = function(evaluationResult) {
-    return JSON.stringify(evaluationResult);
-}
-
-var toPlain = function(result) {
+var render = function(result) {
     var output = '';
     forEach(result, function(value, property) {
         output += '#' + property + '\n';
@@ -23,15 +19,4 @@ var toPlain = function(result) {
     return output;
 };
 
-var reporterByType = {
-    'json': toJSON,
-    'plain': toPlain
-};
-
-var to = function(type, evaluationResult) {
-    return reporterByType[type](evaluationResult);
-};
-
-exports.toJSON = toJSON;
-exports.toPlain = toPlain;
-exports.to = to;
+exports.render = render;

@@ -1,5 +1,6 @@
+'use strict';
+
 var subject = require('../../src/processing/amdProxy.js');
-var isArray = require('util').isArray;
 
 describe('amdProxy', function() {
 
@@ -13,7 +14,7 @@ describe('amdProxy', function() {
 
             it('should return an object containing an empty array of errors', function() {
                 var result = subject.evaluateFiles();
-                expect(isArray(result.errors)).toBeTruthy();
+                expect(Array.isArray(result.errors)).toBeTruthy();
             });
 
             it('should return an object containing a empty hash array of modules', function() {

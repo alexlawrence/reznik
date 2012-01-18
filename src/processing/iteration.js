@@ -1,3 +1,5 @@
+'use strict';
+
 var forEachModule = function(modules, callback) {
     var moduleId, dependencyIds, shouldAbort;
     for (moduleId in modules) {

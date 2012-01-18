@@ -1,3 +1,5 @@
+'use strict';
+
 var subject = require('../../src/common/errorHandling.js');
 
 describe('util', function() {

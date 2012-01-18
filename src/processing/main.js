@@ -1,14 +1,17 @@
-var amdProxy = require('./processing/amdProxy.js');
-var filesystem = require('./common/filesystem.js');
-var transformation = require('./processing/transformation.js');
-var reporter = require('./processing/reporter.js');
-var verification = require('./processing/verification.js');
-var errorHandling = require('./common/errorHandling.js');
-var isArray = require('util').isArray;
+'use strict';
+
+var amdProxy = require('./amdProxy.js');
+var filesystem = require('../common/filesystem.js');
+var transformation = require('./transformation.js');
+var verification = require('./verification.js');
+var errorHandling = require('../common/errorHandling.js');
+
+var availableOutputTypes = ['json', 'plain', 'html'];
 
 function run(basePath, options) {
     options = options || {};
-    options.exclude = isArray(options.exclude) ? options.exclude : [options.exclude];
+    options.output = options.output || 'json';
+    options.exclude = Array.isArray(options.exclude) ? options.exclude : [options.exclude];
     var filepaths = filesystem.getAllFiles({
         basePath: basePath,
         exclude: options.exclude,
@@ -27,7 +30,12 @@ function run(basePath, options) {
     if (options.inverted) {
         evaluationResult.modulesInverted = transformation.generateInvertedModuleList(evaluationResult.modules);
     }
-    return reporter.to(options.output || 'json', evaluationResult);
+    if (availableOutputTypes.indexOf(options.output) > -1) {
+        var reporter = require('../reporting/' + options.output + 'Reporter.js');
+        return reporter.render(evaluationResult);
+    }
+    return '';
+
 }
 
 exports.run = run;

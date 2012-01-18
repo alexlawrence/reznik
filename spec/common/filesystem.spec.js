@@ -1,4 +1,6 @@
-require('../../src/common/occurrencesOf.js');
+'use strict';
+
+require('../../src/common/arrayOccurrencesOf.js');
 var subject = require('../../src/common/filesystem.js');
 var horaa = require('horaa');
 var fs = horaa('fs');
