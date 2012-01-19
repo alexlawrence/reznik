@@ -10,20 +10,20 @@ When using the Async Module Definition there are mainly two possibilities for pr
 * Use tools such as the [r.js](https://github.com/jrburke/r.js) optimizer on build time to combine all scripts into one
 big file or predefined bundles
 
-Both strategies are valid and have their own use cases.
+Both strategies work perfectly fine and have their own use cases.
 However with reznik you can extend your application to load any AMD module and all its dependencies **synchronously**.
 
 ###Features
 
-The module runs in node.js and generates a list of all existing AMD modules and their dependencies.
-This is done by evaluating each JavaScript file and intercepting the *define()* and *require()* calls.
+The module runs in node.js and generates lists of all existing AMD modules and their dependencies.
+This is done by evaluating each JavaScript file in a given structure and intercepting the *define()* and *require()* calls.
 The generation is meant to be done on build time or on deployment of an application.
-Whenever a page needs a JavaScript all its dependencies can be read from the list and can implicitly be included.
-How this can exactly be implemented depends on your application stack.
+Whenever a component requests a JavaScript all its dependencies can be read from the list and can implicitly be included.
+How exactly this is implemented depends on your application stack.
 
 Additional features:
 
-* Code analysis to check for missing and circular dependencies and invalid module ids
+* Code analysis to check for missing modules, circular dependencies and invalid module ids
 * Flattened module lists to see implicit dependencies
 * Inverted module lists for dependency analysis
 * JSON, dot and plain text output
@@ -31,18 +31,20 @@ Additional features:
 
 ###Restrictions
 
+reznik has some restrictions on using AMD:
+
 * An AMD compliant shim such as [almond.js](https://github.com/jrburke/almond) is required for use in production environment
 * All AMD modules must have ids matching the filename (without extension) including the relative path starting from the base path of your JavaScript directory.
-* Only top level *require()* and *define()* calls are supported. No code must be executed before these calls. This is because reznik does not fake any DOM context.
+* Only top level *require()* and *define()* calls are supported. No code should be executed before these calls. This is because reznik does not fake any DOM context.
 * Code that leads to infinite code execution will cause this module to freeze
 
-#####Example for a valid module id:
+Example for a valid module id:
 
 * Base path for JavaScript: */projects/website/javascripts*
 * Absolute module path: */projects/website/javascripts/tools/dom.js*
 * Required module id: *tools/dom*
 
-#####Example for unsupported define call:
+Example for an unsupported define call:
 
 ```javascript
 (function() {
@@ -61,7 +63,7 @@ an error and cause reznik to stop evaluating. Normally an AMD should not look li
 ###Output
 
 The generated list can be output as JSON, plain text, dot file or as an HTML module browser.
-The JSON contains all defined modules, all of their dependencies, all errors occurred during the evaluation and some information messages.
+Each output contains all defined modules, all of their dependencies, all errors occurred during the evaluation and some information messages.
 Depending on the configured options a list of flattened and/or inverted dependencies will also be included.
 
 Example modules:
@@ -83,7 +85,7 @@ define('c', function() {
 });
 ```
 
-Resulting output:
+Resulting example output:
 
 ```javascript
 // JSON output
@@ -107,6 +109,11 @@ Resulting output:
   ]
 }
 ```
+
+####Module browser
+
+When choosing HTML as output type reznik will generate a pretty printed and self contained HTML file
+with the possibility to search for keywords.
 
 ###Command line usage
 
