@@ -6,7 +6,7 @@ var transformation = require('./transformation.js');
 var verification = require('./verification.js');
 var errorHandling = require('../common/errorHandling.js');
 
-var availableOutputTypes = ['json', 'plain', 'html'];
+var availableOutputTypes = ['json', 'plain', 'html', 'dot'];
 
 function run(basePath, options) {
     options = options || {};

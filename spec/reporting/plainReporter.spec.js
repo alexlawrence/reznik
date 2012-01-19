@@ -19,12 +19,11 @@ describe('plainReporter', function() {
 
             var result = subject.render(evaluationResult);
 
-            expect(result).toContain(
-                '#modules\n' +
-                'm/a:m/b\n' +
-                'm/b:m/c,m/d\n' +
-                'm/c:m/d\n' +
-                'm/d:\n');
+            expect(result).toContain('#modules');
+            expect(result).toContain('m/a:m/b');
+            expect(result).toContain('m/b:m/c,m/d');
+            expect(result).toContain('m/c:m/d');
+            expect(result).toContain('m/d');
         });
 
         it('should serialize properties starting with "modules" in the same way as modules', function() {
@@ -40,12 +39,11 @@ describe('plainReporter', function() {
 
             var result = subject.render(evaluationResult);
 
-            expect(result).toContain(
-                '#modulesFoobar\n' +
-                'm/a:m/b\n' +
-                'm/b:m/c,m/d\n' +
-                'm/c:m/d\n' +
-                'm/d:\n');
+            expect(result).toContain('#modulesFoobar');
+            expect(result).toContain('m/a:m/b');
+            expect(result).toContain('m/b:m/c,m/d');
+            expect(result).toContain('m/c:m/d');
+            expect(result).toContain('m/d');
         });
 
         it('should serialize the errors', function() {
@@ -57,11 +55,10 @@ describe('plainReporter', function() {
 
             var result = subject.render(evaluationResult);
 
-            expect(result).toContain(
-                '#errors\n' +
-                'error 1\n' +
-                'error 2\n' +
-                'error 3\n');
+            expect(result).toContain('#errors');
+            expect(result).toContain('error 1');
+            expect(result).toContain('error 2');
+            expect(result).toContain('error 3');
 
         });
 
@@ -75,11 +72,9 @@ describe('plainReporter', function() {
 
             var result = subject.render(evaluationResult);
 
-            expect(result).toContain(
-                '#information\n' +
-                'did something\n' +
-                'did something else\n');
-
+            expect(result).toContain('#information');
+            expect(result).toContain('did something');
+            expect(result).toContain('did something else');
         });
 
     });

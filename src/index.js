@@ -10,7 +10,7 @@ var cliHelpMessage = '\n' +
     ' -inverted=true/false                  (default false)\n' +
     ' -verify=true/false                    (default false)\n' +
     ' -exclude=string1,string2              (default empty, one or more strings to match)\n' +
-    ' -output=json/plain/html               (default json)\n';
+    ' -output=json/plain/html/dot           (default json)\n';
 
 cli.initialize({helpMessage: cliHelpMessage});
 if (cli.options.basePath) {

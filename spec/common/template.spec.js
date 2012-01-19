@@ -4,13 +4,11 @@ var subject = require('../../src/common/template.js');
 
 describe('template', function() {
 
-    describe('render', function() {
-
         it('should return an output equal to the template when given a template without placeholders', function() {
 
             var template = '<div><span>foobar</span></div>';
 
-            var output = subject.render(template, {});
+            var output = subject.template(template, {});
 
             expect(output).toBe(template);
 
@@ -20,7 +18,7 @@ describe('template', function() {
 
             var template = '<div><span>{property}</span></div>';
 
-            var output = subject.render(template, { property: 'value' });
+            var output = subject.template(template, { property: 'value' });
 
             expect(output).toBe('<div><span>value</span></div>');
 
@@ -30,7 +28,7 @@ describe('template', function() {
 
             var template = '<div><span>{otherProperty}</span></div>';
 
-            var output = subject.render(template, { property: 'value' });
+            var output = subject.template(template, { property: 'value' });
 
             expect(output).toBe('<div><span>{otherProperty}</span></div>');
 
@@ -40,7 +38,7 @@ describe('template', function() {
 
             var template = '<div><span>{{}</span></div>';
 
-            var output = subject.render(template, {});
+            var output = subject.template(template, {});
 
             expect(output).toBe('<div><span>{</span></div>');
 
@@ -50,7 +48,7 @@ describe('template', function() {
 
             var template = '<div><span>{}}</span></div>';
 
-            var output = subject.render(template, {});
+            var output = subject.template(template, {});
 
             expect(output).toBe('<div><span>}</span></div>');
 
@@ -61,13 +59,11 @@ describe('template', function() {
             var template = '<div><span></span></div>';
             var data = {'{': 'foobar'};
 
-            var output = subject.render(template, data);
+            var output = subject.template(template, data);
 
             expect(data['{']).toBe('foobar');
             expect(data['}']).toBeUndefined();
 
         });
-
-    });
 
 });

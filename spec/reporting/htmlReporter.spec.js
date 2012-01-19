@@ -25,7 +25,7 @@ describe('htmlReporter', function() {
             var output = subject.render(evaluationResult);
 
             expect(output).toContain(
-                '<ul class="list errors"><li class="item">error 1</li><li class="item">error 2</li></ul>');
+                '<ul class="messages errors"><li class="message">error 1</li><li class="message">error 2</li></ul>');
 
         });
 
@@ -38,7 +38,7 @@ describe('htmlReporter', function() {
             var output = subject.render(evaluationResult);
 
             expect(output).toContain(
-                '<ul class="list information"><li class="item">information 1</li><li class="item">information 2</li></ul>');
+                '<ul class="messages information"><li class="message">information 1</li><li class="message">information 2</li></ul>');
 
         });
 
@@ -53,7 +53,7 @@ describe('htmlReporter', function() {
             var output = subject.render(evaluationResult);
 
             expect(output).toContain(
-                '<span class="title">a</span><ul class="itemList"><li class="item">b</li><li class="item">c</li></ul>');
+                '<span class="moduleId">a</span><ul class="dependencies"><li class="dependency">b</li><li class="dependency">c</li></ul>');
 
         });
 
@@ -68,7 +68,7 @@ describe('htmlReporter', function() {
             var output = subject.render(evaluationResult);
 
             expect(output).toContain(
-                '<span class="title">a</span><ul class="itemList"><li class="item">b</li><li class="item">c</li></ul>');
+                '<span class="moduleId">a</span><ul class="dependencies"><li class="dependency">b</li><li class="dependency">c</li></ul>');
 
         });
 
@@ -83,7 +83,7 @@ describe('htmlReporter', function() {
             var output = subject.render(evaluationResult);
 
             expect(output).toContain(
-                '<span class="title">a</span><ul class="itemList"><li class="item">b</li><li class="item">c</li></ul>');
+                '<span class="moduleId">a</span><ul class="dependencies"><li class="dependency">b</li><li class="dependency">c</li></ul>');
 
         });
 

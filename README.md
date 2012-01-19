@@ -26,6 +26,8 @@ Additional features:
 * Code analysis to check for missing and circular dependencies and invalid module ids
 * Flattened module lists to see implicit dependencies
 * Inverted module lists for dependency analysis
+* JSON, dot and plain text output
+* HTML module browser
 
 ###Restrictions
 
@@ -58,9 +60,9 @@ an error and cause reznik to stop evaluating. Normally an AMD should not look li
 
 ###Output
 
-The generated list can be output as JSON or plain text. It contains all defined modules, all of their dependencies,
-all errors occurred during the evaluation and some information messages. Depending on the configured options a list
-of flattened and/or inverted dependencies will also be included.
+The generated list can be output as JSON, plain text, dot file or as an HTML module browser.
+The JSON contains all defined modules, all of their dependencies, all errors occurred during the evaluation and some information messages.
+Depending on the configured options a list of flattened and/or inverted dependencies will also be included.
 
 Example modules:
 
@@ -91,13 +93,18 @@ Resulting output:
     "b": ["d"],
     "c": []
   },
+  "modulesFlattened": {
+    "a": ["b", "c", "d"],
+    "b": ["d"],
+    "c": []
+  },
   "errors": [
     "missing dependency d in b.js"
   ]
   "information": [
     "processed 3 files",
     "ran 100ms"
-  }
+  ]
 }
 ```
 
@@ -111,7 +118,7 @@ list. Makes it easier for an application to decide which scripts to include *(op
 * **inverted**: Flag to indicate whether the result should contain an inverted list of all dependencies *(optional, true/false, default: false)*
 * **verify**: Flag to indicate whether to perform code analysis. Currently implemented: missing dependencies check,
 circular dependencies check *(optional, true/false, default: false)*
-* **output**: Output type of the list to generate *(optional, json/plain, default: json)*
+* **output**: Output type of the list to generate *(optional, json/plain/html/dot, default: json)*
 * **exclude**: A single string or a comma separated list of strings that are matched against all files and directories.
 All matches are excluded from the evaluation.
 

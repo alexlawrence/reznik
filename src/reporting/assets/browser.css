@@ -1,0 +1,100 @@
+html
+{
+    font-family: Verdana,Helvetica,Arial,sans-serif;
+}
+
+body
+{
+    width: 600px;
+    margin: 0 auto;
+}
+
+h1
+{
+    font-family: Tahoma,Geneva,Kalimati,sans-serif;
+    font-weight: normal;
+    font-size: 40px;
+    margin: 0 0 20px;
+}
+
+h2
+{
+    font-family: Tahoma,Geneva,Kalimati,sans-serif;
+    font-weight: normal;
+    font-size: 30px;
+    margin: 0 0 20px;
+}
+
+ul, li
+{
+    list-style-type: none;
+    padding:0;
+}
+
+.moduleTree li, .messages li
+{
+    margin:0 0 0 5px;
+}
+
+.moduleTree ul, .messages ul
+{
+    margin:0 0 10px 0px;
+}
+
+.module
+{
+    font-size: 14px;
+}
+
+.moduleId
+{
+    font-weight: bold;
+}
+
+.moduleId:after
+{
+    content: " depends on ";
+    font-weight: normal;
+    color: #888;
+}
+
+.dependency:before
+{
+    content: "- ";
+}
+
+.highlight
+{
+    color: #FF7500;
+    text-decoration: underline;
+}
+
+.errors
+{
+    color: #C00;
+}
+
+.information
+{
+    color: #0A0;
+}
+
+#search
+{
+    width: 100%;
+
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -o-box-sizing: border-box;
+
+    margin: 0 0 50px;
+    font-size: 32px;
+    display:block;
+    padding-left: 5px;
+
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -o-border-radius: 10px;
+}

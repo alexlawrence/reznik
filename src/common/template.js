@@ -2,7 +2,7 @@ var forEach = require('./objectForEach.js').forEach;
 
 var placeholderPrefix = '{', placeholderSuffix = '}';
 
-var render = function(template, data) {
+var template = function(template, data) {
     var output = template, placeholder, dataClone = {};
     forEach(data, function(value, property) {
         dataClone[property] = value;
@@ -16,4 +16,4 @@ var render = function(template, data) {
     return output;
 };
 
-exports.render = render;
+exports.template = template;
