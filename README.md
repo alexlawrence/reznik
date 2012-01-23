@@ -55,8 +55,10 @@ an error and cause reznik to stop evaluating. Normally an AMD should not look li
 ###Output
 
 The generated list can be output as JSON, plain text, dot file or as an HTML module browser.
-Each output contains all defined modules, all of their dependencies, all errors occurred during the evaluation and some information messages.
-Depending on the configured options a list of flattened and/or inverted dependencies will also be included.
+Every output contains all defined modules, all of their dependencies, all errors occurred during the evaluation and some information messages.
+However Only JSON and plain output are suited for further processing as they contain the full set of information.
+The HTML output generates a pretty printed and self contained HTML file with the possibility to search for keywords.
+The dot output generates a simplified directed dependencies graph.a
 
 Example modules:
 
@@ -125,10 +127,6 @@ Resulting example output:
   ]
 }
 ```
-
-####Module browser
-
-When choosing HTML as output type reznik will generate a pretty printed and self contained HTML file with the possibility to search for keywords.
 
 ###Command line usage
 
