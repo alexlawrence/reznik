@@ -1,6 +1,6 @@
 var fs = require('fs');
 var template = require('../common/template.js').template;
-var forEach = require('../common/objectForEach.js').forEach;
+var iteration = require('../processing/iteration.js');
 
 var htmlTemplate = '<!doctype html><html><head><title>module browser</title>{styles}</head><body>{header}{search}{output}{scripts}</body></html>';
 var headerHtml = '<h1>module browser</h1>';
@@ -49,9 +49,9 @@ var renderTree = function(modules, title) {
     var output = '';
     if (modules) {
         output += template(listTitleTemplate, {title: 'moduleTreeTitle ' + title, value: title});
-        forEach(modules, function(dependencies, moduleId) {
+        iteration.forEachModule(modules, function(moduleId, moduleData) {
             var dependenciesOutput = '', moduleOutput = '';
-            dependencies.forEach(function(dependencyId) {
+            moduleData.dependencies.forEach(function(dependencyId) {
                 dependenciesOutput += template(listItemTemplate, {title: 'dependency', value: dependencyId});
             });
             moduleOutput += template(moduleTitleTemplate, {title: 'moduleId', value: moduleId});

@@ -21,7 +21,11 @@ describe('verification', function() {
         it('should not add an error when all dependencies are available', function() {
 
             var result = {
-                modules: {'a': ['b', 'c'], 'b': ['c'], 'c': []},
+                modules: {
+                    'a': {dependencies: ['b', 'c']},
+                    'b': {dependencies: ['c']},
+                    'c': {dependencies: []}
+                },
                 errors: []
             };
 
@@ -33,13 +37,17 @@ describe('verification', function() {
         it('should add an error when a module´s dependency is undefined', function() {
 
             var result = {
-                modules: {'a': ['b']},
+                modules: {
+                    'a': {dependencies: ['b']},
+                    'b': {dependencies: ['c']}
+                },
                 errors: []
             };
 
             subject.checkMissingDependencies(result);
 
-            expect(result.errors[0]).toBe('missing dependency b required in a.js');
+            expect(result.errors[0]).toBe('missing dependency c required in b.js');
+            expect(result.errors.length).toBe(1);
         });
 
     });
@@ -49,33 +57,46 @@ describe('verification', function() {
         it('should add an error when a module depends on itself', function() {
 
             var result = {
-                modules: {'a': ['a']},
+                modules: {
+                    'a': {dependencies: ['a']}
+                },
                 errors: []
             };
 
             subject.checkCircularDependencies(result);
 
             expect(result.errors[0]).toBe('circular dependency in a.js');
+            expect(result.errors.length).toBe(1);
 
         });
 
         it('should add an error when modules directly depend on each other', function() {
 
             var result = {
-                modules: {'a': ['b'], 'b': ['a']},
+                modules: {
+                    'a': {dependencies: ['b']},
+                    'b': {dependencies: ['a']}
+                },
                 errors: []
             };
 
             subject.checkCircularDependencies(result);
 
             expect(result.errors[0]).toBe('circular dependency in a.js');
+            expect(result.errors.length).toBe(1);
 
         });
 
         it('should add an error when modules implicitly depend on each other', function() {
 
             var result = {
-                modules: {'a': ['b'], 'b': ['c'], 'c': ['d', 'e'], 'd': [], 'e': ['a']},
+                modules: {
+                    'a': {dependencies: ['b']},
+                    'b': {dependencies: ['c']},
+                    'c': {dependencies: ['d', 'e']},
+                    'd': {dependencies: []},
+                    'e': {dependencies: ['a']}
+                },
                 errors: []
             };
 
@@ -88,7 +109,9 @@ describe('verification', function() {
         it('should not break when requiring a non existing module', function() {
 
             var result = {
-                modules: {'a': ['e']},
+                modules: {
+                    'a': {dependencies: ['e']}
+                },
                 errors: []
             };
 

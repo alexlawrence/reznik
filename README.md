@@ -1,29 +1,28 @@
 #reznik
 
-Tool to generate and analyze [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) module dependency lists.
+Tool to analyze [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) structures and dependencies.
 
 ###Why
 
-When using the Async Module Definition there are mainly two possibilities for production environments:
+When using the Async Module Definition there are two main possibilities for production environments:
 
 * Load each required script asynchronously with the help of script loaders such as [require.js](http://requirejs.org/)
 * Use tools such as the [r.js](https://github.com/jrburke/r.js) optimizer on build time to combine all scripts into one
 big file or predefined bundles
 
-Both strategies work perfectly fine and have their own use cases.
-However with reznik you can extend your application to load any AMD module and all its dependencies **synchronously**.
+Both strategies work perfectly fine. reznik was written to fit another use case.
+The goal is to be able to resolve all script dependencies for runtime combining on the server side.
+Whenever a page of an application requests a script all its dependencies can be included.
 
 ###Features
 
 The module runs in node.js and generates lists of all existing AMD modules and their dependencies.
 This is done by evaluating each JavaScript file in a given structure and intercepting the *define()* and *require()* calls.
 The generation is meant to be done on build time or on deployment of an application.
-Whenever a component requests a JavaScript all its dependencies can be read from the list and can implicitly be included.
-How exactly this is implemented depends on your application stack.
 
 Additional features:
 
-* Code analysis to check for missing modules, circular dependencies and invalid module ids
+* Code analysis to check for missing modules and circular dependencies
 * Flattened module lists to see implicit dependencies
 * Inverted module lists for dependency analysis
 * JSON, dot and plain text output
@@ -34,15 +33,8 @@ Additional features:
 reznik has some restrictions on using AMD:
 
 * An AMD compliant shim such as [almond.js](https://github.com/jrburke/almond) is required for use in production environment
-* All AMD modules must have ids matching the filename (without extension) including the relative path starting from the base path of your JavaScript directory.
-* Only top level *require()* and *define()* calls are supported. No code should be executed before these calls. This is because reznik does not fake any DOM context.
+* Only top level *require()* and *define()* calls are supported. No code should be executed before these calls
 * Code that leads to infinite code execution will cause this module to freeze
-
-Example for a valid module id:
-
-* Base path for JavaScript: */projects/website/javascripts*
-* Absolute module path: */projects/website/javascripts/tools/dom.js*
-* Required module id: *tools/dom*
 
 Example for an unsupported define call:
 
@@ -80,7 +72,7 @@ define('b', ['d'], function() {
 });
 
 // c.js
-define('c', function() {
+define(function() {
     // factory
 });
 ```
@@ -91,14 +83,38 @@ Resulting example output:
 // JSON output
 {
   "modules": {
-    "a": ["b", "c"],
-    "b": ["d"],
-    "c": []
+    "a": {
+        "filename": "a.js",
+        "anonymous": false,
+        "dependencies": ["b", "c"],
+    }
+    "b": {
+        "filename": "b.js",
+        "anonymous": false,
+        "dependencies": ["d"],
+    },
+    "c": {
+        "filename": "c.js",
+        "anonymous": true,
+        "dependencies": [],
+    }
   },
   "modulesFlattened": {
-    "a": ["b", "c", "d"],
-    "b": ["d"],
-    "c": []
+    "a": {
+        "filename": "a.js",
+        "anonymous": false,
+        "dependencies": ["b", "c", "d"],
+    }
+    "b": {
+        "filename": "b.js",
+        "anonymous": false,
+        "dependencies": ["d"],
+    },
+    "c": {
+        "filename": "c.js",
+        "anonymous": true,
+        "dependencies": [],
+    }
   },
   "errors": [
     "missing dependency d in b.js"
@@ -112,8 +128,7 @@ Resulting example output:
 
 ####Module browser
 
-When choosing HTML as output type reznik will generate a pretty printed and self contained HTML file
-with the possibility to search for keywords.
+When choosing HTML as output type reznik will generate a pretty printed and self contained HTML file with the possibility to search for keywords.
 
 ###Command line usage
 

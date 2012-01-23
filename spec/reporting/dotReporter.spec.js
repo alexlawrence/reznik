@@ -6,7 +6,7 @@ describe('dotReporter', function() {
 
     describe('render', function() {
 
-        it('should render in the correct dot format', function() {
+        it('should return the correct dot format', function() {
 
             var evaluationResult = {
                 modules: {},
@@ -19,14 +19,15 @@ describe('dotReporter', function() {
 
         });
 
-        it('should serialize modules with dependencies', function() {
+        it('should return the modules with dependencies in dot format', function() {
 
             var evaluationResult = {
                 modules: {
-                    'm/a': ['m/b'],
-                    'm/b': ['m/c', 'm/d'],
-                    'm/c': ['m/d'],
-                    'm/d': [] },
+                    'm/a': {dependencies: ['m/b']},
+                    'm/b': {dependencies: ['m/c', 'm/d']},
+                    'm/c': {dependencies: ['m/d']},
+                    'm/d': {dependencies: [] }
+                },
                 errors: []
             };
 
@@ -43,10 +44,10 @@ describe('dotReporter', function() {
 
             var evaluationResult = {
                 modules: {
-                    'm/a': ['m/b'],
-                    'm/b': ['m/c', 'm/d'],
-                    'm/c': ['m/d'],
-                    'm/d': [] },
+                    'm/a': {dependencies: ['m/b']},
+                    'm/b': {dependencies: ['m/c', 'm/d']},
+                    'm/c': {dependencies: ['m/d']},
+                    'm/d': {dependencies: []} },
                 errors: []
             };
 

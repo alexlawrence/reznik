@@ -4,10 +4,10 @@ var iteration = require('./iteration.js');
 
 var checkMissingDependencies = function(evaluationResult) {
     var errors = evaluationResult.errors, modules = evaluationResult.modules;
-    iteration.forEachModule(modules, function(moduleId, dependencyIds) {
-        dependencyIds.forEach(function(dependencyId) {
-            if (!evaluationResult.modules[dependencyId]) {
-                errors.push('missing dependency ' + dependencyId + ' required in ' + moduleId + '.js');
+    iteration.forEachModule(modules, function(moduleId, moduleData) {
+        moduleData.dependencies.forEach(function(dependency) {
+            if (!evaluationResult.modules[dependency]) {
+                errors.push('missing dependency ' + dependency + ' required in ' + moduleId + '.js');
             }
         });
     });

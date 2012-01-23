@@ -1,5 +1,7 @@
 $(function() {
 
+    'use strict';
+
     $('#search').keyup(function() {
 
         var searchText = $(this).val();

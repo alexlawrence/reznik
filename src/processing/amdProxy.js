@@ -3,15 +3,15 @@
 var errorHandling = require('../common/errorHandling.js');
 var vm = require('vm');
 
-var moduleCache, errors, moduleIdFromFilename, relativeFilename;
+var moduleCache, errors, idFromFilename, filename;
 
 var evaluateFiles = function(files) {
     files = files || [];
     resetState();
     var information = [], start = new Date();
     files.forEach(function(file) {
-        relativeFilename = file.relativeFilename;
-        moduleIdFromFilename = getModuleIdFromFilename(relativeFilename);
+        filename = file.filename;
+        idFromFilename = getIdFromFilename(filename);
         errorHandling.executeAndIgnoreErrors(function() {
             vm.runInNewContext(file.contents, { require: requireProxy, define: defineProxy });
         });
@@ -26,43 +26,61 @@ var evaluateFiles = function(files) {
 };
 
 var resetState = function() {
-    moduleCache = {}, errors = [], moduleIdFromFilename = '', relativeFilename = '';
+    moduleCache = {}, errors = [], idFromFilename = '', filename = '';
 };
 
-var getModuleIdFromFilename = function(relativeFilename) {
-    return relativeFilename.substring(0, relativeFilename.indexOf('js') - 1).replace(/\\/g, '/').toLowerCase();
+var getIdFromFilename = function(filename) {
+    return filename.toLowerCase().substring(0, filename.indexOf('js') - 1).replace(/\\/g, '/');
 };
 
-var defineProxy = function(moduleId, dependencies, factory) {
-    if (typeof moduleId !== 'string') {
-        return pushError('anonymous module definition', relativeFilename);
-    }
-    moduleId = moduleId.toLowerCase();
+var defineProxy = function(explicitId) {
+    var moduleData = getModuleData(arguments);
+    moduleData.id = moduleData.id.toLowerCase();
+    moduleData.dependencies = moduleData.dependencies.map(function(dependency) {
+        return dependency.toLowerCase();
+    });
     var matches;
     for (var key in errorChecksForDefine) {
         matches = errorChecksForDefine[key];
-        if (errorChecksForDefine.hasOwnProperty(key) && matches(moduleId)) {
-            return pushError(key, relativeFilename);
+        if (errorChecksForDefine.hasOwnProperty(key) && matches(moduleData.id)) {
+            return pushError(key, filename);
         }
     }
-    if (typeof dependencies === 'function') {
-        dependencies = [];
-    }
-    else {
-        dependencies = dependencies.map(function(dependency) {
-            return dependency.toLowerCase();
-        });
-    }
-    moduleCache[moduleId] = dependencies;
+    moduleCache[moduleData.id] = {
+        filename: filename,
+        anonymous: moduleData.anonymous,
+        dependencies: moduleData.dependencies
+    };
 };
 
-var pushError =function(message, filename) {
+var getModuleData = function(args) {
+    var moduleData = {
+        dependencies: []
+    };
+    if (typeof args[0] === 'string') {
+        moduleData.id = args[0];
+        moduleData.anonymous = false;
+        if (Array.isArray(args[1])) {
+            moduleData.dependencies = args[1];
+        }
+    }
+    else {
+        moduleData.id = idFromFilename;
+        moduleData.anonymous = true;
+        if (Array.isArray(args[0])) {
+            moduleData.dependencies = args[0];
+        }
+    }
+    return moduleData;
+};
+
+var pushError = function(message, filename) {
     errors.push(message + ' in ' + filename);
 };
 
 var errorChecksForDefine = {
-    'mismatching module id and relative filepath': function(moduleId) {
-        return moduleId !== moduleIdFromFilename;
+    'mismatching id and filename': function(id) {
+        return id !== idFromFilename;
     },
     'duplicate module definition': function(moduleId) {
         return moduleCache[moduleId] !== undefined;
@@ -76,7 +94,10 @@ var requireProxy = function(dependencies) {
     dependencies = dependencies.map(function(dependency) {
         return dependency.toLowerCase();
     });
-    moduleCache[moduleIdFromFilename] = (moduleCache[moduleIdFromFilename] || []).concat(dependencies);
+    moduleCache[idFromFilename] = {
+        filename: filename,
+        dependencies: dependencies
+    };
 };
 
 exports.evaluateFiles = evaluateFiles;

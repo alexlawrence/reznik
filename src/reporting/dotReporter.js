@@ -3,9 +3,9 @@ var iteration = require('../processing/iteration.js');
 
 var render = function(result) {
     var output = 'digraph dependencies {\n';
-    forEach(result.modules, function(dependencyIds, moduleId) {
-        if(dependencyIds.length > 0) {
-            dependencyIds.forEach(function(dependency) {
+    iteration.forEachModule(result.modules, function(moduleId, moduleData) {
+        if(moduleData.dependencies.length > 0) {
+            moduleData.dependencies.forEach(function(dependency) {
                 output += '"' + moduleId + '" -> "' + dependency + '";\n';
             });
         }

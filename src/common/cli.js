@@ -22,15 +22,30 @@ var argumentsToOptions = function(args) {
         }
         var optionName = argument.substring(argumentPrefix.length, separatorIndex);
         var optionValue = argument.substring(separatorIndex + 1) || 'true';
-
-        if (optionValue.indexOf(arraySeparator) > -1) {
-            optionValue = optionValue.split(arraySeparator);
-        }
-
+        converters.forEach(function(converter){
+            if (converter.matches(optionValue)) {
+                optionValue = converter.convert(optionValue);
+            }
+        });
         options[optionName] = optionValue;
     });
     return options;
 };
+
+var converters = [
+    {
+        matches: function(value) { return value.indexOf(arraySeparator) > -1; },
+        convert: function(value) { return value.split(arraySeparator); }
+    },
+    {
+        matches: function(value) { return value === 'true' },
+        convert: function(value) { return true; }
+    },
+    {
+        matches: function(value) { return value === 'false' },
+        convert: function(value) { return false; }
+    }
+]
 
 exports.initialize = initialize;
 exports.argumentsToOptions = argumentsToOptions;

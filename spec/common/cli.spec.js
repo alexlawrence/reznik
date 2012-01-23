@@ -17,13 +17,33 @@ describe('cli', function() {
 
         });
 
-        it('should set the value of options to "true" if no value is provided', function() {
+        it('should set an option value to true if no value is provided', function() {
 
             var args = ['-option'];
 
             var options = cli.argumentsToOptions(args);
 
-            expect(options.option).toBe('true');
+            expect(options.option).toBeTruthy();
+
+        });
+
+        it('should convert an option value to bool if "true" is provided', function() {
+
+            var args = ['-option=true'];
+
+            var options = cli.argumentsToOptions(args);
+
+            expect(options.option).toBeTruthy();
+
+        });
+
+        it('should convert an option value to bool if "false" is provided', function() {
+
+            var args = ['-option=false'];
+
+            var options = cli.argumentsToOptions(args);
+
+            expect(options.option).toBeFalsy();
 
         });
 

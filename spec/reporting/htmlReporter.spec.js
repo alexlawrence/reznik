@@ -46,7 +46,8 @@ describe('htmlReporter', function() {
 
             var evaluationResult = {
                 modules: {
-                    'a': ['b', 'c']
+                    'a': {dependencies: ['b', 'c']},
+                    'd': {dependencies: ['e', 'f']}
                 }
             };
 
@@ -54,6 +55,8 @@ describe('htmlReporter', function() {
 
             expect(output).toContain(
                 '<span class="moduleId">a</span><ul class="dependencies"><li class="dependency">b</li><li class="dependency">c</li></ul>');
+            expect(output).toContain(
+                '<span class="moduleId">d</span><ul class="dependencies"><li class="dependency">e</li><li class="dependency">f</li></ul>');
 
         });
 
@@ -61,7 +64,8 @@ describe('htmlReporter', function() {
 
             var evaluationResult = {
                 modulesFlattened: {
-                    'a': ['b', 'c']
+                    'a': {dependencies: ['b', 'c']},
+                    'd': {dependencies: ['e', 'f']}
                 }
             };
 
@@ -69,6 +73,8 @@ describe('htmlReporter', function() {
 
             expect(output).toContain(
                 '<span class="moduleId">a</span><ul class="dependencies"><li class="dependency">b</li><li class="dependency">c</li></ul>');
+            expect(output).toContain(
+                '<span class="moduleId">d</span><ul class="dependencies"><li class="dependency">e</li><li class="dependency">f</li></ul>');
 
         });
 
@@ -76,7 +82,8 @@ describe('htmlReporter', function() {
 
             var evaluationResult = {
                 modulesInverted: {
-                    'a': ['b', 'c']
+                    'a': {dependencies: ['b', 'c']},
+                    'd': {dependencies: ['e', 'f']}
                 }
             };
 
@@ -84,6 +91,8 @@ describe('htmlReporter', function() {
 
             expect(output).toContain(
                 '<span class="moduleId">a</span><ul class="dependencies"><li class="dependency">b</li><li class="dependency">c</li></ul>');
+            expect(output).toContain(
+                '<span class="moduleId">d</span><ul class="dependencies"><li class="dependency">e</li><li class="dependency">f</li></ul>');
 
         });
 

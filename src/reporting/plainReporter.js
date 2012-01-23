@@ -6,8 +6,8 @@ var render = function(result) {
     forEach(result, function(value, property) {
         output += '#' + property + '\n';
         if (property.indexOf('modules') === 0) {
-            value && iteration.forEachModule(value, function(moduleId, dependencyIds) {
-                output += moduleId + ':' + dependencyIds.join(',') + '\n';
+            value && iteration.forEachModule(value, function(moduleId, moduleData) {
+                output += moduleId + ':' + moduleData.dependencies.join(',') + '\n';
             });
         }
         else {

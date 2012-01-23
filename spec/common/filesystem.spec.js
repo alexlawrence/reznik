@@ -43,7 +43,7 @@ describe('filesystem', function() {
             fs.restore('lstatSync');
         });
 
-        it('should return the correct filepath names when given multiple files', function() {
+        it('should return the correct file names when given multiple files', function() {
 
             fs.hijack('lstatSync', function() {
                 return {
@@ -59,7 +59,7 @@ describe('filesystem', function() {
                 ['1.js', '2.js', '3.js', 'subDirectory/1.js', 'subDirectory/2.js', 'subDirectory/3.js']);
 
             expect(files.length).toBe(6);
-            expect(files[5].relativeFilename).toBe('subDirectory/3.js');
+            expect(files[5].filename).toBe('subDirectory/3.js');
 
             fs.restore('readFileSync');
         });
@@ -134,7 +134,7 @@ describe('filesystem', function() {
             expect(files.occurrencesOf('subDirectory/1.js')).toBe(0);
         });
 
-        it('should return a list containing all files matching the file ending when given', function() {
+        it('should return a list containing all files matching the file ending', function() {
             fs.hijack('readdirSync', function() {
                 return ['1.js', '2.js', '3.js'];
             });

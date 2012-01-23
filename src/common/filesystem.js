@@ -2,16 +2,16 @@ var fs = require('fs');
 
 var encoding = 'utf-8';
 
-var readFiles = function(basePath, relativeFilenames) {
+var readFiles = function(basePath, filenames) {
     var stat = fs.lstatSync(basePath);
     if (!stat.isDirectory()) {
         throw new Error('invalid base path');
     }
     var files = [];
-    relativeFilenames.forEach(function(relativeFilename) {
+    filenames.forEach(function(filename) {
         files.push({
-          relativeFilename: relativeFilename,
-          contents: fs.readFileSync(basePath + '/' + relativeFilename, encoding)
+          filename: filename,
+          contents: fs.readFileSync(basePath + '/' + filename, encoding)
         });
     });
     return files;
@@ -23,24 +23,24 @@ var getAllFiles = function(options, currentPath) {
     var files = [];
     var fsItems = fs.readdirSync(options.basePath + '/' + currentPath);
     fsItems.forEach(function(fsItem) {
-        var relativeItemName = currentPath + fsItem;
-        var fullItemName = options.basePath + '/' + relativeItemName;
+        var itemName = currentPath + fsItem;
+        var fullItemName = options.basePath + '/' + itemName;
         var itemShouldBeExcluded = exclude.some(function(value) {
-            return relativeItemName.indexOf(value) > -1;
+            return itemName.indexOf(value) > -1;
         });
         if (itemShouldBeExcluded) {
             return;
         }
         var stat = fs.lstatSync(fullItemName);
         if (stat.isDirectory()) {
-            files = files.concat(getAllFiles(options, relativeItemName));
+            files = files.concat(getAllFiles(options, itemName));
         }
         else if (matchesFileEnding(fsItem, options.fileEnding)) {
             files.push(currentPath + fsItem);
         }
     });
     return files;
-}
+};
 
 var matchesFileEnding = function(file, ending) {
     if (!ending) {

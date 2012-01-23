@@ -17,8 +17,8 @@
         }
     ],
     "name": "reznik",
-    "description": "Tool to generate and analyze AMD module dependency lists",
-    "version": "0.6.0",
+    "description": "Tool to analyze AMD structures and dependencies",
+    "version": "0.6.5",
     "homepage": "http://www.github.com/alexlawrence/reznik",
     "main" : "./src/index.js",
     "repository": {

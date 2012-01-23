@@ -31,15 +31,15 @@ describe('amdProxy', function() {
                 global.executedFiles = { one: false, two: false, three: false };
                 var files = [];
                 files.push({
-                    relativeFilename: 'one.js',
+                    filename: 'one.js',
                     contents: 'executedFiles.one = true;'
                 });
                 files.push({
-                    relativeFilename: 'two.js',
+                    filename: 'two.js',
                     contents: 'executedFiles.two = true;'
                 });
                 files.push({
-                    relativeFilename: 'three.js',
+                    filename: 'three.js',
                     contents: 'executedFiles.three = true;'
                 });
 
@@ -53,15 +53,15 @@ describe('amdProxy', function() {
             it('should not rethrow any errors in evaluated javascript file content', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'one.js',
+                    filename: 'one.js',
                     contents: 'window.foobar.foobar = "foobar";'
                 });
                 files.push({
-                    relativeFilename: 'two.js',
+                    filename: 'two.js',
                     contents: 'asdf.asdf::asdf;;;asdf'
                 });
                 files.push({
-                    relativeFilename: 'three.js',
+                    filename: 'three.js',
                     contents: '???###:::;;;'
                 });
 
@@ -71,7 +71,7 @@ describe('amdProxy', function() {
             it ('should abort each individual script execution after the first javascript error', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'one.js',
+                    filename: 'one.js',
                     contents: 'foobar.foobar = "foobar"; define("one", function() {});'
                 });
                 var evaluationResult = subject.evaluateFiles(files);
@@ -82,11 +82,11 @@ describe('amdProxy', function() {
             it ('should not abort consecutive script execution after javascript errors', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'one.js',
+                    filename: 'one.js',
                     contents: 'foobar.foobar = "foobar"; define("one", function() {});'
                 });
                 files.push({
-                    relativeFilename: 'two.js',
+                    filename: 'two.js',
                     contents: 'define("two", function() {});'
                 });
                 var evaluationResult = subject.evaluateFiles(files);
@@ -98,23 +98,38 @@ describe('amdProxy', function() {
 
         describe('when given amd modules using define', function() {
 
+            it('should include a module with its dependencies in the result', function() {
+                var files = [];
+                files.push({
+                    filename: 'one.js',
+                    contents: 'define("one", ["two", "three", "four/four/four"], function() {});'
+                });
+
+                var result = subject.evaluateFiles(files);
+
+                expect(result.modules.one).toBeDefined();
+                expect(result.modules.one.dependencies.length).toBe(3);
+                expect(result.modules.one.dependencies[0]).toBe('two');
+                expect(result.modules.one.dependencies[1]).toBe('three');
+                expect(result.modules.one.dependencies[2]).toBe('four/four/four');
+            });
+
             it('should include a module in the result even if it has no dependencies', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'one.js',
+                    filename: 'one.js',
                     contents: 'define("one", function() {});'
                 });
 
                 var result = subject.evaluateFiles(files);
 
                 expect(result.modules.one).toBeDefined();
-                expect(result.modules.one.length).toBe(0);
             });
 
-            it('should convert the module id to lowercase', function() {
+            it('should convert the id to lowercase', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'hereAreSomeCases.js',
+                    filename: 'hereAreSomeCases.js',
                     contents: 'define("hereAreSomeCases", function() {});'
                 });
 
@@ -124,97 +139,109 @@ describe('amdProxy', function() {
                 expect(result.modules.herearesomecases).toBeDefined();
             });
 
-            it('should include a module in the result with its dependencies', function() {
+            it('should include a module´s filename in the result', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'one.js',
-                    contents: 'define("one", ["two", "three", "four/four/four"], function() {});'
+                    filename: 'one.js',
+                    contents: 'define("one", ["two"], function() {});'
+                });
+                files.push({
+                    filename: 'two.js',
+                    contents: 'define("two", ["three"], function() {});'
                 });
 
                 var result = subject.evaluateFiles(files);
 
-                expect(result.modules.one).toBeDefined();
-                expect(result.modules.one.length).toBe(3);
-                expect(result.modules.one[0]).toBe('two');
-                expect(result.modules.one[1]).toBe('three');
-                expect(result.modules.one[2]).toBe('four/four/four');
+                expect(result.modules.one.filename).toBe('one.js');
+                expect(result.modules.two.filename).toBe('two.js');
             });
 
-            it('should include the dependencies of a module as lowercase ids', function() {
+            it('should convert the dependencies of a module to lowercase ids', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'one.js',
+                    filename: 'one.js',
                     contents: 'define("one", ["caseTwo", "caseThree", "four/four/CaSeFoUr"], function() {});'
                 });
 
                 var result = subject.evaluateFiles(files);
 
                 expect(result.modules.one).toBeDefined();
-                expect(result.modules.one.length).toBe(3);
-                expect(result.modules.one[0]).toBe('casetwo');
-                expect(result.modules.one[1]).toBe('casethree');
-                expect(result.modules.one[2]).toBe('four/four/casefour');
+                expect(result.modules.one.dependencies.length).toBe(3);
+                expect(result.modules.one.dependencies[0]).toBe('casetwo');
+                expect(result.modules.one.dependencies[1]).toBe('casethree');
+                expect(result.modules.one.dependencies[2]).toBe('four/four/casefour');
             });
 
-            it('should return an error when a module does not provide an id', function() {
+            it('should determine the id for an anonymous module by its filename', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'one.js',
+                    filename: 'one.js',
                     contents: 'define(["two", "three"], function() {});'
                 });
                 files.push({
-                    relativeFilename: 'two.js',
+                    filename: 'two.js',
                     contents: 'define(function() {});'
                 });
 
                 var result = subject.evaluateFiles(files);
 
-                expect(result.errors.length).toBe(2);
-                expect(result.errors[0]).toBe('anonymous module definition in one.js');
-                expect(result.errors[1]).toBe('anonymous module definition in two.js');
+                expect(result.modules.one).toBeDefined();
+                expect(result.modules.two).toBeDefined();
             });
 
-            it('should not include its dependencies when a module does not provide an id', function() {
+            it('should include the dependencies of an anonymous module in the result', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'one.js',
+                    filename: 'one.js',
                     contents: 'define(["two", "three"], function() {});'
                 });
 
                 var result = subject.evaluateFiles(files);
 
-                expect(result.modules.one).toBeUndefined();
+                expect(result.modules.one.dependencies.length).toBe(2);
+            });
+
+            it('should set the anonymous flag to true for an anonymous module', function() {
+                var files = [];
+                files.push({
+                    filename: 'one.js',
+                    contents: 'define(["two", "three"], function() {});'
+                });
+
+                var result = subject.evaluateFiles(files);
+
+                expect(result.modules.one.anonymous).toBeTruthy();
             });
 
             it('should not execute the factory of a module', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'one.js',
+                    filename: 'one.js',
                     contents: 'define("one", ["two", "three"], function() { require(["four"], function() {}); });'
                 });
 
                 var evaluationResult = subject.evaluateFiles(files);
 
-                expect(evaluationResult.modules['one'].length).toBe(2);
+                expect(evaluationResult.modules.one.dependencies.length).toBe(2);
             });
 
             it('should not execute the factory of a module when it has no dependencies', function() {
                 global.executedFiles = { one: false };
                 var files = [];
                 files.push({
-                    relativeFilename: 'one.js',
+                    filename: 'one.js',
                     contents: 'define("one", function() { require(["two"], function() {}); });'
                 });
 
                 var evaluationResult = subject.evaluateFiles(files);
 
-                expect(evaluationResult.modules['one'].length).toBe(0);
+                expect(evaluationResult.modules.one.dependencies.length).toBe(0);
             });
 
-            it('should not return an error when a module id matches the relative filepath', function() {
+            it('should not return an error when an id matches the filename', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'path/to/one/module.js',
+                    filename: 'path/to/one/module.js',
                     contents: 'define("path/to/one/module", function() {});'
                 });
 
@@ -223,23 +250,23 @@ describe('amdProxy', function() {
                 expect(result.errors.length).toBe(0);
             });
 
-            it('should return an error when a module id does not match the relative filepath', function() {
+            it('should return an error when an id does not match the filename', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'path/to/one/module.js',
+                    filename: 'path/to/one/module.js',
                     contents: 'define("wrong/path/to/one/module", function() {});'
                 });
 
                 var result = subject.evaluateFiles(files);
 
                 expect(result.errors.length).toBe(1);
-                expect(result.errors[0]).toBe('mismatching module id and relative filepath in path/to/one/module.js');
+                expect(result.errors[0]).toBe('mismatching id and filename in path/to/one/module.js');
             });
 
-            it('should correct the relative filepath and not throw an error when using windows path (\\)', function() {
+            it('should correct the filename and not throw an error when using windows path (\\)', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'path\\to\\one\\module.js',
+                    filename: 'path\\to\\one\\module.js',
                     contents: 'define("path/to/one/module", function() {});'
                 });
 
@@ -251,7 +278,7 @@ describe('amdProxy', function() {
             it('should return an error when a module contains multiple identical defines', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'path/to/one/module.js',
+                    filename: 'path/to/one/module.js',
                     contents: 'define("path/to/one/module", function() {});' +
                         'define("path/to/one/module", function() {});'
                 });
@@ -266,10 +293,10 @@ describe('amdProxy', function() {
 
         describe('when given javascript files using require', function() {
 
-            it('should generate an implicit module id from relative filepath', function() {
+            it('should generate an implicit id from filename', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'path/to/module/one.js',
+                    filename: 'path/to/module/one.js',
                     contents: 'require(["two", "three"], function() {});'
                 });
 
@@ -277,48 +304,48 @@ describe('amdProxy', function() {
                 expect(result.modules['path/to/module/one']).toBeDefined();
             });
 
-            it('should include all dependencies for the implicit module ids', function() {
+            it('should include all dependencies for the implicit id', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'path/to/module/one.js',
+                    filename: 'path/to/module/one.js',
                     contents: 'require(["two", "three"], function() {});'
                 });
 
                 var result = subject.evaluateFiles(files);
 
-                expect(result.modules['path/to/module/one'][0]).toBe('two');
-                expect(result.modules['path/to/module/one'][1]).toBe('three');
+                expect(result.modules['path/to/module/one'].dependencies[0]).toBe('two');
+                expect(result.modules['path/to/module/one'].dependencies[1]).toBe('three');
             });
 
-            it('should include all dependencies as lowercase module ids', function() {
+            it('should include all dependencies as lowercase ids', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'path/to/module/one.js',
+                    filename: 'path/to/module/one.js',
                     contents: 'require(["caseTwo", "CASETHREE"], function() {});'
                 });
 
                 var result = subject.evaluateFiles(files);
 
-                expect(result.modules['path/to/module/one'][0]).toBe('casetwo');
-                expect(result.modules['path/to/module/one'][1]).toBe('casethree');
+                expect(result.modules['path/to/module/one'].dependencies[0]).toBe('casetwo');
+                expect(result.modules['path/to/module/one'].dependencies[1]).toBe('casethree');
             });
 
             it('should not execute the factory', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'path/to/module/one.js',
+                    filename: 'path/to/module/one.js',
                     contents: 'require(["two", "three"], function() { require(["four"], function() {}); });'
                 });
 
                 var evaluationResult = subject.evaluateFiles(files);
 
-                expect(evaluationResult.modules['path/to/module/one'].length).toBe(2);
+                expect(evaluationResult.modules['path/to/module/one'].dependencies.length).toBe(2);
             });
 
             it('should not evaluate CommonJS require calls', function() {
                 var files = [];
                 files.push({
-                    relativeFilename: 'path/to/module/one.js',
+                    filename: 'path/to/module/one.js',
                     contents: 'require("two");'
                 });
 

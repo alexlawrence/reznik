@@ -1,10 +1,10 @@
 'use strict';
 
 var forEachModule = function(modules, callback) {
-    var moduleId, dependencyIds, shouldAbort;
-    for (moduleId in modules) {
-        dependencyIds = modules[moduleId] || [];
-        shouldAbort = callback(moduleId, dependencyIds);
+    var id, dependencies, shouldAbort;
+    for (id in modules) {
+        modules[id].dependencies = modules[id].dependencies || [];
+        shouldAbort = callback(id, modules[id]);
         if (shouldAbort) {
             return;
         }
@@ -12,16 +12,18 @@ var forEachModule = function(modules, callback) {
 };
 
 var forEachModuleDependencyRecursive = function(modules, callback) {
-    var dependencyId, allDependencyIds;
-    forEachModule(modules, function(moduleId, dependencyIds) {
-        allDependencyIds = dependencyIds.slice(0);
-        while (allDependencyIds.length > 0) {
-            if (allDependencyIds.indexOf(moduleId) > -1) {
+    var dependency, allDependencies;
+    forEachModule(modules, function(moduleId, moduleData) {
+        allDependencies = moduleData.dependencies.slice(0);
+        while (allDependencies.length > 0) {
+            if (allDependencies.indexOf(moduleId) > -1) {
                 throw new Error('circular dependency in ' + moduleId);
             }
-            dependencyId = allDependencyIds.pop();
-            allDependencyIds = allDependencyIds.concat(modules[dependencyId] || []);
-            callback(moduleId, dependencyId);
+            dependency = allDependencies.pop();
+            if (modules[dependency] && modules[dependency].dependencies) {
+                allDependencies = allDependencies.concat(modules[dependency].dependencies);
+            }
+            callback(moduleId, dependency);
         }
     });
 };
