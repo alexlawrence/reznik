@@ -6,6 +6,12 @@ describe('iteration', function() {
 
     describe('forEachModule', function() {
 
+        it('should not throw an error when passing undefined', function() {
+
+            expect(subject.forEachModule).not.toThrow();
+
+        });
+
         it('should call the callback for every given module', function() {
 
             var spy = jasmine.createSpy();

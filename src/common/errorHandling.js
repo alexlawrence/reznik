@@ -1,3 +1,5 @@
+'use strict';
+
 function executeAndIgnoreErrors(callback) {
     try{
         callback();

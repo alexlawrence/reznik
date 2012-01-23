@@ -1,3 +1,5 @@
+'use strict';
+
 var forEach = require('../common/objectForEach.js').forEach;
 var iteration = require('../processing/iteration.js');
 

@@ -1,7 +1,7 @@
 'use strict';
 
 var cli = require('./common/cli.js');
-var main = require('./processing/main.js');
+var main = require('./main.js');
 
 var cliHelpMessage = '\n' +
     'options:                                \n' +

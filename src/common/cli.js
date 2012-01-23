@@ -1,3 +1,5 @@
+'use strict';
+
 var argumentPrefix = '-', separator = '=', arraySeparator = ',';
 
 var initialize = function(setup) {

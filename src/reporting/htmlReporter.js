@@ -1,8 +1,11 @@
+'use strict';
+
 var fs = require('fs');
 var template = require('../common/template.js').template;
 var iteration = require('../processing/iteration.js');
 
-var htmlTemplate = '<!doctype html><html><head><title>module browser</title>{styles}</head><body>{header}{search}{output}{scripts}</body></html>';
+var htmlTemplate = '<!doctype html>' +
+    '<html><head><title>module browser</title>{styles}</head><body>{header}{search}{output}{scripts}</body></html>';
 var headerHtml = '<h1>module browser</h1>';
 var searchHtml = '<input type="text" id="search" placeholder="enter module name" />';
 
@@ -14,6 +17,8 @@ var listTitleTemplate = '<h2 class="{title}">{value}</h2>';
 var inlineCssTemplate = '<style type="text/css">{style}</style>';
 var externalScriptTemplate = '<script type="text/javascript" src="{url}"></script>';
 var inlineScriptTemplate = '<script type="text/javascript">{script}</script>';
+
+var jQueryUrl = 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js';
 
 var render = function(evaluationResult) {
     var output = '';
@@ -64,7 +69,7 @@ var renderTree = function(modules, title) {
 };
 
 var renderScripts = function() {
-    var jQueryScript = template(externalScriptTemplate, {url: 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'});
+    var jQueryScript = template(externalScriptTemplate, {url: jQueryUrl});
     var browserScript = fs.readFileSync(__dirname + '/assets/browser.js', 'utf-8');
     browserScript = template(inlineScriptTemplate, {script: browserScript});
     return jQueryScript + browserScript;

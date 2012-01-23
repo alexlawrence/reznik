@@ -1,6 +1,9 @@
 'use strict';
 
 var forEachModule = function(modules, callback) {
+    if (!modules) {
+        return;
+    }
     var id, dependencies, shouldAbort;
     for (id in modules) {
         modules[id].dependencies = modules[id].dependencies || [];

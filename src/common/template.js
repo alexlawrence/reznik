@@ -1,3 +1,5 @@
+'use strict';
+
 var forEach = require('./objectForEach.js').forEach;
 
 var placeholderPrefix = '{', placeholderSuffix = '}';

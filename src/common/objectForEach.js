@@ -1,3 +1,5 @@
+'use strict';
+
 var forEach = function(object, callback) {
     if (Array.isArray(object)) {
         return object.forEach(callback);

@@ -1,10 +1,11 @@
 'use strict';
 
-var amdProxy = require('./amdProxy.js');
-var filesystem = require('../common/filesystem.js');
-var transformation = require('./transformation.js');
-var verification = require('./verification.js');
-var errorHandling = require('../common/errorHandling.js');
+var vm = require('./execution/vm.js');
+var amdProxy = require('./execution/amdProxy.js');
+var filesystem = require('./common/filesystem.js');
+var transformation = require('./processing/transformation.js');
+var verification = require('./processing/verification.js');
+var errorHandling = require('./common/errorHandling.js');
 
 var availableOutputTypes = ['json', 'plain', 'html', 'dot'];
 
@@ -18,6 +19,7 @@ function run(basePath, options) {
         fileEnding: 'js'
     });
     var files = filesystem.readFiles(basePath, filepaths);
+    amdProxy.setExecutionMethod(vm.execute);
     var evaluationResult = amdProxy.evaluateFiles(files);
     if (options.verify) {
         verification.executeAllAvailableChecks(evaluationResult);
@@ -31,7 +33,7 @@ function run(basePath, options) {
         evaluationResult.modulesInverted = transformation.generateInvertedModuleList(evaluationResult.modules);
     }
     if (availableOutputTypes.indexOf(options.output) > -1) {
-        var reporter = require('../reporting/' + options.output + 'Reporter.js');
+        var reporter = require('./reporting/' + options.output + 'Reporter.js');
         return reporter.render(evaluationResult);
     }
     return '';

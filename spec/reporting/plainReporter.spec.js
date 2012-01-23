@@ -10,42 +10,53 @@ describe('plainReporter', function() {
 
             var evaluationResult = {
                 modules: {
-                    'm/a': {dependencies: ['m/b']},
-                    'm/b': {dependencies: ['m/c', 'm/d']},
-                    'm/c': {dependencies: ['m/d']},
-                    'm/d': {dependencies: []}
+                    'moduleA': {dependencies: ['moduleB']},
+                    'moduleB': {dependencies: ['moduleC', 'moduleD']},
+                    'moduleC': {dependencies: ['moduleD']},
+                    'moduleD': {dependencies: []}
                 },
                 errors: []
             };
 
             var result = subject.render(evaluationResult);
 
-            expect(result).toContain('#modules');
-            expect(result).toContain('m/a:m/b');
-            expect(result).toContain('m/b:m/c,m/d');
-            expect(result).toContain('m/c:m/d');
-            expect(result).toContain('m/d');
+            expect(result).toMatch(
+                /\s*#modules\s*moduleA:moduleB\s*moduleB:moduleC,moduleD\s*moduleC:moduleD\s*moduleD\s*/);
+        });
+
+        it('should serialize a list of all anonymous modules', function() {
+
+            var evaluationResult = {
+                modules: {
+                    'moduleA': {anonymous: true},
+                    'moduleB': {anonymous: true},
+                    'moduleC': {anonymous: false},
+                    'moduleD': {anonymous: false}
+                },
+                errors: []
+            };
+
+            var result = subject.render(evaluationResult);
+
+            expect(result).toMatch(/\s*#anonymous modules\s*moduleA\s*moduleB\s*/);
         });
 
         it('should serialize properties starting with "modules" in the same way as modules', function() {
 
             var evaluationResult = {
                 modulesFoobar: {
-                    'm/a': {dependencies: ['m/b']},
-                    'm/b': {dependencies: ['m/c', 'm/d']},
-                    'm/c': {dependencies: ['m/d']},
-                    'm/d': {dependencies: []}
+                    'moduleA': {dependencies: ['moduleB']},
+                    'moduleB': {dependencies: ['moduleC', 'moduleD']},
+                    'moduleC': {dependencies: ['moduleD']},
+                    'moduleD': {dependencies: []}
                 },
                 errors: []
             };
 
             var result = subject.render(evaluationResult);
 
-            expect(result).toContain('#modulesFoobar');
-            expect(result).toContain('m/a:m/b');
-            expect(result).toContain('m/b:m/c,m/d');
-            expect(result).toContain('m/c:m/d');
-            expect(result).toContain('m/d');
+            expect(result).toMatch(
+                /\s*#modulesFoobar\s*moduleA:moduleB\s*moduleB:moduleC,moduleD\s*moduleC:moduleD\s*moduleD\s*/);
         });
 
         it('should serialize the errors', function() {
@@ -57,10 +68,8 @@ describe('plainReporter', function() {
 
             var result = subject.render(evaluationResult);
 
-            expect(result).toContain('#errors');
-            expect(result).toContain('error 1');
-            expect(result).toContain('error 2');
-            expect(result).toContain('error 3');
+            expect(result).toMatch(
+                /\s*#errors\s*error 1\s*error 2\s*error 3\s*/);
 
         });
 
@@ -74,9 +83,8 @@ describe('plainReporter', function() {
 
             var result = subject.render(evaluationResult);
 
-            expect(result).toContain('#information');
-            expect(result).toContain('did something');
-            expect(result).toContain('did something else');
+            expect(result).toMatch(
+                /\s*#information\s*did something\s*did something else\s*/);
         });
 
     });

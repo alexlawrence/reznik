@@ -1,9 +1,15 @@
 'use strict';
 
 var errorHandling = require('../common/errorHandling.js');
-var vm = require('vm');
 
 var moduleCache, errors, idFromFilename, filename;
+var executionMethod = function(script, context) {
+    throw new Error('no execution method set');
+};
+
+var setExecutionMethod = function(newExecutionMethod) {
+    executionMethod = newExecutionMethod;
+};
 
 var evaluateFiles = function(files) {
     files = files || [];
@@ -12,9 +18,7 @@ var evaluateFiles = function(files) {
     files.forEach(function(file) {
         filename = file.filename;
         idFromFilename = getIdFromFilename(filename);
-        errorHandling.executeAndIgnoreErrors(function() {
-            vm.runInNewContext(file.contents, { require: requireProxy, define: defineProxy });
-        });
+        executionMethod(file.contents, {require: requireProxy, define: defineProxy});
     });
     information.push('evaluated ' + files.length + ' files');
     information.push('ran for ' + (new Date() - start) + ' ms');
@@ -30,14 +34,13 @@ var resetState = function() {
 };
 
 var getIdFromFilename = function(filename) {
-    return filename.toLowerCase().substring(0, filename.indexOf('js') - 1).replace(/\\/g, '/');
+    return filename.substring(0, filename.toLowerCase().indexOf('js') - 1).replace(/\\/g, '/');
 };
 
 var defineProxy = function(explicitId) {
     var moduleData = getModuleData(arguments);
-    moduleData.id = moduleData.id.toLowerCase();
     moduleData.dependencies = moduleData.dependencies.map(function(dependency) {
-        return dependency.toLowerCase();
+        return dependency;
     });
     var matches;
     for (var key in errorChecksForDefine) {
@@ -92,7 +95,7 @@ var requireProxy = function(dependencies) {
         return;
     }
     dependencies = dependencies.map(function(dependency) {
-        return dependency.toLowerCase();
+        return dependency;
     });
     moduleCache[idFromFilename] = {
         filename: filename,
@@ -101,3 +104,4 @@ var requireProxy = function(dependencies) {
 };
 
 exports.evaluateFiles = evaluateFiles;
+exports.setExecutionMethod = setExecutionMethod;

@@ -1,15 +1,15 @@
 'use strict';
 
-var subject = require('../../src/processing/main.js');
+var subject = require('../src/main.js');
 
 var horaa = require('horaa');
 
-var amdProxy = horaa(__dirname + '/../../src/processing/amdProxy.js');
-var filesystem = horaa(__dirname + '/../../src/common/filesystem.js');
-var transformation = horaa(__dirname + '/../../src/processing/transformation.js');
-var jsonReporter = horaa(__dirname + '/../../src/reporting/jsonReporter.js');
-var htmlReporter = horaa(__dirname + '/../../src/reporting/htmlReporter.js');
-var verification = horaa(__dirname + '/../../src/processing/verification.js');
+var amdProxy = horaa(__dirname + '/../src/execution/amdProxy.js');
+var filesystem = horaa(__dirname + '/../src/common/filesystem.js');
+var transformation = horaa(__dirname + '/../src/processing/transformation.js');
+var jsonReporter = horaa(__dirname + '/../src/reporting/jsonReporter.js');
+var htmlReporter = horaa(__dirname + '/../src/reporting/htmlReporter.js');
+var verification = horaa(__dirname + '/../src/processing/verification.js');
 
 var executeOrIgnore = function(callback) {
     try{
@@ -46,12 +46,13 @@ describe('main', function() {
                 var basePath = 'testPath';
                 var exclude = ['foo', 'bar'];
                 var fileEnding = 'js';
+                var passedBasePath, passedExclude, passedFileEnding;
 
                 filesystem.restore('getAllFiles');
                 filesystem.hijack('getAllFiles', function(options) {
-                    expect(options.basePath).toBe(basePath);
-                    expect(options.exclude).toBe(directoriesToExclude);
-                    expect(options.fileEnding).toBe(fileEnding);
+                    passedBasePath = options.basePath;
+                    passedExclude = options.exclude;
+                    passedFileEnding = options.fileEnding;
                 });
 
                 executeOrIgnore(function() {
@@ -59,17 +60,23 @@ describe('main', function() {
                         exclude: exclude, fileEnding: fileEnding
                     });
                 });
+
+                expect(passedBasePath).toBe(basePath);
+                expect(passedExclude).toBe(exclude);
+                expect(passedFileEnding).toBe(fileEnding);
             });
 
             it('should call filesystem.readFiles with given basePath and result from getAllFiles', function() {
+
+                var passedFilenames;
 
                 filesystem.restore('getAllFiles');
                 filesystem.hijack('getAllFiles', function() {
                     return ['1.js', '2.js', '3.js'];
                 });
                 filesystem.restore('readFiles');
-                filesystem.hijack('readFiles', function(basePath, filepaths) {
-                    expect(filepaths.length).toBe(3);
+                filesystem.hijack('readFiles', function(basePath, filenames) {
+                    passedFilenames = filenames;
                 });
 
                 executeOrIgnore(function() {
@@ -80,29 +87,50 @@ describe('main', function() {
 
                 executeOrIgnore(subject.run);
 
+                expect(passedFilenames.length).toBe(3);
+
             });
 
         });
 
         describe('evaluation', function() {
 
+            it('should set the amdProxy execution method', function() {
+
+                var spy = jasmine.createSpy();
+
+                amdProxy.hijack('setExecutionMethod', spy);
+
+                executeOrIgnore(subject.run);
+
+                expect(spy).toHaveBeenCalled();
+
+                amdProxy.restore('setExecutionMethod');
+
+            });
+
             it('should call the amdProxy with the result from filesystem', function() {
 
+                var passedFiles;
+
                 filesystem.restore('readFiles');
-                filesystem.hijack('readFiles', function(basePath, filepaths) {
+                filesystem.hijack('readFiles', function(basePath, filenames) {
                    return [
-                       {relativeFilename: '1.js', contents: '1'},
-                       {relativeFilename: '2.js', contents: '1'},
-                       {relativeFilename: '3.js', contents: '3'}
+                       {filename: '1.js', contents: '1'},
+                       {filename: '2.js', contents: '1'},
+                       {filename: '3.js', contents: '3'}
                    ];
                 });
                 amdProxy.hijack('evaluateFiles', function(files) {
-                    expect(files.length).toBe(3);
-                    expect(files[0].relativeFilename).toBe('1.js');
+                    passedFiles = files;
                 });
-                amdProxy.restore('evaluateFiles');
 
                 executeOrIgnore(subject.run);
+
+                expect(passedFiles.length).toBe(3);
+                expect(passedFiles[0].filename).toBe('1.js');
+
+                amdProxy.restore('evaluateFiles');
 
             });
 
@@ -114,9 +142,9 @@ describe('main', function() {
                 amdProxy.hijack('evaluateFiles', function() {
                     return {
                         modules: {
-                            '1': ['2', '3'],
-                            '2': ['3'],
-                            '3': []
+                            '1': {dependencies: ['2', '3']},
+                            '2': {dependencies: ['3']},
+                            '3': {dependencies: []}
                         }
                     };
                 });
@@ -128,14 +156,18 @@ describe('main', function() {
 
             it('should call the verification with the result from amdProxy when option verify is set to true', function() {
 
+                var passedEvaluationResult;
+
                 verification.hijack('executeAllAvailableChecks', function(evaluationResult) {
-                    expect(evaluationResult.modules).toBeDefined();
-                    expect(evaluationResult.modules['1'][0]).toBe('2');
+                    passedEvaluationResult = evaluationResult;
                 });
 
                 executeOrIgnore(function() {
                     subject.run('foobar', { verify: true });
                 });
+
+                expect(passedEvaluationResult.modules).toBeDefined();
+                expect(passedEvaluationResult.modules['1'].dependencies[0]).toBe('2');
 
                 verification.restore('executeAllAvailableChecks');
 
@@ -159,14 +191,18 @@ describe('main', function() {
 
             it('should call the flattening with the result from amdProxy when option flattened is set to true', function() {
 
+                var passedModules;
+
                 transformation.hijack('generateFlattenedModuleList', function(modules) {
-                    expect(modules).toBeDefined();
-                    expect(modules['1'][0]).toBe('2');
+                    passedModules = modules;
                 });
 
                 executeOrIgnore(function() {
                     subject.run('foobar', { flattened: true });
                 });
+
+                expect(passedModules).toBeDefined();
+                expect(passedModules['1'].dependencies[0]).toBe('2');
 
                 transformation.restore('generateFlattenedModuleList');
 
@@ -190,17 +226,20 @@ describe('main', function() {
 
             it('should call the inverting with the result from amdProxy when option inverted is set to true', function() {
 
+                var passedModules;
+
                 transformation.hijack('generateInvertedModuleList', function(modules) {
-                    expect(modules).toBeDefined();
-                    expect(modules['1'][0]).toBe('2');
+                    passedModules = modules;
                 });
 
                 executeOrIgnore(function() {
-                    subject.run('foobar', { flattened: true });
+                    subject.run('foobar', { inverted: true });
                 });
 
                 transformation.restore('generateInvertedModuleList');
 
+                expect(passedModules).toBeDefined();
+                expect(passedModules['1'].dependencies[0]).toBe('2');
             });
 
             it('should not call the inverting when option inverted is set to false', function() {
