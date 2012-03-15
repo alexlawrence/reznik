@@ -19,4 +19,3 @@ if (cli.options.basePath) {
 }
 
 exports.run = main.run;
-

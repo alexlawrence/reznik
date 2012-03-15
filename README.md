@@ -47,7 +47,7 @@ Example for an unsupported define call:
     });
 
 }());
-````
+```
 
 When evaluating this file the *define()* call is never reached because accessing a non existing document will produce
 an error and cause reznik to stop evaluating. Normally an AMD should not look like this anyways.
@@ -58,7 +58,7 @@ The generated list can be output as JSON, plain text, dot file or as an HTML mod
 Every output contains all defined modules, all of their dependencies, all errors occurred during the evaluation and some information messages.
 However Only JSON and plain output are suited for further processing as they contain the full set of information.
 The HTML output generates a pretty printed and self contained HTML file with the possibility to search for keywords.
-The dot output generates a simplified directed dependencies graph.a
+The dot output generates a simplified directed dependencies graph.
 
 Example modules:
 

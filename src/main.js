@@ -1,6 +1,6 @@
 'use strict';
 
-var vm = require('./execution/vm.js');
+var nodeExecution = require('./execution/nodeExecution.js');
 var amdProxy = require('./execution/amdProxy.js');
 var filesystem = require('./common/filesystem.js');
 var transformation = require('./processing/transformation.js');
@@ -19,7 +19,7 @@ function run(basePath, options) {
         fileEnding: 'js'
     });
     var files = filesystem.readFiles(basePath, filepaths);
-    amdProxy.setExecutionMethod(vm.execute);
+    amdProxy.setExecutionMethod(nodeExecution.execute);
     var evaluationResult = amdProxy.evaluateFiles(files);
     if (options.verify) {
         verification.executeAllAvailableChecks(evaluationResult);

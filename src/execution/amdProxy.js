@@ -1,7 +1,5 @@
 'use strict';
 
-var errorHandling = require('../common/errorHandling.js');
-
 var moduleCache, errors, idFromFilename, filename;
 var executionMethod = function(script, context) {
     throw new Error('no execution method set');

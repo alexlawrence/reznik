@@ -1,8 +1,8 @@
 'use strict';
 
-var subject = require('../../src/execution/vm.js');
+var subject = require('../../src/execution/nodeExecution.js');
 
-describe('vm', function() {
+describe('nodeExecution', function() {
 
     it('should execute the script in its own sandbox without access to node context', function() {
 
