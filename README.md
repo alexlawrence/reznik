@@ -1,6 +1,6 @@
 #reznik
 
-Code analysis for projects using [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD).
+Code analysis for [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) projects.
 
 ###Motivation
 

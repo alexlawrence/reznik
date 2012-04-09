@@ -13,7 +13,7 @@
         }
     ],
     "name": "reznik",
-    "description": "Code analysis for projects using AMD",
+    "description": "Code analysis for AMD projects",
     "version": "1.0.0",
     "homepage": "http://www.github.com/alexlawrence/reznik",
     "main" : "./src/index.js",
