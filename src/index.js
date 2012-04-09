@@ -1,21 +1,30 @@
 'use strict';
 
-var cli = require('./common/cli.js');
-var main = require('./main.js');
+var getCommandLineOptions = require('./common/getCommandLineOptions.js');
+var commandLineOptions = getCommandLineOptions();
 
-var cliHelpMessage = '\n' +
-    'options:                                \n' +
-    ' -basePath=path                        (base path for AMD modules)\n' +
-    ' -flattened=true/false                 (default false)\n' +
-    ' -inverted=true/false                  (default false)\n' +
-    ' -verify=true/false                    (default false)\n' +
-    ' -exclude=string1,string2              (default empty, one or more strings to match)\n' +
-    ' -output=json/plain/html/dot           (default json)\n';
+if (commandLineOptions.help) {
+    var cliHelpMessage = '\n' +
+        'options:                                       \n' +
+        ' -basePath=path                                (base path for AMD modules)\n' +
+        ' -flatten=true                                 (default false)\n' +
+        ' -invert=true                                  (default false)\n' +
+        ' -anaylsis=all,missing,circular,case,paths     (default false)\n' +
+        ' -exclude=string1,string2                      (default empty, one or more strings to match)\n' +
+        ' -output=json/plain/html/dot                   (default json)\n';
 
-cli.initialize({helpMessage: cliHelpMessage});
-if (cli.options.basePath) {
-    var evaluationResult = main.run(cli.options.basePath, cli.options);
+    console.log(cliHelpMessage);
+    process.exit();
+}
+
+var run = require('./run.js');
+
+if (commandLineOptions.basePath) {
+    var evaluationResult = run(commandLineOptions.basePath, commandLineOptions);
     console.log(evaluationResult);
 }
 
-exports.run = main.run;
+exports.run = run;
+exports.version = '1.0.0';
+
+

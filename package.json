@@ -10,15 +10,11 @@
         {
             "name": "Alex Lawrence",
             "email": "info@alex-lawrence.com"
-        },
-        {
-            "name": "Florian Fanderl",
-            "email": "florian.fanderl@googlemail.com"
         }
     ],
     "name": "reznik",
-    "description": "Tool to analyze AMD structures and dependencies",
-    "version": "0.6.8",
+    "description": "Code analysis for projects using AMD",
+    "version": "1.0.0",
     "homepage": "http://www.github.com/alexlawrence/reznik",
     "main" : "./src/index.js",
     "repository": {
@@ -31,7 +27,7 @@
     "license": "MIT",
     "dependencies": {},
     "devDependencies": {
-        "jasmine-node": ">= 1.0.17",
+        "jasmine-node": ">= 1.0.23",
         "horaa": ">= 0.1.2alpha"
     }
 }

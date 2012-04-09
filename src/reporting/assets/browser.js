@@ -12,7 +12,7 @@ $(function() {
 
         var modulesToShow = $('.module:contains("' + searchText + '")');
         modulesToShow.show();
-        modulesToShow.find('.moduleId, .dependency').each(function(index, element) {
+        modulesToShow.find('.moduleId, .moduleFilename, .dependency').each(function(index, element) {
             $(element).html($(element).html().replace(searchText, '<span class="highlight">' + searchText + '</span>'));
         });
         $('.module').not(modulesToShow).hide();

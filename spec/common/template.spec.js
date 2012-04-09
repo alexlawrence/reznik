@@ -1,34 +1,44 @@
 'use strict';
 
-var subject = require('../../src/common/template.js');
+var testMethod = require('../../src/common/template.js');
 
-describe('template', function() {
+describe('common/template', function() {
 
-        it('should return an output equal to the template when given a template without placeholders', function() {
+        it('should return an unmodified template when the template contains no placeholders', function() {
 
             var template = '<div><span>foobar</span></div>';
 
-            var output = subject.template(template, {});
+            var output = testMethod(template, {});
 
             expect(output).toBe(template);
 
         });
 
-        it('should replace a placeholder for a property with the correct value when given data having that property', function() {
+        it('should replace a placeholder for a property with the correct value of the given data', function() {
 
             var template = '<div><span>{property}</span></div>';
 
-            var output = subject.template(template, { property: 'value' });
+            var output = testMethod(template, { property: 'value' });
 
             expect(output).toBe('<div><span>value</span></div>');
 
         });
 
-        it('should not replace a placeholder for a property when given data without that property', function() {
+        it('should replace all placeholder occurrences with the correct value of the given data', function() {
+
+            var template = '<div><span>{property}</span><span>{property}</span></div>';
+
+            var output = testMethod(template, { property: 'value' });
+
+            expect(output).toBe('<div><span>value</span><span>value</span></div>');
+
+        });
+
+        it('should not replace a placeholder for a property when the given data does not contain that property', function() {
 
             var template = '<div><span>{otherProperty}</span></div>';
 
-            var output = subject.template(template, { property: 'value' });
+            var output = testMethod(template, { property: 'value' });
 
             expect(output).toBe('<div><span>{otherProperty}</span></div>');
 
@@ -38,7 +48,7 @@ describe('template', function() {
 
             var template = '<div><span>{{}</span></div>';
 
-            var output = subject.template(template, {});
+            var output = testMethod(template, {});
 
             expect(output).toBe('<div><span>{</span></div>');
 
@@ -48,7 +58,7 @@ describe('template', function() {
 
             var template = '<div><span>{}}</span></div>';
 
-            var output = subject.template(template, {});
+            var output = testMethod(template, {});
 
             expect(output).toBe('<div><span>}</span></div>');
 
@@ -59,7 +69,7 @@ describe('template', function() {
             var template = '<div><span></span></div>';
             var data = {'{': 'foobar'};
 
-            var output = subject.template(template, data);
+            var output = testMethod(template, data);
 
             expect(data['{']).toBe('foobar');
             expect(data['}']).toBeUndefined();

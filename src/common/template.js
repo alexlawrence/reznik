@@ -1,21 +1,21 @@
 'use strict';
 
-var forEach = require('./objectForEach.js').forEach;
+var forEachProperty = require('../iteration/forEachProperty.js');
 
 var placeholderPrefix = '{', placeholderSuffix = '}';
 
 var template = function(template, data) {
     var output = template, placeholder, dataClone = {};
-    forEach(data, function(value, property) {
+    forEachProperty(data, function(value, property) {
         dataClone[property] = value;
     });
     dataClone[placeholderPrefix] = placeholderPrefix;
     dataClone[placeholderSuffix] = placeholderSuffix;
-    forEach(dataClone, function(value, property) {
-        placeholder = placeholderPrefix + property + placeholderSuffix;
+    forEachProperty(dataClone, function(value, property) {
+        placeholder = new RegExp(placeholderPrefix + property + placeholderSuffix, 'g');
         output = output.replace(placeholder, value);
     });
     return output;
 };
 
-exports.template = template;
+module.exports = template;

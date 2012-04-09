@@ -51,11 +51,22 @@ ul, li
     font-weight: bold;
 }
 
-.moduleId:after
+.moduleFilename
+{
+    color: #AAA;
+}
+
+.moduleFilename:before
+{
+    content: " in ";
+    font-weight: normal;
+}
+
+.moduleTitle:after
 {
     content: " depends on ";
     font-weight: normal;
-    color: #888;
+    color: #AAA;
 }
 
 .dependency:before
