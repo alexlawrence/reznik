@@ -1,13 +1,13 @@
 'use strict';
 
-var forSomeModules = require('../iteration/forSomeModules.js');
+var forEachModule = require('../iteration/forEachModule.js');
 
 var fileEnding = '.js';
 
-var findAbsoluteIdsWithoutConfig = function(evaluationResult) {
+var findAbsoluteIdsWithoutPaths = function(evaluationResult) {
     var errors = evaluationResult.errors;
     var paths = evaluationResult.configuration.paths || {};
-    forSomeModules(evaluationResult.modules, function(id, module) {
+    forEachModule(evaluationResult.modules, function(id, module) {
         var idWithEnding = id + fileEnding;
         if (idWithEnding.toLowerCase() != module.filename.toLowerCase()) {
             var filename = resolveFilename(id, paths);
@@ -26,4 +26,4 @@ var resolveFilename = function(id, paths) {
     }
 };
 
-module.exports = findAbsoluteIdsWithoutConfig;
+module.exports = findAbsoluteIdsWithoutPaths;

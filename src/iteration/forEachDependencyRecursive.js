@@ -1,10 +1,10 @@
 'use strict';
 
-var forSomeModules = require('./forSomeModules.js');
+var forEachModule = require('./forEachModule.js');
 
 var forEachDependencyRecursive = function(modules, callback) {
     var dependency, allDependencies;
-    forSomeModules(modules, function(id, module) {
+    forEachModule(modules, function(id, module) {
         allDependencies = module.dependencies.slice(0);
         while (allDependencies.length > 0) {
             if (allDependencies.indexOf(id) > -1) {

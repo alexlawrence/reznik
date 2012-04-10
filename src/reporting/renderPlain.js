@@ -1,7 +1,7 @@
 'use strict';
 
 var forEachProperty = require('../iteration/forEachProperty.js');
-var forSomeModules = require('../iteration/forSomeModules.js');
+var forEachModule = require('../iteration/forEachModule.js');
 
 var renderPlain = function(result) {
     var output = '';
@@ -18,7 +18,7 @@ var renderPlain = function(result) {
 var renderModuleDataOrInformation = function(value, property) {
     var output = '#' + property.replace('modules', 'files') + '\n';
     if (property.indexOf('modules') === 0) {
-        forSomeModules(value, function(id, module) {
+        forEachModule(value, function(id, module) {
             var dependantFilenames = getDependantFilenames(value, module.dependencies);
             output += module.filename + ':' + dependantFilenames.join(',') + '\n';
         })
@@ -41,7 +41,7 @@ var getDependantFilenames = function(modules, dependencies) {
 
 var renderAnonymousModules = function(modules) {
     var output = '#anonymous\n';
-    forSomeModules(modules, function(id, module) {
+    forEachModule(modules, function(id, module) {
          if (module.anonymous) {
              output += module.filename + '\n';
          }

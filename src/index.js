@@ -25,6 +25,6 @@ if (commandLineOptions.basePath) {
 }
 
 exports.run = run;
-exports.version = '1.0.0';
+exports.version = '1.0.1';
 
 

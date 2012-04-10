@@ -1,8 +1,8 @@
 'use strict';
 
-var testMethod = require('../../src/analysis/findAbsoluteIdsWithoutConfig.js');
+var testMethod = require('../../src/analysis/findAbsoluteIdsWithoutPaths.js');
 
-describe('analysis/findAbsoluteIdsWithoutConfig', function() {
+describe('analysis/findAbsoluteIdsWithoutPaths', function() {
 
     it('should not add an error when module ids and filenames are equal', function() {
 

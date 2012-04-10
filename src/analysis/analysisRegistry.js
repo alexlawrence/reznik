@@ -3,7 +3,7 @@
 var findMissingDependencies = require('./findMissingDependencies.js');
 var findCircularDependencies = require('./findCircularDependencies.js');
 var findCaseMismatches = require('./findCaseMismatches.js');
-var findAbsoluteIdsWithoutConfig = require('./findAbsoluteIdsWithoutConfig.js');
+var findAbsoluteIdsWithoutConfig = require('./findAbsoluteIdsWithoutPaths.js');
 
 var analysisByName = {
     'missing': findMissingDependencies,

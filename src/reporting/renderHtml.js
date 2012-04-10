@@ -2,7 +2,7 @@
 
 var fs = require('fs');
 var template = require('../common/template.js');
-var forSomeModules = require('../iteration/forSomeModules.js');
+var forEachModule = require('../iteration/forEachModule.js');
 var staticCurrentDirname = __dirname;
 
 var htmlTemplate = '<!doctype html>' +
@@ -55,7 +55,7 @@ var renderTree = function(modules, title) {
     var output = '';
     if (modules) {
         output += template(listTitleTemplate, {class: 'moduleTreeTitle ' + title, value: title});
-        forSomeModules(modules, function(id, module) {
+        forEachModule(modules, function(id, module) {
             var dependenciesOutput = '', moduleOutput = '';
             module.dependencies.forEach(function(dependencyId) {
                 dependenciesOutput += template(listItemTemplate, {class: 'dependency', value: dependencyId});

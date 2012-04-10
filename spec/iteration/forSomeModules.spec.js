@@ -10,7 +10,7 @@ describe('iteration/forSomeModules', function() {
 
     });
 
-    it('should call the callback for every given module', function() {
+    it('should call the callback for every module as long as the callback does not return true', function() {
 
         var spy = jasmine.createSpy();
         var modules = { a: {}, b: {}, c: {} };
@@ -55,7 +55,7 @@ describe('iteration/forSomeModules', function() {
 
     });
 
-    it('should abort iteration when callback returns true', function() {
+    it('should abort the iteration when callback returns true', function() {
 
         var timesCalled = 0;
         var modules = { a: {}, c: {}, b: {} };

@@ -1,12 +1,12 @@
 'use strict';
 
 var forEachDependencyRecursive = require('../iteration/forEachDependencyRecursive.js');
-var forSomeModules = require('../iteration/forSomeModules.js');
+var forEachModule = require('../iteration/forEachModule.js');
 var cloneModuleWithoutDependencies = require('./cloneModuleWithoutDependencies.js');
 
 var flattenModuleList = function(modules) {
     var modulesFlattened = {};
-    forSomeModules(modules, function(moduleId, moduleData) {
+    forEachModule(modules, function(moduleId, moduleData) {
         modulesFlattened[moduleId] = cloneModuleWithoutDependencies(moduleData);
     });
     forEachDependencyRecursive(modules, function(moduleId, dependencyId) {
