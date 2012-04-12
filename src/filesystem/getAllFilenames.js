@@ -3,10 +3,10 @@
 var fs = require('fs');
 var matchesFileEnding = require('./matchesFileEnding.js');
 
-var getAllFiles = function(options, currentPath) {
+var getAllFilenames = function(options, currentPath) {
     currentPath = currentPath ? currentPath + '/' : '';
     var exclude = options.exclude || [];
-    var files = [];
+    var filenames = [];
     var fsItems = fs.readdirSync(options.basePath + '/' + currentPath);
     fsItems.forEach(function(fsItem) {
         var itemName = currentPath + fsItem;
@@ -20,17 +20,17 @@ var getAllFiles = function(options, currentPath) {
 
         var stat = fs.lstatSync(fullItemName);
         if (stat.isDirectory()) {
-            files = files.concat(getAllFiles(options, itemName));
+            filenames = filenames.concat(getAllFilenames(options, itemName));
         }
         else if (matchesFileEnding(fsItem, options.fileEnding)) {
-            files.push(currentPath + fsItem);
+            filenames.push(currentPath + fsItem);
         }
     });
-    return files;
+    return filenames;
 };
 
 var isInvalidItem = function(fullItemName) {
     return /\/\.$/.test(fullItemName) || /\/\.\.$/.test(fullItemName);
 };
 
-module.exports = getAllFiles;
+module.exports = getAllFilenames;

@@ -1,7 +1,6 @@
 'use strict';
 
-var getAllFiles = require('./filesystem/getAllFiles.js');
-var readFiles = require('./filesystem/readFiles.js');
+var getAllFilenames = require('./filesystem/getAllFilenames.js');
 var fileEvaluation = require('./fileEvaluation.js');
 var analysisRegistry = require('./analysis/analysisRegistry.js');
 var flattenModuleList = require('./transformation/flattenModuleList.js');
@@ -19,8 +18,8 @@ fileEvaluation.setExecutionMethod(executionMethod);
 
 var run = function(basePath, options) {
     options = completeOptions(options);
-    var files = getAndReadAllFiles(basePath, options);
-    var evaluationResult = fileEvaluation.evaluateFiles(files);
+    var filenames = getAllJavaScriptFiles(basePath, options);
+    var evaluationResult = fileEvaluation.evaluateFiles(basePath, filenames);
     executeAnalysis(evaluationResult, options);
     executeTransformation(evaluationResult, options);
     return render(evaluationResult, options);
@@ -33,13 +32,12 @@ var completeOptions = function(options) {
     return options;
 };
 
-var getAndReadAllFiles = function(basePath, options) {
-    var filepaths = getAllFiles({
+var getAllJavaScriptFiles = function(basePath, options) {
+    return getAllFilenames({
         basePath: basePath,
         exclude: options.exclude,
         fileEnding: 'js'
     });
-    return readFiles(basePath, filepaths);
 };
 
 var executeAnalysis = function(evaluationResult, options) {

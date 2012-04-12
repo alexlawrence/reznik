@@ -6,16 +6,16 @@ var fs = horaa('fs');
 var occurrencesOf = require('../../src/common/occurrencesOf.js');
 occurrencesOf.installAsPrototype();
 
-var testMethod = require('../../src/filesystem/getAllFiles.js');
+var testMethod = require('../../src/filesystem/getAllFilenames.js');
 
-describe('filesystem/getAllFiles', function() {
+describe('filesystem/getAllFilenames', function() {
 
     afterEach(function() {
         fs.restore('readdirSync');
         fs.restore('lstatSync');
     });
 
-    it('should return a list of all files in the top level directory', function() {
+    it('should return a list of all filenames in the top level directory', function() {
         fs.hijack('readdirSync', function() {
             return ['1.js', '2.js', '3.js'];
         });
@@ -31,7 +31,7 @@ describe('filesystem/getAllFiles', function() {
         expect(files[2]).toBe('3.js');
     });
 
-    it('should return a list of all files including subdirectories', function() {
+    it('should return a list of all filenames including subdirectories', function() {
         var subDirectory = 'subDirectory';
 
         fs.hijack('readdirSync', function(directory) {
@@ -52,7 +52,7 @@ describe('filesystem/getAllFiles', function() {
         expect(files[5]).toBe('subDirectory/3.js');
     });
 
-    it('should return a list of all files excluding any items matching strings to exclude', function() {
+    it('should return a list of all filenames excluding any items matching strings to exclude', function() {
         var subDirectory = 'subDirectory';
 
         fs.hijack('readdirSync', function(directory) {
@@ -76,7 +76,7 @@ describe('filesystem/getAllFiles', function() {
         expect(files.occurrencesOf('subDirectory/1.js')).toBe(0);
     });
 
-    it('should return a list of all files matching the file ending', function() {
+    it('should return a list of all filenames matching the file ending', function() {
         fs.hijack('readdirSync', function() {
             return ['1.js', '2.js', '3.js'];
         });

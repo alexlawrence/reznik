@@ -1,59 +1,88 @@
 'use strict';
 
+var horaa = require('horaa');
 var testMethod = require('../../src/execution/executeInNode.js');
+var fs = horaa('fs');
+var vm = horaa('vm');
 
 describe('execution/executeInNode', function() {
 
-    it('should execute the script in its own sandbox without access to node context', function() {
+    describe('when loading a file from the filesystem', function() {
 
-        global.test = false;
-        var script = 'global.test = true;'
+        var passedArguments;
+        var spy;
 
-        testMethod(script);
+        beforeEach(function() {
+            spy = jasmine.createSpy('readFileSync');
+            fs.hijack('readFileSync', function() {
+                passedArguments = arguments;
+                spy();
+            });
+            testMethod('basePath', 'filename', {});
+        });
 
-        expect(global.test).toBeFalsy();
+        afterEach(function() {
+            fs.restore('readFileSync');
+        });
 
+        it('should call fs.readFileSync', function() {
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it('should combine the given base path and the given filename', function() {
+            expect(passedArguments[0]).toBe('basePath/filename');
+        });
+
+        it('should pass utf-8 as expected encoding to the fs.readFileSync', function() {
+            expect(passedArguments[1]).toBe('utf-8');
+        });
     });
 
-    it('should not rethrow any errors occurred in the executed script', function() {
-        var script = 'window.foobar.foobar = "foobar";'
+    describe('when executing loaded javascript content', function() {
 
-        expect(function() { testMethod(script); }).not.toThrow();
-    });
+        var passedArgumentsToRunInNewContext;
 
-    it('should make all given context attributes accessible to the executed script', function() {
+        beforeEach(function() {
+            vm.hijack('runInNewContext', function() {
+                passedArgumentsToRunInNewContext = arguments;
+            });
+        });
 
-        var script = 'value = true;';
-        var context = {value: false};
+        afterEach(function() {
+            vm.restore('runInNewContext');
+            fs.restore('readFileSync');
+        });
 
-        testMethod(script, context);
+        it('should pass each javascript content to vm.runInNewContext', function () {
+            var script = 'foobar';
+            fs.hijack('readFileSync', function() {
+                return script;
+            });
 
-        expect(context.value).toBeTruthy();
+            testMethod('basePath', 'filename');
 
-    });
+            expect(passedArgumentsToRunInNewContext[0]).toBe(script);
+        });
 
-    it('should make all given context methods accessible to the executed script', function() {
+        it('should pass the given context object to vm.runInNewContext', function () {
+            var context = {a: 1, b: 2, c: function() {}};
+            fs.hijack('readFileSync', function() {
+                return '';
+            });
 
-        var script = 'setValue(true);';
-        var value = false;
-        var context = {setValue: function(newValue) {
-            value = newValue;
-        }};
+            testMethod('basePath', 'filename', context);
 
-        testMethod(script, context);
+            expect(passedArgumentsToRunInNewContext[1]).toBe(context);
+        });
 
-        expect(value).toBeTruthy();
+        it('should not rethrow any javascript errors occurring in a loaded script', function () {
+            var script = 'foobar';
+            fs.hijack('readFileSync', function() {
+                return 'window.foobar.foobar = "foobar";';
+            });
 
-    });
-
-    it ('should abort script execution after the first javascript error', function() {
-
-        var script = 'foobar.foobar.foobar;test.value = true;';
-        var context = {value: false};
-
-        testMethod(script, context);
-
-        expect(context.value).toBeFalsy();
+            expect(function() { testMethod('basePath', 'filename'); }).not.toThrow();
+        });
 
     });
 

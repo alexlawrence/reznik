@@ -2,14 +2,14 @@
 
 var executeAndIgnoreErrors = require('../common/executeAndIgnoreErrors.js');
 
-var executeInPhantom = function(script, context) {
+var executeInPhantom = function(basePath, filename, context) {
     var page = require('webpage').create();
     var proxyCalls = [];
     page.onConsoleMessage = function(proxyCall) {
         proxyCalls.push(proxyCall);
     };
     createProxiesForPhantom(page, context);
-    executeModuleCode(page, script);
+    executeModuleCode(page, basePath + '/' + filename);
     evaluateProxyCalls(proxyCalls, context);
 };
 
@@ -21,8 +21,8 @@ var evaluateProxyCalls = function(proxyCalls, context) {
     });
 };
 
-var executeModuleCode = function(page, script) {
-    page.evaluate(new Function('try{' + script + '} catch(e) {}'));
+var executeModuleCode = function(page, absoluteFilename) {
+    page.injectJs(absoluteFilename);
 };
 
 var createProxiesForPhantom = function(page, context) {
