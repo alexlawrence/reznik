@@ -4,8 +4,8 @@
 
     var system = phantomRequire('system');
     var filesystem = phantomRequire('fs');
-    filesystem.readFileSync = filesystem.read;
     filesystem.readdirSync = filesystem.list;
+    filesystem.readFileSync = filesystem.read;
     filesystem.lstatSync = function(path) {
         return {
             isDirectory: function() {

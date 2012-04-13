@@ -52,7 +52,8 @@ Example:
 }());
 ```
 
-Therefore the recommended environment is PhantomJS.
+Therefore the recommended environment is PhantomJS. However note that PhantomJS execution requires the current working
+directory to be writable and creates a temporary file (phantom-js.tmp) for the time of the execution.
 
 ###Restrictions
 
