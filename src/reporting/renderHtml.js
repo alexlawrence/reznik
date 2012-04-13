@@ -3,7 +3,7 @@
 var fs = require('fs');
 var template = require('../common/template.js');
 var forEachModule = require('../iteration/forEachModule.js');
-var staticCurrentDirname = __dirname;
+var phantomSafeDirname = __dirname;
 
 var htmlTemplate = '<!doctype html>' +
     '<html><head><title>module browser</title>{styles}</head><body>{header}{search}{output}{scripts}</body></html>';
@@ -73,13 +73,13 @@ var renderTree = function(modules, title) {
 
 var renderScripts = function() {
     var jQueryScript = template(externalScriptTemplate, {url: jQueryUrl});
-    var browserScript = fs.readFileSync(staticCurrentDirname + '/assets/browser.js', 'utf-8');
+    var browserScript = fs.readFileSync(phantomSafeDirname + '/assets/browser.js', 'utf-8');
     browserScript = template(inlineScriptTemplate, {script: browserScript});
     return jQueryScript + browserScript;
 };
 
 var renderStyles = function() {
-    var browserStyle = fs.readFileSync(staticCurrentDirname + '/assets/browser.css', 'utf-8');
+    var browserStyle = fs.readFileSync(phantomSafeDirname + '/assets/browser.css', 'utf-8');
     return template(inlineCssTemplate, {style: browserStyle});
 };
 

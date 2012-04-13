@@ -9,36 +9,36 @@ When working with AMD there are mainly two possibilities for production environm
 1. Load modules asynchronously on demand with script loaders such as [require.js](https://github.com/jrburke/requirejs)
 2. Combine modules into one file or multiple bundles with build tools like [r.js](https://github.com/jrburke/r.js)
 
-Both strategies work perfectly fine. This module was written to fit another (third) use case.
+Both strategies work perfectly fine. reznik was written to fit another (third) use case.
 The goal is to be able to resolve individual module dependencies for runtime script combining on the server side.
 Whenever modules are requested by an application all their dependencies can be included dynamically.
 
 ###Features
 
-Despite the original motivation reznik has some useful code analysis features for AMD projects.
+Despite the original motivation this module has some useful code analysis features for AMD projects.
 
 ####Module list
 
 The main functionality is the generation of a list of all modules and their individual dependencies.
-This list can be flattened to see implicit dependencies and it can also be inverted.
+This list can be flattened for implicit dependencies and it can also be inverted.
 Possible output formats are JSON, HTML, dot and plain text (which is heavily optimized for own use case).
 The HTML renderer generates a module browser with a simple search functionality.
 
 ####Code checks
 
-The module list can be used to search for missing and circular dependencies,
+The output can be used to search for missing and circular dependencies,
 case mismatches between module ids and file names and for named modules which cannot be loaded
 due to missing or wrong configuration in the script loader (currently only require.config.paths supported).
 
 ###Environment
 
-reznik was developed in Node.js using but it can also be executed in [PhantomJS](http://www.phantomjs.org/).
+reznik was developed in Node.js but it can also be executed in [PhantomJS](http://www.phantomjs.org/).
 Although the Node environment can execute any JavaScript code it does not exactly behave like browser
 nor does it have a document or a window object by default.
-In order to prevent creating a fake browser context in Node this module was made compatible with PhantomJS.
+In order to prevent creating a fake browser context for Node this module was made compatible with PhantomJS.
+For both environments each individual module evaluation is aborted on encountering any script error.
 
-Individual module evaluation is aborted on encountering a script error.
-When executed with Node.js all define() and require() calls preceeded by any browser specific code are not detected.
+So when executed with Node.js all define() and require() calls preceeded by any browser specific code are not detected.
 Example:
 
 ```javascript
@@ -52,7 +52,7 @@ Example:
 }());
 ```
 
-Therefore the recommended environment is PhantomJS. However note that PhantomJS execution requires the current working
+Therefore the recommended environment is PhantomJS. However note that the execution requires the current working
 directory to be writable and creates a temporary file (phantom-js.tmp) for the time of the execution.
 
 ###Restrictions

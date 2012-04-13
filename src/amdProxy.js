@@ -43,7 +43,10 @@ var setActiveFilename = function(newFilename) {
 };
 
 var reset = function() {
-    modules = {}, errors = [], idFromFilename = '', filename = '';
+    modules = {};
+    configuration = {};
+    errors = [];
+    idFromFilename = filename = '';
 };
 
 var getModules = function() {
