@@ -32,7 +32,7 @@ due to missing or wrong configuration in the script loader (currently only requi
 
 ###Environment
 
-reznik was developed in Node.js but it can also be executed in [PhantomJS](http://www.phantomjs.org/).
+reznik was developed in Node.js but it can also be executed in [PhantomJS](http://www.phantomjs.org/) (>= 1.5.0).
 Although the Node environment can execute any JavaScript code it does not exactly behave like browser
 nor does it have a document or a window object by default.
 In order to prevent creating a fake browser context for Node this module was made compatible with PhantomJS.
