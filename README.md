@@ -26,9 +26,12 @@ The HTML renderer generates a module browser with a simple search functionality.
 
 ####Code checks
 
-The output can be used to search for missing and circular dependencies,
-case mismatches between module ids and file names and for named modules which cannot be loaded
-due to missing or wrong configuration in the script loader (currently only require.config.paths supported).
+The module list can be analyzed in order to find:
+
+- Circular module dependencies
+- Missing module dependencies
+- Case mismatches between file name and module id (server file names are case insensitive but for module IDs cases matter)
+- Non anonymous module IDs which differ from the file name but have no loader configuration (currently only require.js supported)
 
 ###Environment
 
