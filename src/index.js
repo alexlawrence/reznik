@@ -9,7 +9,7 @@ if (commandLineOptions.help) {
         ' -basePath=path                                (base path for AMD modules)\n' +
         ' -flatten=true                                 (default false)\n' +
         ' -invert=true                                  (default false)\n' +
-        ' -anaylsis=all,missing,circular,case,paths     (default false)\n' +
+        ' -analysis=all,missing,circular,case,paths     (default false)\n' +
         ' -exclude=string1,string2                      (default empty, one or more strings to match)\n' +
         ' -output=json/plain/html/dot                   (default json)\n';
 
