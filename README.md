@@ -75,7 +75,7 @@ Available options:
 
 Example PhantomJS call generating a module browser including a flattened module list which is output to a HTML file:
 
-    phantomjs reznik/src/phantom.js -basePath=reznik/example -flatten=true -output=html > browser.html
+    phantomjs reznik/src/phantomAdapter.js -basePath=reznik/example -flatten=true -output=html > browser.html
 
 Example Node.js call executing all code analysis generating a JSON output to the standard output:
 
