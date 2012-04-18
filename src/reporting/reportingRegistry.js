@@ -1,3 +1,5 @@
+'use strict';
+
 var renderPlain = require('./renderPlain.js');
 var renderHtml = require('./renderHtml.js');
 var renderJson = require('./renderJson.js');

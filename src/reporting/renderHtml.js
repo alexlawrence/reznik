@@ -10,10 +10,10 @@ var htmlTemplate = '<!doctype html>' +
 var headerHtml = '<h1>module browser</h1>';
 var searchHtml = '<input type="text" id="search" placeholder="enter module name" />';
 
-var listItemTemplate = '<li class="{class}">{value}</li>';
-var listTemplate = '<ul class="{class}">{items}</ul>';
-var moduleTitleTemplate = '<span class="{class}">{value}</span>';
-var listTitleTemplate = '<h2 class="{class}">{value}</h2>';
+var listItemTemplate = '<li class="{cssClass}">{value}</li>';
+var listTemplate = '<ul class="{cssClass}">{items}</ul>';
+var moduleTitleTemplate = '<span class="{cssClass}">{value}</span>';
+var listTitleTemplate = '<h2 class="{cssClass}">{value}</h2>';
 
 var inlineCssTemplate = '<style type="text/css">{style}</style>';
 var externalScriptTemplate = '<script type="text/javascript" src="{url}"></script>';
@@ -42,11 +42,11 @@ var renderList = function(messages, title) {
     var output = '';
     if (messages && messages.length > 0) {
         var itemsOutput = '';
-        output += template(listTitleTemplate, {class: 'messagesTitle ' + title, value: title});
+        output += template(listTitleTemplate, {cssClass: 'messagesTitle ' + title, value: title});
         messages.forEach(function(message) {
-            itemsOutput += template(listItemTemplate, {class: 'message', value: message});
+            itemsOutput += template(listItemTemplate, {cssClass: 'message', value: message});
         });
-        output += template(listTemplate, {class: 'messages ' + title, items: itemsOutput});
+        output += template(listTemplate, {cssClass: 'messages ' + title, items: itemsOutput});
     }
     return output;
 };
@@ -54,19 +54,19 @@ var renderList = function(messages, title) {
 var renderTree = function(modules, title) {
     var output = '';
     if (modules) {
-        output += template(listTitleTemplate, {class: 'moduleTreeTitle ' + title, value: title});
+        output += template(listTitleTemplate, {cssClass: 'moduleTreeTitle ' + title, value: title});
         forEachModule(modules, function(id, module) {
             var dependenciesOutput = '', moduleOutput = '';
             module.dependencies.forEach(function(dependencyId) {
-                dependenciesOutput += template(listItemTemplate, {class: 'dependency', value: dependencyId});
+                dependenciesOutput += template(listItemTemplate, {cssClass: 'dependency', value: dependencyId});
             });
-            var idElement = template(moduleTitleTemplate, {class: 'moduleId', value: id});
-            var filenameElement = template(moduleTitleTemplate, {class: 'moduleFilename', value: module.filename});
-            moduleOutput += template(moduleTitleTemplate, {class: 'moduleTitle', value: idElement + filenameElement});
-            moduleOutput += template(listTemplate, {class: 'dependencies', items: dependenciesOutput});
-            output += template(listItemTemplate, {class: 'module', value: moduleOutput});
+            var idElement = template(moduleTitleTemplate, {cssClass: 'moduleId', value: id});
+            var filenameElement = template(moduleTitleTemplate, {cssClass: 'moduleFilename', value: module.filename});
+            moduleOutput += template(moduleTitleTemplate, {cssClass: 'moduleTitle', value: idElement + filenameElement});
+            moduleOutput += template(listTemplate, {cssClass: 'dependencies', items: dependenciesOutput});
+            output += template(listItemTemplate, {cssClass: 'module', value: moduleOutput});
         });
-        output = template(listTemplate, {class: 'moduleTree ' + title, items: output});
+        output = template(listTemplate, {cssClass: 'moduleTree ' + title, items: output});
     }
     return output;
 };

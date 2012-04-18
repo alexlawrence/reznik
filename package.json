@@ -10,11 +10,15 @@
         {
             "name": "Alex Lawrence",
             "email": "info@alex-lawrence.com"
+        },
+        {
+            "name": "Florian Fanderl",
+            "email": "florian.fanderl@googlemail.com"
         }
     ],
     "name": "reznik",
     "description": "Code analysis for AMD projects",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "homepage": "http://www.github.com/alexlawrence/reznik",
     "main" : "./src/index.js",
     "repository": {

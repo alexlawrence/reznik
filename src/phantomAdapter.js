@@ -2,7 +2,6 @@
 
     var phantomRequire = global.require;
 
-    var system = phantomRequire('system');
     var filesystem = phantomRequire('fs');
     filesystem.readdirSync = filesystem.list;
     filesystem.readFileSync = filesystem.read;
@@ -19,7 +18,7 @@
 
     global.process = {
         exit: phantom.exit,
-        argv: ['phantom'].concat(system.args)
+        argv: ['phantomjs.exe', 'phantomAdapter.js'].concat(phantom.args)
     };
 
     global.require = function(filepath) {
