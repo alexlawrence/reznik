@@ -10,10 +10,6 @@ var reportingRegistry = require('./reporting/reportingRegistry.js');
 var executionMethod = require(typeof phantom !== 'undefined' ?
     './execution/executeInPhantom.js' : './execution/executeInNode.js');
 
-var renderMethodByOutputType = {
-    'json': 'renderJson', 'plain': 'renderPlain', 'html': 'renderHtml', 'dot': 'renderDot'
-};
-
 fileEvaluation.setExecutionMethod(executionMethod);
 
 var run = function(basePath, options) {
@@ -27,7 +23,6 @@ var run = function(basePath, options) {
 
 var completeOptions = function(options) {
     options = options || {};
-    options.output = options.output || 'json';
     options.exclude = Array.isArray(options.exclude) ? options.exclude : [options.exclude];
     return options;
 };
@@ -64,11 +59,8 @@ var executeTransformation = function(evaluationResult, options) {
 };
 
 var render = function(evaluationResult, options) {
-    if (renderMethodByOutputType[options.output]) {
-        var renderer = reportingRegistry.getRendererByOutput(options.output);
-        return renderer(evaluationResult);
-    }
-    return '';
+    var renderer = reportingRegistry.getRendererByOutput(options.output);
+    return renderer(evaluationResult);
 };
 
 module.exports = run;

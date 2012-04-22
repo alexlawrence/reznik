@@ -7,10 +7,10 @@ if (commandLineOptions.help) {
     var cliHelpMessage = '\n' +
         'options:                                       \n' +
         ' -basePath=path                                (base path for AMD modules)\n' +
-        ' -flatten=true                                 (default false)\n' +
-        ' -invert=true                                  (default false)\n' +
-        ' -analysis=all,missing,circular,case,paths     (default false)\n' +
-        ' -exclude=string1,string2                      (default empty, one or more strings to match)\n' +
+        ' -flatten=true                                 (default empty)\n' +
+        ' -invert=true                                  (default empty)\n' +
+        ' -analysis=all,missing,circular,case,paths     (default empty)\n' +
+        ' -exclude=string1,string2                      (default empty, list of strings to match)\n' +
         ' -output=json/plain/html/dot                   (default json)\n';
 
     console.log(cliHelpMessage);
@@ -20,11 +20,12 @@ if (commandLineOptions.help) {
 var run = require('./run.js');
 
 if (commandLineOptions.basePath) {
+    commandLineOptions.output = commandLineOptions.output || 'json';
     var evaluationResult = run(commandLineOptions.basePath, commandLineOptions);
     console.log(evaluationResult);
 }
 
 exports.run = run;
-exports.version = '1.0.4';
+exports.version = '1.0.5';
 
 

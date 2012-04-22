@@ -55,8 +55,11 @@ Example:
 }());
 ```
 
-Therefore the recommended environment is PhantomJS. However note that the execution requires the current working
+Therefore the recommended environment is PhantomJS. Note that the execution requires the current working
 directory to be writable and creates a temporary file (phantom-js.tmp) for the time of the execution.
+
+reznik is meant to be executed once as a build step. Currently the module makes use of synchronous I/O operations
+and should therefore not be executed within a Node.js web application.
 
 ###Restrictions
 
@@ -84,7 +87,8 @@ Example Node.js call executing all code analysis generating a JSON output to the
 
     node reznik -basePath=reznik/example -analysis=all -output=html
 
-###Code usage
+###Module usage
 
-The Node module exposes one method: *run(basePath, options)*.
-The options object accepts the same options as the command line call (using object notation).
+When including reznik in Node.js the module exposes the following method: *run(basePath, options)*.
+The options object accepts the same options as the command line call.
+The default return type is an object.

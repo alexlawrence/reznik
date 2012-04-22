@@ -13,7 +13,11 @@ var rendererByOutput = {
 };
 
 var getRendererByOutput = function(output) {
-    return rendererByOutput[output] || renderJson;
+    return rendererByOutput[output] || returnOriginalValue;
+};
+
+var returnOriginalValue = function(output) {
+    return output;
 };
 
 exports.getRendererByOutput = getRendererByOutput;
