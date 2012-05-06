@@ -44,26 +44,6 @@ describe('common/template', function() {
 
         });
 
-        it('should replace {{} with { in order to have the possibility to use braces in templates', function() {
-
-            var template = '<div><span>{{}</span></div>';
-
-            var output = testMethod(template, {});
-
-            expect(output).toBe('<div><span>{</span></div>');
-
-        });
-
-        it('should replace {}} with } in order to have the possibility to use braces in templates', function() {
-
-            var template = '<div><span>{}}</span></div>';
-
-            var output = testMethod(template, {});
-
-            expect(output).toBe('<div><span>}</span></div>');
-
-        });
-
         it('should not mutate the data object', function() {
 
             var template = '<div><span></span></div>';
@@ -74,6 +54,14 @@ describe('common/template', function() {
             expect(data['{']).toBe('foobar');
             expect(data['}']).toBeUndefined();
 
+        });
+
+        it('should not replace content of the first placeholder that looks like the second placeholder', function() {
+            var template = '{first},{second}';
+
+            var output = testMethod(template, { first: '{second}', second: 'replaced'});
+
+            expect(output).toBe('{second},replaced');
         });
 
 });

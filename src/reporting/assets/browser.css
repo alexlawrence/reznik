@@ -62,7 +62,7 @@ ul, li
     font-weight: normal;
 }
 
-.moduleTitle:after
+.module.withDependencies .moduleTitle:after
 {
     content: " depends on ";
     font-weight: normal;

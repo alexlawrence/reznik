@@ -1,1 +1,1 @@
-foo.foo;
+foo.bar.foo.bar;

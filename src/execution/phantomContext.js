@@ -3,37 +3,22 @@
     'use strict';
 
     window.define = function() {
-        console.log('define(' + serializeDefineArguments(arguments) + ')');
+        console.log('define(' + serializeArguments(arguments) + ');');
     };
 
-    window.require = function(dependencies) {
-        if (Array.isArray(dependencies)) {
-            console.log('require(' + serializeRequireArguments(dependencies) + ')');
-        }
+    window.require = function() {
+        console.log('require(' + serializeArguments(arguments) + ');');
     };
 
     window.require.config = function(configuration) {
-        console.log('require.config(' + JSON.stringify(configuration) + ')');
+        console.log('require.config(' + JSON.stringify(configuration) + ');');
     };
 
-    var serializeRequireArguments = function(dependencies) {
-        return JSON.stringify(dependencies) + ', function() {}';
-    };
-
-    var serializeDefineArguments = function(args) {
-        var output = '', dependencies;
-        if (typeof args[0] === 'string') {
-            output += '"' + args[0] + '", ';
-            dependencies = args[1];
-        }
-        else {
-            dependencies = args[0];
-        }
-        if (Array.isArray(dependencies)) {
-            output += JSON.stringify(dependencies) + ', ';
-        }
-        output += 'function() {}';
-        return output;
+    var serializeArguments = function(args) {
+        var preparedArgs = Array.prototype.map.call(args, function(arg) {
+            return typeof arg === 'function' ? arg.toString() : JSON.stringify(arg);
+        });
+        return preparedArgs.join(',');
     };
 
 }());

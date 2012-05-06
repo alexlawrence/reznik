@@ -1,20 +1,28 @@
 'use strict';
 
-var executeAndIgnoreErrors = require('../common/executeAndIgnoreErrors.js');
+var webpage = require('webpage');
 var filesystem = require('fs');
+
+var executeAndIgnoreErrors = require('../common/executeAndIgnoreErrors.js');
+
 var temporaryFile = 'phantom-js.tmp';
 var phantomContext = __dirname + '/phantomContext.js';
 
 var executeInPhantom = function(basePath, filename, context) {
-    var page = require('webpage').create();
-    var proxyCalls = [];
-    page.onConsoleMessage = function(proxyCall) {
-        proxyCalls.push(proxyCall);
-    };
+    var page = webpage.create();
+    var proxyCalls = setupProxyCalls(page);
     createProxies(page, context);
     executeModuleCode(page, basePath + '/' + filename);
     evaluateProxyCalls(proxyCalls, context);
     cleanup();
+};
+
+var setupProxyCalls = function(page) {
+    var proxyCalls = [];
+    page.onConsoleMessage = function (proxyCall) {
+        proxyCalls.push(proxyCall);
+    };
+    return proxyCalls;
 };
 
 var createProxies = function(page, context) {

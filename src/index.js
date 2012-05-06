@@ -21,11 +21,11 @@ var run = require('./run.js');
 
 if (commandLineOptions.basePath) {
     commandLineOptions.output = commandLineOptions.output || 'json';
-    var evaluationResult = run(commandLineOptions.basePath, commandLineOptions);
+    var evaluationResult = run(commandLineOptions);
     console.log(evaluationResult);
 }
 
 exports.run = run;
-exports.version = '1.0.5';
+exports.version = '1.0.8';
 
 

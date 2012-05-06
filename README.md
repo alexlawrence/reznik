@@ -21,8 +21,7 @@ Despite the original motivation this module has some useful code analysis featur
 
 The main functionality is the generation of a list of all modules and their individual dependencies.
 This list can be flattened for implicit dependencies and it can also be inverted.
-Possible output formats are JSON, HTML, dot and plain text (which is heavily optimized for own use case).
-The HTML renderer generates a module browser with a simple search functionality.
+Possible output formats are JSON, dot, plain text (which is optimized for own use case) and an HTML module browser.
 
 ####Code checks
 
@@ -75,20 +74,20 @@ Available options:
 * **flatten**: Flag to indicate if a flattened module list should be generated*(optional, value: true, default: false)*
 * **invert**: Flag to indicate if an inverted module list should be generated*(optional, value: true, default: false)*
 * **analysis**: List or single string of code analysis types to perform *(optional, values: all/missing/circular/case/paths, default: null)*
-* **output**: Output type *(optional, values: json/plain/html/dot, default: json)*
+* **output**: Output type *(optional, values: json/plain/browser/dot, default: json)*
 * **exclude**: List or single string to match against files and directories. Matches are excluded from evaluation. *(optional, default: null)*
 * **help**: Display the help
 
 Example PhantomJS call generating a module browser including a flattened module list which is output to a HTML file:
 
-    phantomjs reznik/src/phantomAdapter.js -basePath=reznik/example -flatten=true -output=html > browser.html
+    phantomjs reznik/src/phantomAdapter.js -basePath=reznik/example -flatten=true -output=browser > browser.html
 
 Example Node.js call executing all code analysis generating a JSON output to the standard output:
 
-    node reznik -basePath=reznik/example -analysis=all -output=html
+    node reznik -basePath=reznik/example -analysis=all -output=json
 
 ###Module usage
 
-When including reznik in Node.js the module exposes the following method: *run(basePath, options)*.
+When including reznik in Node.js the module exposes the following method: *run(options)*.
 The options object accepts the same options as the command line call.
 The default return type is an object.

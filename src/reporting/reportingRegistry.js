@@ -1,13 +1,13 @@
 'use strict';
 
 var renderPlain = require('./renderPlain.js');
-var renderHtml = require('./renderHtml.js');
+var renderBrowser = require('./renderBrowser.js');
 var renderJson = require('./renderJson.js');
 var renderDot = require('./renderDot.js');
 
 var rendererByOutput = {
     'plain': renderPlain,
-    'html': renderHtml,
+    'browser': renderBrowser,
     'json': renderJson,
     'dot': renderDot
 };

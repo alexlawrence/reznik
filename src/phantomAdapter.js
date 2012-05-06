@@ -18,7 +18,7 @@
 
     global.process = {
         exit: phantom.exit,
-        argv: ['phantomjs.exe', 'phantomAdapter.js'].concat(phantom.args)
+        argv: ['phantomjs', 'phantomAdapter.js'].concat(phantom.args)
     };
 
     global.require = function(filepath) {

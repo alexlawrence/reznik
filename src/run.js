@@ -12,10 +12,10 @@ var executionMethod = require(typeof phantom !== 'undefined' ?
 
 fileEvaluation.setExecutionMethod(executionMethod);
 
-var run = function(basePath, options) {
+var run = function(options) {
     options = completeOptions(options);
-    var filenames = getAllJavaScriptFiles(basePath, options);
-    var evaluationResult = fileEvaluation.evaluateFiles(basePath, filenames);
+    var filenames = getAllJavaScriptFiles(options.basePath, options);
+    var evaluationResult = fileEvaluation.evaluateFiles(options.basePath, filenames);
     executeAnalysis(evaluationResult, options);
     executeTransformation(evaluationResult, options);
     return render(evaluationResult, options);

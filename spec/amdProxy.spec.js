@@ -6,40 +6,46 @@ var testFilename = 'testModule.js';
 var testDependency1 = 'foo';
 var testDependency2 = 'bar';
 
-var it_should_add_the_module_with_the_correct_implicit_id_from_the_filename = function(modules) {
+var it_should_add_the_module_with_the_correct_implicit_id_from_the_filename = function() {
     it('should add the module with the correct implicit id from the filename', function() {
         expect(subject.getModules()[testId].id).toBe(testId);
     });
 };
 
-var it_should_mark_the_module_as_not_anonymous = function(modules) {
+var it_should_mark_the_module_as_not_anonymous = function() {
     it('should mark the module as not anonymous', function() {
         expect(subject.getModules()[testId].anonymous).toBeFalsy();
     });
 };
 
-var it_should_mark_the_module_as_anonymous = function(modules) {
+var it_should_mark_the_module_as_anonymous = function() {
     it('should mark the module as not anonymous', function() {
         expect(subject.getModules()[testId].anonymous).toBeTruthy();
     });
 };
 
-var it_should_add_the_module_dependencies = function(modules) {
+var it_should_add_the_module_dependencies = function() {
     it('should add the module dependencies', function() {
         expect(subject.getModules()[testId].dependencies[0]).toBe(testDependency1);
         expect(subject.getModules()[testId].dependencies[1]).toBe(testDependency2);
     });
 };
 
-var it_should_add_the_module_with_the_correct_id = function(modules) {
+var it_should_add_the_module_with_the_correct_id = function() {
     it('should add the module with the correct id', function() {
         expect(subject.getModules()[testId].id).toBe(testId);
     });
 };
 
-var it_should_add_an_empty_dependencies_array_to_the_module = function(modules) {
+var it_should_add_an_empty_dependencies_array_to_the_module = function() {
     it('should add an empty dependencies array to the module', function() {
         expect(subject.getModules()[testId].dependencies).toBeDefined();
+    });
+};
+
+var it_should_add_the_module_factory = function(expectedFunction) {
+    it('should add the module factory', function() {
+        expect(subject.getModules()[testId].factory).toBe(expectedFunction);
     });
 };
 
@@ -84,25 +90,31 @@ describe('amdProxy', function() {
 
         describe('when called with an id and a factory', function() {
 
+            var factory = function() { var foo = 'foo'; };
+
             beforeEach(function() {
-                testMethod(testId, function() {});
+                testMethod(testId, factory);
             });
 
             it_should_add_the_module_with_the_correct_id();
             it_should_add_an_empty_dependencies_array_to_the_module();
+            it_should_add_the_module_factory(factory);
             it_should_mark_the_module_as_not_anonymous();
 
         });
 
         describe('when called with only a factory and the active filename is set', function() {
 
+            var factory = function() {};
+
             beforeEach(function() {
-                testMethod(function() {});
+                testMethod(factory);
             });
 
             it_should_add_the_module_with_the_correct_implicit_id_from_the_filename();
             it_should_mark_the_module_as_anonymous();
             it_should_add_an_empty_dependencies_array_to_the_module();
+            it_should_add_the_module_factory(factory);
             it('should add the module with the correct filename', function() {
                 expect(subject.getModules()[testId].filename).toBe(testFilename);
             });
@@ -111,23 +123,29 @@ describe('amdProxy', function() {
 
         describe('when called with an id, a dependencies array and a factory', function() {
 
+            var factory = function() {};
+
             beforeEach(function() {
-                testMethod(testId, [testDependency1, testDependency2], function() {});
+                testMethod(testId, [testDependency1, testDependency2], factory);
             });
 
             it_should_add_the_module_with_the_correct_id();
             it_should_add_the_module_dependencies();
+            it_should_add_the_module_factory(factory);
 
         });
 
         describe('when called with a dependencies array and a factory', function() {
 
+            var factory = function() {};
+
             beforeEach(function() {
-                testMethod([testDependency1, testDependency2], function() {});
+                testMethod([testDependency1, testDependency2], factory);
             });
 
             it_should_add_the_module_with_the_correct_implicit_id_from_the_filename();
             it_should_add_the_module_dependencies();
+            it_should_add_the_module_factory(factory);
 
         });
 
@@ -151,12 +169,15 @@ describe('amdProxy', function() {
 
         describe('when called with a factory and a dependencies array and the active filename is set', function() {
 
+            var factory = function() {};
+
             beforeEach(function() {
-                testMethod([testDependency1, testDependency2], function() {});
+                testMethod([testDependency1, testDependency2], factory);
             });
 
             it_should_add_the_module_with_the_correct_implicit_id_from_the_filename();
             it_should_add_the_module_dependencies();
+            it_should_add_the_module_factory(factory);
             it_should_mark_the_module_as_not_anonymous();
 
         });

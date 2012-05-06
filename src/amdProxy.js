@@ -11,7 +11,10 @@ var defineProxy = function() {
     module.anonymous = typeof arguments[0] !== 'string';
     module.id = module.anonymous ? idFromFilename : arguments[0];
     var dependenciesCandidate = module.anonymous ? arguments[0] : arguments[1];
-    module.dependencies = Array.isArray(dependenciesCandidate) ? dependenciesCandidate.slice(0) : [];
+    var isArray = Array.isArray(dependenciesCandidate);
+    module.dependencies = isArray ? dependenciesCandidate.slice(0) : [];
+    var indexOfFactory = (module.anonymous ? 0 : 1) + (isArray ? 1 : 0);
+    module.factory = arguments[indexOfFactory];
 
     if (modules[module.id] !== undefined) {
         return errors.push('duplicate module definition in ' + module.filename);
@@ -21,7 +24,7 @@ var defineProxy = function() {
 
 defineProxy.amd = {};
 
-var requireProxy = function(dependencies) {
+var requireProxy = function(dependencies, factory) {
     if (!Array.isArray(dependencies)) {
         return;
     }
@@ -29,7 +32,8 @@ var requireProxy = function(dependencies) {
     modules[idFromFilename] = {
         id: idFromFilename,
         filename: filename,
-        dependencies: dependencies
+        dependencies: dependencies,
+        factory: factory
     };
 };
 
