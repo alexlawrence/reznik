@@ -1,6 +1,7 @@
 'use strict';
 
 var horaa = require('horaa');
+var waitsForDeferred = require('../waitsForDeferred.js');
 var testMethod = require('../../src/execution/executeInNode.js');
 var fs = horaa('fs');
 var vm = horaa('vm');
@@ -13,8 +14,9 @@ describe('execution/executeInNode', function() {
         var spy;
 
         beforeEach(function() {
-            spy = jasmine.createSpy('readFileSync');
-            fs.hijack('readFileSync', function() {
+            spy = jasmine.createSpy('readFile');
+            //noinspection JSValidateTypes
+            fs.hijack('readFile', function() {
                 passedArguments = arguments;
                 spy();
             });
@@ -22,10 +24,10 @@ describe('execution/executeInNode', function() {
         });
 
         afterEach(function() {
-            fs.restore('readFileSync');
+            fs.restore('readFile');
         });
 
-        it('should call fs.readFileSync', function() {
+        it('should call fs.readFile', function() {
             expect(spy).toHaveBeenCalled();
         });
 
@@ -33,7 +35,7 @@ describe('execution/executeInNode', function() {
             expect(passedArguments[0]).toBe('basePath/filename');
         });
 
-        it('should pass utf-8 as expected encoding to the fs.readFileSync', function() {
+        it('should pass utf-8 as expected encoding to the fs.readFile', function() {
             expect(passedArguments[1]).toBe('utf-8');
         });
     });
@@ -41,8 +43,10 @@ describe('execution/executeInNode', function() {
     describe('when executing loaded javascript content', function() {
 
         var passedArgumentsToRunInNewContext;
+        var deferred;
 
         beforeEach(function() {
+            //noinspection JSValidateTypes
             vm.hijack('runInNewContext', function() {
                 passedArgumentsToRunInNewContext = arguments;
             });
@@ -50,38 +54,49 @@ describe('execution/executeInNode', function() {
 
         afterEach(function() {
             vm.restore('runInNewContext');
-            fs.restore('readFileSync');
+            fs.restore('readFile');
         });
 
         it('should pass each javascript content to vm.runInNewContext', function () {
             var script = 'foobar';
-            fs.hijack('readFileSync', function() {
-                return script;
+
+            //noinspection JSValidateTypes
+            fs.hijack('readFile', function (filename, encoding, callback) {
+                callback(undefined, script);
             });
 
-            testMethod('basePath', 'filename');
+            deferred = testMethod('basePath', 'filename');
 
-            expect(passedArgumentsToRunInNewContext[0]).toBe(script);
+            waitsForDeferred(deferred).then(function() {
+                expect(passedArgumentsToRunInNewContext[0]).toBe(script);
+            });
         });
 
         it('should pass the given context object to vm.runInNewContext', function () {
             var context = {a: 1, b: 2, c: function() {}};
-            fs.hijack('readFileSync', function() {
-                return '';
+
+            //noinspection JSValidateTypes
+            fs.hijack('readFile', function (filename, encoding, callback) {
+                callback();
             });
 
-            testMethod('basePath', 'filename', context);
+            deferred = testMethod('basePath', 'filename', context);
 
-            expect(passedArgumentsToRunInNewContext[1]).toBe(context);
+            waitsForDeferred(deferred).then(function() {
+                expect(passedArgumentsToRunInNewContext[1]).toBe(context);
+            });
         });
 
         it('should not rethrow any javascript errors occurring in a loaded script', function () {
-            var script = 'foobar';
-            fs.hijack('readFileSync', function() {
-                return 'window.foobar.foobar = "foobar";';
+            var done = false;
+
+            //noinspection JSValidateTypes
+            fs.hijack('readFile', function (filename, encoding, callback) {
+                callback(undefined, 'window.foobar.foobar = "foobar";');
             });
 
-            expect(function() { testMethod('basePath', 'filename'); }).not.toThrow();
+            deferred = testMethod('basePath', 'filename');
+            waitsForDeferred(deferred).then(function() { });
         });
 
     });

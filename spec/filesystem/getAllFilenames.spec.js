@@ -2,101 +2,138 @@
 
 var horaa = require('horaa');
 var fs = horaa('fs');
+var waitsForDeferred = require('../waitsForDeferred.js');
 
 var occurrencesOf = require('../../src/common/occurrencesOf.js');
-occurrencesOf.installAsPrototype();
 
 var testMethod = require('../../src/filesystem/getAllFilenames.js');
 
 describe('filesystem/getAllFilenames', function() {
 
     afterEach(function() {
-        fs.restore('readdirSync');
-        fs.restore('lstatSync');
+        fs.restore('readdir');
+        fs.restore('lstat');
+    });
+
+    it('should not freeze if a directory does not contain any files', function() {
+        //noinspection JSValidateTypes
+        fs.hijack('readdir', function(directory, callback) {
+            setTimeout(function() {
+                callback(undefined, []);
+            }, 0);
+        });
+        //noinspection JSValidateTypes
+        fs.hijack('lstat', function(path, callback) {
+            setTimeout(function() {
+                callback(undefined, {
+                    isDirectory: function() { return false; }
+                });
+            }, 0);
+        });
+
+        waitsForDeferred(testMethod({ basePath: 'testFiles' })).then(function() {});
     });
 
     it('should return a list of all filenames in the top level directory', function() {
-        fs.hijack('readdirSync', function() {
-            return ['1.js', '2.js', '3.js'];
+        //noinspection JSValidateTypes
+        fs.hijack('readdir', function(directory, callback) {
+            setTimeout(function() {
+                callback(undefined, ['1.js', '2.js', '3.js']);
+            }, 0);
         });
-        fs.hijack('lstatSync', function() {
-            return {
-                isDirectory: function() { return false; }
-            };
+        //noinspection JSValidateTypes
+        fs.hijack('lstat', function(path, callback) {
+            setTimeout(function() {
+                callback(undefined, {
+                    isDirectory: function() { return false; }
+                });
+            }, 0);
         });
 
-        var files = testMethod({ basePath: 'testFiles' });
-        expect(files[0]).toBe('1.js');
-        expect(files[1]).toBe('2.js');
-        expect(files[2]).toBe('3.js');
+        waitsForDeferred(testMethod({ basePath: 'testFiles' })).then(function(files) {
+            expect(occurrencesOf(files, '1.js')).toBe(1);
+            expect(occurrencesOf(files, '2.js')).toBe(1);
+            expect(occurrencesOf(files, '3.js')).toBe(1);
+        });
     });
 
     it('should return a list of all filenames including subdirectories', function() {
         var subDirectory = 'subDirectory';
 
-        fs.hijack('readdirSync', function(directory) {
-            return directory.indexOf(subDirectory) === -1 ? ['1.js', '2.js', '3.js', subDirectory] :
+        //noinspection JSValidateTypes
+        fs.hijack('readdir', function(directory, callback) {
+            var result = directory.indexOf(subDirectory) === -1 ? ['1.js', '2.js', '3.js', subDirectory] :
                 ['1.js', '2.js', '3.js'];
+            callback(undefined, result);
         });
-        fs.hijack('lstatSync', function(item) {
-            return {
+        //noinspection JSValidateTypes
+        fs.hijack('lstat', function(path, callback) {
+            callback(undefined, {
                 isDirectory: function() {
-                    return item.indexOf(subDirectory) === item.length - subDirectory.length;
+                    return path.indexOf(subDirectory) === path.length - subDirectory.length;
                 }
-            };
+            });
         });
 
-        var files = testMethod({ basePath: 'testFiles' });
-        expect(files[3]).toBe('subDirectory/1.js');
-        expect(files[4]).toBe('subDirectory/2.js');
-        expect(files[5]).toBe('subDirectory/3.js');
+        waitsForDeferred(testMethod({ basePath: 'testFiles' })).then(function(files) {
+            expect(occurrencesOf(files, 'subDirectory/1.js')).toBe(1);
+            expect(occurrencesOf(files, 'subDirectory/2.js')).toBe(1);
+            expect(occurrencesOf(files, 'subDirectory/3.js')).toBe(1);
+        });
     });
 
     it('should return a list of all filenames excluding any items matching strings to exclude', function() {
         var subDirectory = 'subDirectory';
 
-        fs.hijack('readdirSync', function(directory) {
-            return directory.indexOf(subDirectory) === -1 ?
-                ['1.js', '2.js', '3.js', '_cache.specs.js', subDirectory] : ['1.js', '2.js', '3.js'];
+        //noinspection JSValidateTypes
+        fs.hijack('readdir', function(directory, callback) {
+            var result = directory.indexOf(subDirectory) >= 0 ?
+                ['1.js', '2.js', '3.js'] : ['1.js', '2.js', '3.js', '_cache.specs.js', subDirectory];
+            callback(undefined, result);
         });
-        fs.hijack('lstatSync', function(item) {
-            return {
+        //noinspection JSValidateTypes
+        fs.hijack('lstat', function(path, callback) {
+            callback(undefined, {
                 isDirectory: function() {
-                    return item.indexOf(subDirectory) === item.length - subDirectory.length;
+                    return path.indexOf(subDirectory) === path.length - subDirectory.length;
                 }
-            };
+            });
         });
 
-        var files = testMethod({
+        waitsForDeferred(testMethod({
             basePath: __dirname + '/testFiles/getAllFiles',
             exclude: ['subDirectory', 'specs.js']
+        })).then(function(files) {
+            expect(occurrencesOf(files, '_cache.specs.js')).toBe(0);
+            expect(occurrencesOf(files, 'subDirectory/1.js')).toBe(0);
         });
-
-        expect(files.occurrencesOf('_cache.specs.js')).toBe(0);
-        expect(files.occurrencesOf('subDirectory/1.js')).toBe(0);
     });
 
     it('should return a list of all filenames matching the file ending', function() {
-        fs.hijack('readdirSync', function() {
-            return ['1.js', '2.js', '3.js'];
+        //noinspection JSValidateTypes
+        fs.hijack('readdir', function(directory, callback) {
+            callback(undefined, ['1.js', '2.js', '3.js']);
         });
-        fs.hijack('lstatSync', function() {
-            return {
+        //noinspection JSValidateTypes
+        fs.hijack('lstat', function(path, callback) {
+            callback(undefined, {
                 isDirectory: function() { return false; }
-            };
+            });
         });
 
-        var files = testMethod({
+        waitsForDeferred(testMethod({
             basePath: 'testFiles',
             fileEnding: 'js'
+        })).then(function(files) {
+            expect(files.length).toBe(3);
         });
-        expect(files.length).toBe(3);
 
-        var files = testMethod({
+        waitsForDeferred(testMethod({
             basePath: 'testFiles',
             fileEnding: 'foobar'
+        })).then(function(files) {
+            expect(files.length).toBe(0);
         });
-        expect(files.length).toBe(0);
     });
 
 });

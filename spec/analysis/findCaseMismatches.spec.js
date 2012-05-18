@@ -7,7 +7,7 @@ describe('analysis/findCaseMismatches', function() {
     it('should not add an error when no modules are available', function() {
 
         var result = {
-            modules: {},
+            scripts: [],
             errors: []
         };
 
@@ -19,10 +19,10 @@ describe('analysis/findCaseMismatches', function() {
     it('should not add an error when module ids are different than the filenames', function() {
 
         var result = {
-            modules: {
-                'a': {filename: 'moduleA.js', dependencies: []},
-                'b': {filename: 'moduleB.js', dependencies: []}
-            },
+            scripts: [
+                {id: 'a', filename: 'moduleA.js', dependencies: [], type: 'module'},
+                {id: 'b', filename: 'moduleB.js', dependencies: [], type: 'module'}
+            ],
             errors: []
         };
 
@@ -35,10 +35,10 @@ describe('analysis/findCaseMismatches', function() {
     it('should not add an error when module ids and filenames are equal', function() {
 
         var result = {
-            modules: {
-                'moduleA': {filename: 'moduleA.js', dependencies: []},
-                'moduleB': {filename: 'moduleB.js', dependencies: []}
-            },
+            scripts: [
+                {id: 'A', filename: 'A.js', dependencies: [], type: 'module'},
+                {id: 'B', filename: 'B.js', dependencies: [], type: 'module'}
+            ],
             errors: []
         };
 
@@ -51,9 +51,9 @@ describe('analysis/findCaseMismatches', function() {
     it('should add an error when a module id and a filename are equal but have different cases', function() {
 
         var result = {
-            modules: {
-                'modulea': {filename: 'moduleA.js'}
-            },
+            scripts: [
+                {id: 'a', filename: 'A.js', type: 'module'}
+            ],
             errors: []
         };
 

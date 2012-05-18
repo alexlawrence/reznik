@@ -1,7 +1,6 @@
 'use strict';
 
 var forEachProperty = require('../iteration/forEachProperty.js');
-var forEachModule = require('../iteration/forEachModule.js');
 
 var renderPlain = function(result) {
     var output = '';
@@ -9,41 +8,43 @@ var renderPlain = function(result) {
         if (property == 'configuration') {
             return;
         }
-        output += renderModuleDataOrInformation(value, property);
+        output += renderScriptsDataOrInformation(value, property);
     });
-    output += renderAnonymousModules(result.modules);
+    output += renderAnonymousModules(result.scripts);
     return output;
 };
 
-var renderModuleDataOrInformation = function(value, property) {
-    var output = '#' + property.replace('modules', 'files') + '\n';
-    if (property.indexOf('modules') === 0) {
-        forEachModule(value, function(id, module) {
-            var dependantFilenames = getDependantFilenames(value, module.dependencies);
-            output += module.filename + ':' + dependantFilenames.join(',') + '\n';
-        })
+var renderScriptsDataOrInformation = function(scriptsOrInformation, property) {
+    var output = '#' + property.replace('scripts', 'files') + '\n';
+    if (property.indexOf('scripts') === 0) {
+        scriptsOrInformation.forEach(function(script) {
+            var dependantFilenames = getDependantFilenames(scriptsOrInformation, script.dependencies);
+            output += script.filename + ':' + dependantFilenames.join(',') + '\n';
+        });
     }
     else {
-        value.forEach(function(valueItem) {
-            output += valueItem + '\n';
+        scriptsOrInformation.forEach(function(item) {
+            output += item + '\n';
         });
     }
     return output;
 };
 
-var getDependantFilenames = function(modules, dependencies) {
-    var dependantFilenames = dependencies.map(function(dependency) {
-        return modules[dependency] ? modules[dependency].filename : undefined;
-    });
+var getDependantFilenames = function(scripts, dependencies) {
+    var dependantFilenames = dependencies.map(function(id) { return findModuleById(scripts, id).filename; });
     dependantFilenames = dependantFilenames.filter(function(value) { return value !== undefined; });
     return dependantFilenames;
 };
 
-var renderAnonymousModules = function(modules) {
+var findModuleById = function(scripts, id) {
+    return scripts.filter(function(script) { return script.id == id; })[0] || {};
+};
+
+var renderAnonymousModules = function(scripts) {
     var output = '#anonymous\n';
-    forEachModule(modules, function(id, module) {
-         if (module.anonymous) {
-             output += module.filename + '\n';
+    scripts.forEach(function(script) {
+         if (script.anonymous) {
+             output += script.filename + '\n';
          }
     });
     return output;

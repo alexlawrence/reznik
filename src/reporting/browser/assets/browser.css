@@ -31,38 +31,38 @@ ul, li
     padding:0;
 }
 
-.moduleTree li, .messages li
+.scriptTree li, .messages li
 {
     margin:0 0 0 5px;
 }
 
-.moduleTree ul, .messages ul
+.scriptTree ul, .messages ul
 {
     margin:0 0 10px 0px;
 }
 
-.module
+.script
 {
     font-size: 14px;
 }
 
-.moduleId
+.scriptId
 {
     font-weight: bold;
 }
 
-.moduleFilename
+.scriptFilename
 {
     color: #AAA;
 }
 
-.moduleFilename:before
+.scriptFilename:before
 {
     content: " in ";
     font-weight: normal;
 }
 
-.module.withDependencies .moduleTitle:after
+.script.withDependencies .scriptTitle:after
 {
     content: " depends on ";
     font-weight: normal;

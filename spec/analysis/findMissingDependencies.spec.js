@@ -7,7 +7,7 @@ describe('analysis/findMissingDependencies', function() {
     it('should not add an error when no modules are available', function() {
 
         var result = {
-            modules: {},
+            scripts: [],
             errors: []
         };
 
@@ -19,11 +19,11 @@ describe('analysis/findMissingDependencies', function() {
     it('should not add an error when all dependencies are available', function() {
 
         var result = {
-            modules: {
-                'a': {filename: 'a.js', dependencies: ['b', 'c']},
-                'b': {filename: 'b.js', dependencies: ['c']},
-                'c': {filename: 'c.js', dependencies: []}
-            },
+            scripts: [
+                {filename: 'a.js', dependencies: ['b', 'c'], type: 'require'},
+                {id: 'b', filename: 'b.js', dependencies: ['c'], type: 'module'},
+                {id: 'c', filename: 'c.js', dependencies: [], type: 'module'}
+            ],
             errors: []
         };
 
@@ -35,10 +35,10 @@ describe('analysis/findMissingDependencies', function() {
     it('should add an error when a modules dependency is undefined', function() {
 
         var result = {
-            modules: {
-                'a': {filename: 'a.js', dependencies: ['b']},
-                'b': {filename: 'b.js', dependencies: ['c']}
-            },
+            scripts: [
+                {filename: 'a.js', dependencies: ['b'], type: 'require'},
+                {id: 'b', filename: 'b.js', dependencies: ['c'], type: 'module'}
+            ],
             errors: []
         };
 

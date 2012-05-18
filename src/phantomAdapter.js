@@ -4,13 +4,19 @@
 
     var filesystem = phantomRequire('fs');
     filesystem.readdirSync = filesystem.list;
+    filesystem.readdir = function(dirname, callback) {
+        callback(undefined, filesystem.list(dirname));
+    };
     filesystem.readFileSync = filesystem.read;
-    filesystem.lstatSync = function(path) {
-        return {
+    filesystem.readFile = function(filename, encoding, callback) {
+        callback(undefined, filesystem.read(filename));
+    };
+    filesystem.lstat = function(path, callback) {
+        callback(undefined, {
             isDirectory: function() {
                 return filesystem.isDirectory(path);
             }
-        }
+        });
     };
 
     var currentRelativePath = phantom.libraryPath;
@@ -52,6 +58,6 @@
 
 }(this));
 
-require('./index.js');
-
-process.exit();
+require('./index.js').then(function() {
+    process.exit();
+});

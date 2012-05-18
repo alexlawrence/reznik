@@ -1,13 +1,8 @@
 'use strict';
 
-var forSomeModules = require('./forSomeModules.js');
-
-var forEachModule = function(modules, callback) {
-    var wrappedCallback = function(id, module) {
-        callback(id, module);
-        return false;
-    };
-    forSomeModules(modules, wrappedCallback);
+var forEachModule = function(scripts, callback) {
+    var modules = (scripts || []).filter(function(script) { return script.type == 'module'; });
+    return modules.forEach(callback || function() {});
 };
 
 module.exports = forEachModule;

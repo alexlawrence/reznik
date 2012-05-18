@@ -1,51 +1,62 @@
 'use strict';
 
 var subject = require('../src/amdProxy.js');
+var firstOrNull = require('../src/common/firstOrNull.js');
 var testId = 'testModule';
 var testFilename = 'testModule.js';
 var testDependency1 = 'foo';
 var testDependency2 = 'bar';
 
+var tryGetTestModuleFromProxy = function() {
+    return firstOrNull(subject.getScripts(), function(x) { return x.filename == testFilename; });
+}
+
 var it_should_add_the_module_with_the_correct_implicit_id_from_the_filename = function() {
     it('should add the module with the correct implicit id from the filename', function() {
-        expect(subject.getModules()[testId].id).toBe(testId);
+        expect(tryGetTestModuleFromProxy().id).toBe(testId);
     });
 };
 
 var it_should_mark_the_module_as_not_anonymous = function() {
     it('should mark the module as not anonymous', function() {
-        expect(subject.getModules()[testId].anonymous).toBeFalsy();
+        expect(tryGetTestModuleFromProxy().anonymous).toBeFalsy();
     });
 };
 
 var it_should_mark_the_module_as_anonymous = function() {
     it('should mark the module as not anonymous', function() {
-        expect(subject.getModules()[testId].anonymous).toBeTruthy();
+        expect(tryGetTestModuleFromProxy().anonymous).toBeTruthy();
     });
 };
 
-var it_should_add_the_module_dependencies = function() {
+var it_should_add_the_scripts_dependencies = function() {
     it('should add the module dependencies', function() {
-        expect(subject.getModules()[testId].dependencies[0]).toBe(testDependency1);
-        expect(subject.getModules()[testId].dependencies[1]).toBe(testDependency2);
+        expect(tryGetTestModuleFromProxy().dependencies[0]).toBe(testDependency1);
+        expect(tryGetTestModuleFromProxy().dependencies[1]).toBe(testDependency2);
     });
 };
 
 var it_should_add_the_module_with_the_correct_id = function() {
     it('should add the module with the correct id', function() {
-        expect(subject.getModules()[testId].id).toBe(testId);
+        expect(tryGetTestModuleFromProxy().id).toBe(testId);
     });
 };
 
 var it_should_add_an_empty_dependencies_array_to_the_module = function() {
     it('should add an empty dependencies array to the module', function() {
-        expect(subject.getModules()[testId].dependencies).toBeDefined();
+        expect(tryGetTestModuleFromProxy().dependencies).toBeDefined();
     });
 };
 
-var it_should_add_the_module_factory = function(expectedFunction) {
+var it_should_add_the_scripts_factory = function(expectedFunction) {
     it('should add the module factory', function() {
-        expect(subject.getModules()[testId].factory).toBe(expectedFunction);
+        expect(tryGetTestModuleFromProxy().factory).toBe(expectedFunction);
+    });
+};
+
+var it_should_set_the_scripts_type_to = function(expectedType) {
+    it('should set the module type to "' + expectedType + '"', function() {
+        expect(tryGetTestModuleFromProxy().type).toBe(expectedType);
     });
 };
 
@@ -59,8 +70,8 @@ describe('amdProxy', function() {
         subject.reset();
     });
 
-    it('should expose a getModules method', function() {
-        expect(subject.getModules).toBeDefined();
+    it('should expose a getScripts method', function() {
+        expect(subject.getScripts).toBeDefined();
     });
 
     it('should expose a getErrors method', function() {
@@ -79,15 +90,6 @@ describe('amdProxy', function() {
             expect(testMethod.amd).toBeDefined();
         });
 
-        it('should add an error when trying to add a module with the same id twice', function() {
-            testMethod(testId, function() {});
-            testMethod(testId, function() {});
-
-            var errors = subject.getErrors();
-
-            expect(errors[0]).toContain('duplicate module definition');
-        });
-
         describe('when called with an id and a factory', function() {
 
             var factory = function() { var foo = 'foo'; };
@@ -98,8 +100,9 @@ describe('amdProxy', function() {
 
             it_should_add_the_module_with_the_correct_id();
             it_should_add_an_empty_dependencies_array_to_the_module();
-            it_should_add_the_module_factory(factory);
+            it_should_add_the_scripts_factory(factory);
             it_should_mark_the_module_as_not_anonymous();
+            it_should_set_the_scripts_type_to('module');
 
         });
 
@@ -114,10 +117,11 @@ describe('amdProxy', function() {
             it_should_add_the_module_with_the_correct_implicit_id_from_the_filename();
             it_should_mark_the_module_as_anonymous();
             it_should_add_an_empty_dependencies_array_to_the_module();
-            it_should_add_the_module_factory(factory);
+            it_should_add_the_scripts_factory(factory);
             it('should add the module with the correct filename', function() {
-                expect(subject.getModules()[testId].filename).toBe(testFilename);
+                expect(tryGetTestModuleFromProxy().filename).toBe(testFilename);
             });
+            it_should_set_the_scripts_type_to('module');
 
         });
 
@@ -130,8 +134,10 @@ describe('amdProxy', function() {
             });
 
             it_should_add_the_module_with_the_correct_id();
-            it_should_add_the_module_dependencies();
-            it_should_add_the_module_factory(factory);
+            it_should_add_the_scripts_dependencies();
+            it_should_mark_the_module_as_not_anonymous();
+            it_should_add_the_scripts_factory(factory);
+            it_should_set_the_scripts_type_to('module');
 
         });
 
@@ -144,8 +150,10 @@ describe('amdProxy', function() {
             });
 
             it_should_add_the_module_with_the_correct_implicit_id_from_the_filename();
-            it_should_add_the_module_dependencies();
-            it_should_add_the_module_factory(factory);
+            it_should_mark_the_module_as_anonymous();
+            it_should_add_the_scripts_dependencies();
+            it_should_add_the_scripts_factory(factory);
+            it_should_set_the_scripts_type_to('module');
 
         });
 
@@ -162,7 +170,7 @@ describe('amdProxy', function() {
             });
 
             it('should not add the module', function() {
-                expect(subject.getModules()[testId]).toBeUndefined();
+                expect(tryGetTestModuleFromProxy()).toBeNull();
             });
 
         });
@@ -175,10 +183,9 @@ describe('amdProxy', function() {
                 testMethod([testDependency1, testDependency2], factory);
             });
 
-            it_should_add_the_module_with_the_correct_implicit_id_from_the_filename();
-            it_should_add_the_module_dependencies();
-            it_should_add_the_module_factory(factory);
-            it_should_mark_the_module_as_not_anonymous();
+            it_should_add_the_scripts_dependencies();
+            it_should_add_the_scripts_factory(factory);
+            it_should_set_the_scripts_type_to('require');
 
         });
 

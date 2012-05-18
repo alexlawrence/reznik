@@ -1,20 +1,21 @@
 'use strict';
 
-var forEachModule = require('./forEachModule.js');
+var firstOrNull = require('../common/firstOrNull.js');
 
-var forEachDependencyRecursive = function(modules, callback) {
-    var dependency, allDependencies;
-    forEachModule(modules, function(id, module) {
-        allDependencies = module.dependencies.slice(0);
-        while (allDependencies.length > 0) {
-            if (allDependencies.indexOf(id) > -1) {
-                throw new Error('circular dependency in ' + module.filename);
+var forEachDependencyRecursive = function(scripts, callback) {
+    var dependency, dependencyId, allDependencyIds;
+    scripts.forEach(function(script) {
+        allDependencyIds = script.dependencies.slice(0);
+        while (allDependencyIds.length > 0) {
+            if (allDependencyIds.indexOf(script.id) > -1) {
+                throw new Error('circular dependency in ' + script.filename);
             }
-            dependency = allDependencies.pop();
-            if (modules[dependency] && modules[dependency].dependencies) {
-                allDependencies = allDependencies.concat(modules[dependency].dependencies);
+            dependencyId = allDependencyIds.pop();
+            dependency = firstOrNull(scripts, function(x) { return x.id == dependencyId; });
+            if (dependency && dependency.dependencies) {
+                allDependencyIds = allDependencyIds.concat(dependency.dependencies);
             }
-            callback(id, dependency);
+            callback(script, dependencyId);
         }
     });
 };

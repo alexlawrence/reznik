@@ -2,11 +2,20 @@
 
 var subject = require('../src/fileEvaluation.js');
 
+var Deferred = require('../src/common/Deferred.js');
+
 var horaa = require('horaa');
+var waitsForDeferred = require('./waitsForDeferred.js');
 
 var amdProxy = horaa(__dirname + '../../src/amdProxy.js');
 
 describe('fileEvaluation', function() {
+
+    var resolvedDeferred = function() {
+        var deferred = new Deferred();
+        deferred.resolve();
+        return deferred;
+    };
 
     var hijackExecutionWith = function(callback) {
         subject.setExecutionMethod(callback);
@@ -17,7 +26,7 @@ describe('fileEvaluation', function() {
         describe('when given no files', function() {
 
             it('should not throw an error', function() {
-                expect(subject.evaluateFiles).not.toThrow();
+                expect(function() { subject.evaluateFiles('basePath'); }).not.toThrow();
             });
 
         });
@@ -26,8 +35,7 @@ describe('fileEvaluation', function() {
 
             describe('on executing scripts', function() {
 
-                var passedArguments;
-                var executionSpy;
+                var passedArguments, executionSpy, deferred;
 
                 beforeEach(function() {
 
@@ -36,27 +44,35 @@ describe('fileEvaluation', function() {
                     hijackExecutionWith(function() {
                         passedArguments = arguments;
                         executionSpy();
+                        return resolvedDeferred();
                     });
 
-                    subject.evaluateFiles('basePath', ['path/to/script.js']);
-
+                    deferred = subject.evaluateFiles('basePath', ['path/to/script.js']);
                 });
 
                 it('should use the passed method to setExecutionMethod to execute scripts', function() {
-                    expect(executionSpy).toHaveBeenCalled();
+                    waitsForDeferred(deferred).then(function() {
+                        expect(executionSpy).toHaveBeenCalled();
+                    });
                 });
 
                 it('should pass the basePath as first argument to the execution method', function() {
-                    expect(passedArguments[0]).toBe('basePath');
+                    waitsForDeferred(deferred).then(function() {
+                        expect(passedArguments[0]).toBe('basePath');
+                    });
                 });
 
                 it('should pass each filename as second argument to the execution method', function() {
-                    expect(passedArguments[1]).toBe('path/to/script.js');
+                    waitsForDeferred(deferred).then(function() {
+                        expect(passedArguments[1]).toBe('path/to/script.js');
+                    });
                 });
 
                 it('should pass a context object containing define and require to the execution method', function() {
-                    expect(typeof passedArguments[2].define).toBe('function');
-                    expect(typeof passedArguments[2].require).toBe('function');
+                    waitsForDeferred(deferred).then(function() {
+                        expect(typeof passedArguments[2].define).toBe('function');
+                        expect(typeof passedArguments[2].require).toBe('function');
+                    });
                 });
 
             });
@@ -66,51 +82,53 @@ describe('fileEvaluation', function() {
                 it('should include all errors', function() {
 
                     var errors = [1, 2, 3];
+                    //noinspection JSValidateTypes
                     amdProxy.hijack('getErrors', function() {
                         return errors;
                     });
 
-                    var evaluationResult = subject.evaluateFiles([]);
-
-                    expect(evaluationResult.errors).toBe(errors);
-
-                    amdProxy.restore('getErrors');
+                    waitsForDeferred(subject.evaluateFiles('basePath', [])).then(function(evaluationResult) {
+                        expect(evaluationResult.errors).toBe(errors);
+                        amdProxy.restore('getErrors');
+                    });
                 });
 
-                it('should include all modules', function() {
+                it('should include all scripts', function() {
 
-                    var modules = {'a': {filename: 'a.js', dependencies: []}, 'b': {filename: 'b.js', dependencies: ['a']}};
-                    amdProxy.hijack('getModules', function() {
-                        return modules;
+                    var scripts = [
+                        {id: 'a', filename: 'a.js', dependencies: [], type: 'module'},
+                        {id: 'b', filename: 'b.js', dependencies: ['a'], type: 'module'}
+                    ];
+                    //noinspection JSValidateTypes
+                    amdProxy.hijack('getScripts', function() {
+                        return scripts;
                     });
 
-                    var evaluationResult = subject.evaluateFiles([]);
-
-                    expect(evaluationResult.modules).toBe(modules);
-
-                    amdProxy.restore('getModules');
+                    waitsForDeferred(subject.evaluateFiles('basePath', [])).then(function(evaluationResult) {
+                        expect(evaluationResult.scripts).toBe(scripts);
+                        amdProxy.restore('getScripts');
+                    });
                 });
 
                 it('should include the configuration', function() {
 
                     var configuration = {a: 1, b: 2, c: 3, d: {e: 4}};
+                    //noinspection JSValidateTypes
                     amdProxy.hijack('getConfiguration', function() {
                         return configuration;
                     });
 
-                    var evaluationResult = subject.evaluateFiles([]);
-
-                    expect(evaluationResult.configuration).toBe(configuration);
-
-                    amdProxy.restore('getConfiguration');
+                    waitsForDeferred(subject.evaluateFiles('basePath', [])).then(function(evaluationResult) {
+                        expect(evaluationResult.configuration).toBe(configuration);
+                        amdProxy.restore('getConfiguration');
+                    });
                 });
 
                 it('should include all information', function() {
 
-                    var evaluationResult = subject.evaluateFiles([]);
-
-                    expect(evaluationResult.information).toBeDefined();
-
+                    waitsForDeferred(subject.evaluateFiles('basePath', [])).then(function(evaluationResult) {
+                        expect(evaluationResult.information).toBeDefined();
+                    });
                 });
 
             });

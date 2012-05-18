@@ -4,10 +4,10 @@ var testMethod = require('../../src/reporting/renderPlain.js');
 
 describe('reporting/renderPlain', function() {
 
-    it('should start module information with #files', function() {
+    it('should start scripts information with #files', function() {
 
         var evaluationResult = {
-            modules: {},
+            scripts: [],
             errors: []
         };
 
@@ -16,15 +16,15 @@ describe('reporting/renderPlain', function() {
         expect(result).toMatch(/\s*#files\s*/);
     });
 
-    it('should serialize the filenames of all modules and the corresponding filenames of their dependencies', function() {
+    it('should serialize the filenames of all scripts and the corresponding filenames of their dependencies', function() {
 
         var evaluationResult = {
-            modules: {
-                'a': {filename:'a.js', dependencies: ['b']},
-                'b': {filename:'b.js', dependencies: ['c', 'd']},
-                'c': {filename:'c.js', dependencies: ['d']},
-                'd': {filename:'d.js', dependencies: []}
-            },
+            scripts: [
+                {filename:'a.js', dependencies: ['b'], type: 'require'},
+                {id: 'b', filename:'b.js', dependencies: ['c', 'd'], type: 'module'},
+                {id: 'c', filename:'c.js', dependencies: ['d'], type: 'module'},
+                {id: 'd', filename:'d.js', dependencies: [], type: 'module'}
+            ],
             errors: []
         };
 
@@ -34,13 +34,13 @@ describe('reporting/renderPlain', function() {
             /\s*a\.js:b\.js\s*b\.js:c\.js,d\.js\s*c\.js:d\.js\s*d\.js\s*/);
     });
 
-    it('should serialize the correct filenames of modules even when they are different than the module ids', function() {
+    it('should serialize the correct filenames of scripts even when they are different than the module ids', function() {
 
         var evaluationResult = {
-            modules: {
-                'a': {filename:'moduleA.js', dependencies: ['b']},
-                'b': {filename:'moduleB.js', dependencies: []}
-            },
+            scripts: [
+                {id: 'a', filename:'moduleA.js', dependencies: ['b'], type: 'module'},
+                {id: 'b', filename:'moduleB.js', dependencies: [], type: 'module'}
+            ],
             errors: []
         };
 
@@ -53,10 +53,10 @@ describe('reporting/renderPlain', function() {
     it('should leave out the filename of a dependency when the dependency is not existing', function() {
 
         var evaluationResult = {
-            modules: {
-                'a': {filename:'a.js', dependencies: ['notExisting']},
-                'b': {filename:'b.js', dependencies: []}
-            },
+            scripts: [
+                {id: 'a', filename:'a.js', dependencies: ['notExisting'], type: 'module'},
+                {id: 'b', filename:'b.js', dependencies: [], type: 'module'}
+            ],
             errors: []
         };
 
@@ -69,6 +69,7 @@ describe('reporting/renderPlain', function() {
     it('should not serialize the configuration', function() {
 
         var evaluationResult = {
+            scripts: [],
             configuration: {}
         };
 
@@ -81,12 +82,12 @@ describe('reporting/renderPlain', function() {
     it('should serialize a list of all filenames of anonymous modules', function() {
 
         var evaluationResult = {
-            modules: {
-                'a': {filename:'a.js', anonymous: true, dependencies: []},
-                'b': {filename:'b.js', anonymous: true, dependencies: []},
-                'c': {filename:'c.js', anonymous: false, dependencies: []},
-                'd': {filename:'d.js', anonymous: false, dependencies: []}
-            },
+            scripts: [
+                {id: 'a', filename:'a.js', type: 'module', anonymous: true, dependencies: []},
+                {id: 'b', filename:'b.js', type: 'module', anonymous: true, dependencies: []},
+                {id: 'c', filename:'c.js', type: 'module', anonymous: false, dependencies: []},
+                {id: 'd', filename:'d.js', type: 'module', anonymous: false, dependencies: []}
+            ],
             errors: []
         };
 
@@ -95,15 +96,16 @@ describe('reporting/renderPlain', function() {
         expect(result).toMatch(/\s*#anonymous\s*a.js\s*b.js\s*/);
     });
 
-    it('should serialize properties starting with "modules" the same way as modules', function() {
+    it('should serialize properties starting with "scripts" the same way as scripts', function() {
 
         var evaluationResult = {
-            modulesFoobar: {
-                'a': {filename:'a.js', dependencies: ['b']},
-                'b': {filename:'b.js', dependencies: ['c', 'd']},
-                'c': {filename:'c.js', dependencies: ['d']},
-                'd': {filename:'d.js', dependencies: []}
-            },
+            scriptsFoobar: [
+                {id: 'a', filename:'a.js', dependencies: ['b'], type: 'module'},
+                {id: 'b', filename:'b.js', dependencies: ['c', 'd'], type: 'module'},
+                {id: 'c', filename:'c.js', dependencies: ['d'], type: 'module'},
+                {id: 'd', filename:'d.js', dependencies: [], type: 'module'}
+            ],
+            scripts: [],
             errors: []
         };
 
@@ -116,7 +118,7 @@ describe('reporting/renderPlain', function() {
     it('should serialize the errors', function() {
 
         var evaluationResult = {
-            modules: {},
+            scripts: [],
             errors: ['error 1', 'error 2', 'error 3']
         };
 
@@ -130,7 +132,7 @@ describe('reporting/renderPlain', function() {
     it('should serialize the information messages', function() {
 
         var evaluationResult = {
-            modules: {},
+            scripts: [],
             errors: [],
             information: ['did something', 'did something else']
         };

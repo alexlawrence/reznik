@@ -1,13 +1,16 @@
 'use strict';
 
-var forEachModule = require('../iteration/forEachModule.js');
+var firstOrNull = require('../common/firstOrNull.js');
 
 var findMissingDependencies = function(evaluationResult) {
-    var errors = evaluationResult.errors, modules = evaluationResult.modules;
-    forEachModule(modules, function(id, module) {
-        module.dependencies.forEach(function(dependency) {
-            if (!evaluationResult.modules[dependency]) {
-                errors.push('missing dependency ' + dependency + ' required in ' + module.filename);
+    var errors = evaluationResult.errors, scripts = evaluationResult.scripts;
+    scripts.forEach(function(script) {
+        script.dependencies.forEach(function(dependencyId) {
+            var dependency = firstOrNull(scripts, function(x) {
+                return x.type == 'module' && x.id == dependencyId;
+            });
+            if (!dependency) {
+                errors.push('missing dependency ' + dependencyId + ' required in ' + script.filename);
             }
         });
     });

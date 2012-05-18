@@ -8,7 +8,7 @@ describe('common/executeAndIgnoreErrors', function() {
 
         expect(function() {
             subject(function() {
-                foobar.foobar = 'foobar';
+                throw new Error();
             });
         }).not.toThrow();
 

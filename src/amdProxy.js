@@ -3,10 +3,10 @@
 var getIdFromFilename = require('./common/getModuleIdFromFilename.js');
 var extendObject = require('./common/extendObject.js');
 
-var modules = {}, errors = [], idFromFilename = '', filename = '', configuration = {};
+var scripts = [], errors = [], idFromFilename = '', filename = '', configuration = {};
 
 var defineProxy = function() {
-    var module = {};
+    var module = {type: 'module'};
     module.filename = filename;
     module.anonymous = typeof arguments[0] !== 'string';
     module.id = module.anonymous ? idFromFilename : arguments[0];
@@ -15,11 +15,7 @@ var defineProxy = function() {
     module.dependencies = isArray ? dependenciesCandidate.slice(0) : [];
     var indexOfFactory = (module.anonymous ? 0 : 1) + (isArray ? 1 : 0);
     module.factory = arguments[indexOfFactory];
-
-    if (modules[module.id] !== undefined) {
-        return errors.push('duplicate module definition in ' + module.filename);
-    }
-    modules[module.id] = module;
+    scripts.push(module);
 };
 
 defineProxy.amd = {};
@@ -29,12 +25,12 @@ var requireProxy = function(dependencies, factory) {
         return;
     }
     dependencies = dependencies.slice(0);
-    modules[idFromFilename] = {
-        id: idFromFilename,
+    scripts.push({
         filename: filename,
         dependencies: dependencies,
-        factory: factory
-    };
+        factory: factory,
+        type: 'require'
+    });
 };
 
 requireProxy.config = function(newConfiguration) {
@@ -47,14 +43,14 @@ var setActiveFilename = function(newFilename) {
 };
 
 var reset = function() {
-    modules = {};
+    scripts = [];
     configuration = {};
     errors = [];
     idFromFilename = filename = '';
 };
 
-var getModules = function() {
-    return modules;
+var getScripts = function() {
+    return scripts;
 };
 
 var getErrors = function() {
@@ -69,6 +65,6 @@ exports.reset = reset;
 exports.setActiveFilename = setActiveFilename;
 exports.define = defineProxy;
 exports.require = requireProxy;
-exports.getModules = getModules;
+exports.getScripts = getScripts;
 exports.getErrors = getErrors;
 exports.getConfiguration = getConfiguration;

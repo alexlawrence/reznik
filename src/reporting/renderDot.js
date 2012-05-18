@@ -1,17 +1,16 @@
 'use strict';
 
-var forEachModule = require('../iteration/forEachModule.js');
-
 var renderDot = function(result) {
     var output = 'digraph dependencies {\n';
-    forEachModule(result.modules, function(id, module) {
-        if(module.dependencies.length > 0) {
-            module.dependencies.forEach(function(dependency) {
-                output += '"' + id + '" -> "' + dependency + '";\n';
+    result.scripts.forEach(function(script) {
+        var displayName = (script.id || script.filename);
+        if(script.dependencies.length > 0) {
+            script.dependencies.forEach(function(dependency) {
+                output += '"' + displayName + '" -> "' + dependency + '";\n';
             });
         }
         else {
-            output += '"' + id + '";\n';
+            output += '"' + displayName + '";\n';
         }
     });
     output += '}';

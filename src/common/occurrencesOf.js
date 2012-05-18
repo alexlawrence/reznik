@@ -10,10 +10,4 @@ var occurrencesOf = function (array, toSearch) {
     return occurrences;
 };
 
-occurrencesOf.installAsPrototype = function() {
-    Array.prototype.occurrencesOf = function(toSearch) {
-        return occurrencesOf(this.valueOf(), toSearch);
-    }
-};
-
 module.exports = occurrencesOf;

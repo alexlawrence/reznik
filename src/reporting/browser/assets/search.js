@@ -12,13 +12,13 @@
                 $(element).replaceWith($(element).html());
             });
 
-            var modulesToShow = $('.module:contains("' + searchText + '")');
+            var modulesToShow = $('.script:contains("' + searchText + '")');
             modulesToShow.show();
-            modulesToShow.find('.moduleId, .moduleFilename, .dependency').each(function(index, element) {
+            modulesToShow.find('.scriptId, .scriptilename, .dependency').each(function(index, element) {
                 $(element).html($(element).html().replace(
                     searchText, '<span class="highlight">' + searchText + '</span>'));
             });
-            $('.module').not(modulesToShow).hide();
+            $('.script').not(modulesToShow).hide();
 
             return false;
 

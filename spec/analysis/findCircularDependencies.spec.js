@@ -7,9 +7,9 @@ describe('analysis/findCircularDependencies', function() {
     it('should add an error when a module depends on itself', function() {
 
         var result = {
-            modules: {
-                'a': {filename: 'a.js', dependencies: ['a']}
-            },
+            scripts: [
+                {id: 'a', filename: 'a.js', dependencies: ['a'], type: 'module'}
+            ],
             errors: []
         };
 
@@ -21,10 +21,10 @@ describe('analysis/findCircularDependencies', function() {
     it('should not add an error when no circular dependency is found', function() {
 
         var result = {
-            modules: {
-                'a': {filename: 'a.js', dependencies: ['b']},
-                'b': {filename: 'b.js', dependencies: []}
-            },
+            scripts: [
+                {id: 'a', filename: 'a.js', dependencies: ['b'], type: 'module'},
+                {id: 'b', filename: 'b.js', dependencies: [], type: 'module'}
+            ],
             errors: []
         };
 
@@ -36,10 +36,10 @@ describe('analysis/findCircularDependencies', function() {
     it('should add an error when modules directly depend on each other', function() {
 
         var result = {
-            modules: {
-                'a': {filename: 'a.js', dependencies: ['b']},
-                'b': {filename: 'b.js', dependencies: ['a']}
-            },
+            scripts: [
+                {id: 'a', filename: 'a.js', dependencies: ['b'], type: 'module'},
+                {id: 'b', filename: 'b.js', dependencies: ['a'], type: 'module'}
+            ],
             errors: []
         };
 
@@ -52,13 +52,13 @@ describe('analysis/findCircularDependencies', function() {
     it('should add an error when modules implicitly depend on each other', function() {
 
         var result = {
-            modules: {
-                'a': {filename: 'a.js', dependencies: ['b']},
-                'b': {filename: 'b.js', dependencies: ['c']},
-                'c': {filename: 'c.js', dependencies: ['d', 'e']},
-                'd': {filename: 'd.js', dependencies: []},
-                'e': {filename: 'e.js', dependencies: ['a']}
-            },
+            scripts: [
+                {id: 'a', filename: 'a.js', dependencies: ['b'], type: 'module'},
+                {id: 'b', filename: 'b.js', dependencies: ['c'], type: 'module'},
+                {id: 'c', filename: 'c.js', dependencies: ['d', 'e'], type: 'module'},
+                {id: 'd', filename: 'd.js', dependencies: [], type: 'module'},
+                {id: 'e', filename: 'e.js', dependencies: ['a'], type: 'module'}
+            ],
             errors: []
         };
 
@@ -68,9 +68,9 @@ describe('analysis/findCircularDependencies', function() {
     it('should not break when requiring a non existing module', function() {
 
         var result = {
-            modules: {
-                'a': {filename: 'a.js', dependencies: ['e']}
-            },
+            scripts: [
+                {id: 'a', filename: 'a.js', dependencies: ['e'], type: 'module'}
+            ],
             errors: []
         };
 

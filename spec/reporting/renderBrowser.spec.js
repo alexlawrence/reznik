@@ -1,6 +1,7 @@
 'use strict';
 
 var testMethod = require('../../src/reporting/renderBrowser.js');
+var waitsForDeferred = require('../waitsForDeferred.js');
 
 describe('reporting/browser/renderBrowser', function() {
 
@@ -20,10 +21,10 @@ describe('reporting/browser/renderBrowser', function() {
             errors: ['error 1', 'error 2']
         };
 
-        var output = testMethod(evaluationResult);
-
-        expect(output).toContain(
-            '<ul class="messages errors"><li class="message">error 1</li><li class="message">error 2</li></ul>');
+        waitsForDeferred(testMethod(evaluationResult)).then(function(output) {
+            expect(output).toContain(
+                '<ul class="messages errors"><li class="message">error 1</li><li class="message">error 2</li></ul>');
+        });
 
     });
 
@@ -33,100 +34,99 @@ describe('reporting/browser/renderBrowser', function() {
             information: ['information 1', 'information 2']
         };
 
-        var output = testMethod(evaluationResult);
-
-        expect(output).toContain(
-            '<ul class="messages information"><li class="message">information 1</li><li class="message">information 2</li></ul>');
-
-    });
-
-    it('should return an unordered list for each module and its dependencies', function() {
-
-        var evaluationResult = {
-            modules: {
-                'a': {filename: 'a.js', dependencies: ['b', 'c']},
-                'd': {filename: 'd.js', dependencies: ['e', 'f']}
-            }
-        };
-
-        var output = testMethod(evaluationResult);
-
-        expect(output).toContain(
-            '<li class="module withDependencies">' +
-                '<span class="moduleTitle"><span class="moduleId">a</span><span class="moduleFilename">a.js</span></span>' +
-                '<ul class="dependencies"><li class="dependency">b</li><li class="dependency">c</li></ul>' +
-            '</li>');
-        expect(output).toContain(
-            '<li class="module withDependencies">' +
-                '<span class="moduleTitle"><span class="moduleId">d</span><span class="moduleFilename">d.js</span></span>' +
-                '<ul class="dependencies"><li class="dependency">e</li><li class="dependency">f</li></ul>' +
-            '</li>');
-
+        waitsForDeferred(testMethod(evaluationResult)).then(function(output) {
+            expect(output).toContain(
+                '<ul class="messages information"><li class="message">information 1</li><li class="message">information 2</li></ul>');
+        });
 
     });
 
-    it('should not add the class "withDependencies" for modules without dependencies', function() {
+    it('should return an unordered list for each script and its dependencies', function() {
 
         var evaluationResult = {
-            modules: {
-                'e': {filename: 'e.js', dependencies: []}
-            }
+            scripts: [
+                {id: 'a', filename: 'a.js', dependencies: ['b', 'c'], type: 'module'},
+                {id: 'd', filename: 'd.js', dependencies: ['e', 'f'], type: 'module'}
+            ]
         };
 
-        var output = testMethod(evaluationResult);
+        waitsForDeferred(testMethod(evaluationResult)).then(function(output) {
+            expect(output).toContain(
+                '<li class="script withDependencies">' +
+                    '<span class="scriptTitle"><span class="scriptId">a</span><span class="scriptFilename">a.js</span></span>' +
+                    '<ul class="dependencies"><li class="dependency">b</li><li class="dependency">c</li></ul>' +
+                '</li>');
+            expect(output).toContain(
+                '<li class="script withDependencies">' +
+                    '<span class="scriptTitle"><span class="scriptId">d</span><span class="scriptFilename">d.js</span></span>' +
+                    '<ul class="dependencies"><li class="dependency">e</li><li class="dependency">f</li></ul>' +
+                '</li>');
+        });
 
-        expect(output).toContain(
-            '<li class="module">' +
-                '<span class="moduleTitle"><span class="moduleId">e</span><span class="moduleFilename">e.js</span></span>' +
-                '<ul class="dependencies"></ul>' +
-            '</li>');
     });
 
-    it('should return an unordered list for each flattened module and its dependencies', function() {
+    it('should not add the class "withDependencies" for scripts without dependencies', function() {
 
         var evaluationResult = {
-            modulesFlattened: {
-                'a': {filename: 'a.js', dependencies: ['b', 'c']},
-                'd': {filename: 'd.js', dependencies: ['e', 'f']}
-            }
+            scripts: [
+                {id: 'e', filename: 'e.js', dependencies: [], type: 'module'}
+            ]
         };
 
-        var output = testMethod(evaluationResult);
+        waitsForDeferred(testMethod(evaluationResult)).then(function(output) {
+            expect(output).toContain(
+                '<li class="script">' +
+                    '<span class="scriptTitle"><span class="scriptId">e</span><span class="scriptFilename">e.js</span></span>' +
+                    '<ul class="dependencies"></ul>' +
+                '</li>');
+        });
+    });
 
-        expect(output).toContain(
-            '<li class="module withDependencies">' +
-                '<span class="moduleTitle"><span class="moduleId">a</span><span class="moduleFilename">a.js</span></span>' +
-                '<ul class="dependencies"><li class="dependency">b</li><li class="dependency">c</li></ul>' +
-            '</li>');
-        expect(output).toContain(
-            '<li class="module withDependencies">' +
-                '<span class="moduleTitle"><span class="moduleId">d</span><span class="moduleFilename">d.js</span></span>' +
-                '<ul class="dependencies"><li class="dependency">e</li><li class="dependency">f</li></ul>' +
-            '</li>');
+    it('should return an unordered list for each flattened script and its dependencies', function() {
+
+        var evaluationResult = {
+            scriptsFlattened: [
+                {id: 'a', filename: 'a.js', dependencies: ['b', 'c'], type: 'module'},
+                {id: 'd', filename: 'd.js', dependencies: ['e', 'f'], type: 'module'}
+            ]
+        };
+
+        waitsForDeferred(testMethod(evaluationResult)).then(function(output) {
+            expect(output).toContain(
+                '<li class="script withDependencies">' +
+                    '<span class="scriptTitle"><span class="scriptId">a</span><span class="scriptFilename">a.js</span></span>' +
+                    '<ul class="dependencies"><li class="dependency">b</li><li class="dependency">c</li></ul>' +
+                '</li>');
+            expect(output).toContain(
+                '<li class="script withDependencies">' +
+                    '<span class="scriptTitle"><span class="scriptId">d</span><span class="scriptFilename">d.js</span></span>' +
+                    '<ul class="dependencies"><li class="dependency">e</li><li class="dependency">f</li></ul>' +
+                '</li>');
+        });
 
     });
 
     it('should return an unordered list for each inverted module and its dependencies', function() {
 
         var evaluationResult = {
-            modulesInverted: {
-                'a': {filename: 'a.js', dependencies: ['b', 'c']},
-                'd': {filename: 'd.js', dependencies: ['e', 'f']}
-            }
+            scriptsInverted: [
+                {id: 'a', filename: 'a.js', dependencies: ['b', 'c'], type: 'module'},
+                {id: 'd', filename: 'd.js', dependencies: ['e', 'f'], type: 'module'}
+            ]
         };
 
-        var output = testMethod(evaluationResult);
-
-        expect(output).toContain(
-            '<li class="module withDependencies">' +
-                '<span class="moduleTitle"><span class="moduleId">a</span><span class="moduleFilename">a.js</span></span>' +
-                '<ul class="dependencies"><li class="dependency">b</li><li class="dependency">c</li></ul>' +
-            '</li>');
-        expect(output).toContain(
-            '<li class="module withDependencies">' +
-                '<span class="moduleTitle"><span class="moduleId">d</span><span class="moduleFilename">d.js</span></span>' +
-                '<ul class="dependencies"><li class="dependency">e</li><li class="dependency">f</li></ul>' +
-            '</li>');
+        waitsForDeferred(testMethod(evaluationResult)).then(function(output) {
+            expect(output).toContain(
+                '<li class="script withDependencies">' +
+                    '<span class="scriptTitle"><span class="scriptId">a</span><span class="scriptFilename">a.js</span></span>' +
+                    '<ul class="dependencies"><li class="dependency">b</li><li class="dependency">c</li></ul>' +
+                    '</li>');
+            expect(output).toContain(
+                '<li class="script withDependencies">' +
+                    '<span class="scriptTitle"><span class="scriptId">d</span><span class="scriptFilename">d.js</span></span>' +
+                    '<ul class="dependencies"><li class="dependency">e</li><li class="dependency">f</li></ul>' +
+                    '</li>');
+        });
 
     });
 

@@ -4,7 +4,7 @@ var forEachDependencyRecursive = require('../iteration/forEachDependencyRecursiv
 
 var findCircularDependencies = function(evaluationResult) {
     try {
-        forEachDependencyRecursive(evaluationResult.modules, function() {});
+        forEachDependencyRecursive(evaluationResult.scripts, function() {});
     }
     catch (error) {
         evaluationResult.errors.push(error.message);

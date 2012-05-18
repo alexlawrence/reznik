@@ -3,18 +3,23 @@
 var webpage = require('webpage');
 var filesystem = require('fs');
 
+var Deferred = require('../common/Deferred.js');
 var executeAndIgnoreErrors = require('../common/executeAndIgnoreErrors.js');
 
-var temporaryFile = 'phantom-js.tmp';
 var phantomContext = __dirname + '/phantomContext.js';
+
+var absoluteWindowsPath = /^\w*:[\/|\\]/;
 
 var executeInPhantom = function(basePath, filename, context) {
     var page = webpage.create();
     var proxyCalls = setupProxyCalls(page);
     createProxies(page, context);
-    executeModuleCode(page, basePath + '/' + filename);
-    evaluateProxyCalls(proxyCalls, context);
-    cleanup();
+    var deferred = new Deferred();
+    executeModuleCode(page, basePath + '/' + filename).then(function() {
+        evaluateProxyCalls(proxyCalls, context);
+        deferred.resolve();
+    });
+    return deferred;
 };
 
 var setupProxyCalls = function(page) {
@@ -40,14 +45,17 @@ var evaluateProxyCalls = function(proxyCalls, context) {
 };
 
 var executeModuleCode = function(page, absoluteFilename) {
-    var script = filesystem.read(absoluteFilename);
-    var wrappedScript = 'try{\n' + script + '\n} catch(e) {}';
-    filesystem.write(temporaryFile, wrappedScript, 'w');
-    page.injectJs(temporaryFile);
+    var deferred = new Deferred();
+    if (!isAbsolutePath(absoluteFilename)) {
+        absoluteFilename = filesystem.workingDirectory + '/' + absoluteFilename;
+    }
+    absoluteFilename = absoluteFilename.replace(/\\/g, '/');
+    page.includeJs(absoluteFilename, function() { deferred.resolve(); });
+    return deferred;
 };
 
-var cleanup = function() {
-    filesystem.remove(temporaryFile);
+var isAbsolutePath = function(path) {
+    return path.indexOf('/') == 0 || absoluteWindowsPath.test(path);
 };
 
 module.exports = executeInPhantom;
