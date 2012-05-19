@@ -1,7 +1,7 @@
 'use strict';
 
 var getCommandLineOptions = require('./common/getCommandLineOptions.js');
-var Deferred = require('./common/Deferred.js');
+var Deferred = require('../node_modules/Deferred/index.js');
 
 var run = require('./run.js');
 
@@ -33,6 +33,6 @@ if (commandLineOptions.basePath) {
 }
 
 module.exports.run = run;
-module.exports.version = '1.2.5';
+module.exports.version = '1.2.6';
 
 

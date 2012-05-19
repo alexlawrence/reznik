@@ -2,7 +2,7 @@
 
 var subject = require('../src/fileEvaluation.js');
 
-var Deferred = require('../src/common/Deferred.js');
+var Deferred = require('../node_modules/Deferred/index.js');
 
 var horaa = require('horaa');
 var waitsForDeferred = require('./waitsForDeferred.js');

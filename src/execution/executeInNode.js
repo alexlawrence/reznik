@@ -3,7 +3,8 @@
 var executeAndIgnoreErrors = require('../common/executeAndIgnoreErrors.js');
 var vm = require('vm');
 var fs = require('fs');
-var Deferred = require('../common/Deferred.js');
+
+var Deferred = require('../../node_modules/Deferred/index.js');
 
 var encoding = 'utf-8';
 

@@ -2,8 +2,8 @@
 
 var webpage = require('webpage');
 var filesystem = require('fs');
+var Deferred = require('../../node_modules/Deferred/index.js');
 
-var Deferred = require('../common/Deferred.js');
 var executeAndIgnoreErrors = require('../common/executeAndIgnoreErrors.js');
 
 var phantomContext = __dirname + '/phantomContext.js';

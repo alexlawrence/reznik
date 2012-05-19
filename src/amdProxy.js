@@ -1,7 +1,7 @@
 'use strict';
 
+var extend = require('../node_modules/node.extend/index.js');
 var getIdFromFilename = require('./common/getModuleIdFromFilename.js');
-var extendObject = require('./common/extendObject.js');
 
 var scripts = [], errors = [], idFromFilename = '', filename = '', configuration = {};
 
@@ -34,7 +34,7 @@ var requireProxy = function(dependencies, factory) {
 };
 
 requireProxy.config = function(newConfiguration) {
-    extendObject(configuration, newConfiguration);
+    extend(true, configuration, newConfiguration);
 };
 
 var setActiveFilename = function(newFilename) {

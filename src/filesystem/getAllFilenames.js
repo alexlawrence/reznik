@@ -1,9 +1,9 @@
 'use strict';
 
 var fs = require('fs');
+var Deferred = require('../../node_modules/Deferred/index.js');
 var matchesFileEnding = require('./matchesFileEnding.js');
-var Deferred = require('../common/Deferred.js');
-var when = require('../common/when.js');
+var when = Deferred.when;
 
 var getAllFilenames = function(options, currentPath) {
     currentPath = currentPath ? currentPath + '/' : '';

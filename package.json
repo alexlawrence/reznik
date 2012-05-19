@@ -18,7 +18,7 @@
     ],
     "name": "reznik",
     "description": "Code analysis for AMD projects",
-    "version": "1.2.5",
+    "version": "1.2.6",
     "homepage": "http://www.github.com/alexlawrence/reznik",
     "main" : "./src/index.js",
     "repository": {
@@ -29,6 +29,11 @@
         "node": ">=0.6.7"
     },
     "license": "MIT",
+    "dependencies": {
+        "Deferred": ">= 0.1.1",
+        "node.extend": ">= 1.0.0",
+        "tmpl": ">= 1.0.1"
+    },
     "devDependencies": {
         "jasmine-node": ">= 1.0.23",
         "horaa": ">= 0.1.2alpha"

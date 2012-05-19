@@ -1,7 +1,7 @@
 'use strict';
 
-var template = require('../common/template.js');
-var Deferred = require('../common/Deferred.js');
+var template = require('../../node_modules/tmpl/lib/tmpl.js');
+var Deferred = require('../../node_modules/Deferred/index.js');
 
 var loadAssets = require('./browser/loadAssets.js');
 

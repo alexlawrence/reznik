@@ -1,7 +1,7 @@
 'use strict';
 
 var amdProxy = require('./amdProxy.js');
-var Deferred = require('./common/Deferred.js');
+var Deferred = require('../node_modules/Deferred/index.js');
 
 var executionMethod = function(basePath, file, context) {
     throw new Error('no execution method set');

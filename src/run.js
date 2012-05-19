@@ -9,8 +9,8 @@ var executeAndIgnoreErrors = require('./common/executeAndIgnoreErrors.js');
 var reportingRegistry = require('./reporting/reportingRegistry.js');
 var executionMethod = require(typeof phantom !== 'undefined' ?
     './execution/executeInPhantom.js' : './execution/executeInNode.js');
-var Deferred = require('./common/Deferred.js');
-var when = require('./common/when.js');
+var Deferred = require('../node_modules/Deferred/index.js');
+var when = Deferred.when;
 
 fileEvaluation.setExecutionMethod(executionMethod);
 
@@ -22,8 +22,8 @@ var run = function(options) {
             .then(function(evaluationResult) {
                 executeAnalysis(evaluationResult, options);
                 executeTransformation(evaluationResult, options);
-                when(render(evaluationResult, options)).then(function(results) {
-                    deferred.resolve(results[0]);
+                when(render(evaluationResult, options)).then(function(rendered) {
+                    deferred.resolve(rendered);
                 });
             }
         );
