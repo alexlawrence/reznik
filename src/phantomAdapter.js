@@ -19,8 +19,10 @@
         });
     };
 
-    var currentRelativePath = phantom.libraryPath;
+    var currentPath = phantom.libraryPath + '/';
     var moduleCache = {};
+
+    var parentPathRegex = /\/(\w*)\/\.\./;
 
     global.process = {
         exit: phantom.exit,
@@ -34,22 +36,58 @@
         if (filepath == 'fs') {
             return filesystem;
         }
+
         var lastSeparator = filepath.lastIndexOf('/');
-        var filename = filepath.substring(lastSeparator + 1);
         var path = filepath.substring(0, lastSeparator + 1);
-        return moduleCache[filename] || loadModule(path, filename);
+        var filename = completeFilename(filepath.substring(lastSeparator + 1));
+
+        //noinspection UnnecessaryLocalVariableJS
+        var previousPath = currentPath;
+        addToCurrentPath(path);
+        var module = loadModule(filename);
+        setCurrentPathTo(previousPath);
+
+        return module;
     };
 
-    var loadModule = function(path, filename) {
-        var previousRelativePath = currentRelativePath;
-        global.__dirname = currentRelativePath = currentRelativePath + path;
-        var code = filesystem.read(currentRelativePath + filename);
-        moduleCache[filename] = createModule(filename, code);
-        global.__dirname = currentRelativePath = previousRelativePath;
-        return moduleCache[filename];
+    var completeFilename = function(filename) {
+        if (filename.toLowerCase().lastIndexOf('.js') != filename.length - 3) {
+            filename = filename + '.js';
+        }
+        return filename;
     };
 
-    var createModule = function(filename, code) {
+    var addToCurrentPath = function(path) {
+        path = removeCurrentDirectory(path);
+        currentPath = replaceRelativePaths(currentPath + path);
+        global.__dirname = currentPath;
+    };
+
+    var loadModule = function(filename) {
+        var fullLocation = currentPath + filename;
+        if (!moduleCache[fullLocation]) {
+            var code = filesystem.read(fullLocation);
+            moduleCache[fullLocation] = createModule(code);
+        }
+        return moduleCache[fullLocation];
+    };
+
+    var setCurrentPathTo = function(path) {
+        global.__dirname = currentPath = path;
+    };
+
+    var removeCurrentDirectory = function(path) {
+        return path.replace(/^\.\//g, '');
+    };
+
+    var replaceRelativePaths = function(path) {
+        while (parentPathRegex.test(path)) {
+            path = path.replace(parentPathRegex, '');
+        }
+        return path;
+    };
+
+    var createModule = function(code) {
         var module = {exports: {}};
         var exports = module.exports;
         eval(code);
