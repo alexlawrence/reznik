@@ -9,13 +9,13 @@ var commandLineOptions = getCommandLineOptions();
 
 if (commandLineOptions.help) {
     var cliHelpMessage = '\n' +
-        'options:                                       \n' +
-        ' -basePath=path                                (base path for AMD modules)\n' +
-        ' -flatten=true                                 (default empty)\n' +
-        ' -invert=true                                  (default empty)\n' +
-        ' -analysis=all,missing,circular,case,paths     (default empty)\n' +
-        ' -exclude=string1,string2                      (default empty, list of strings to match)\n' +
-        ' -output=json/plain/browser/dot                (default json)\n';
+        'options:\n' +
+        ' -basePath=path\n' +
+        ' -flatten=true                                             (default empty)\n' +
+        ' -invert=true                                              (default empty)\n' +
+        ' -analysis=all,missing,circular,cases,paths,duplicates     (default empty)\n' +
+        ' -exclude=string1,string2                                  (default empty)\n' +
+        ' -output=json/plain/browser/dot                            (default json)\n';
 
     console.log(cliHelpMessage);
     process.exit();
@@ -33,6 +33,6 @@ if (commandLineOptions.basePath) {
 }
 
 module.exports.run = run;
-module.exports.version = '1.2.4';
+module.exports.version = '1.2.5';
 
 

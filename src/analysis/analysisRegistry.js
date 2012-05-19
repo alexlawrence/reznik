@@ -4,12 +4,14 @@ var findMissingDependencies = require('./findMissingDependencies.js');
 var findCircularDependencies = require('./findCircularDependencies.js');
 var findCaseMismatches = require('./findCaseMismatches.js');
 var findAbsoluteIdsWithoutConfig = require('./findAbsoluteIdsWithoutPaths.js');
+var findDuplicateIds = require('./findDuplicateIds.js');
 
 var analysisByName = {
     'missing': findMissingDependencies,
     'circular': findCircularDependencies,
-    'case': findCaseMismatches,
-    'paths': findAbsoluteIdsWithoutConfig
+    'cases': findCaseMismatches,
+    'paths': findAbsoluteIdsWithoutConfig,
+    'duplicates': findDuplicateIds
 };
 
 var getAnalysisByName = function(name) {
