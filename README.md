@@ -60,7 +60,7 @@ Example:
 Therefore the recommended environment is PhantomJS.
 
 **Note:** This module is intended to be executed as a synchronous build step.
-Although reznik itself works asynchronously the method used for script evaluation in is synchronous.
+Although reznik itself works asynchronously the method used for script evaluation is synchronous.
 
 ###Restrictions
 
@@ -73,8 +73,8 @@ Although reznik itself works asynchronously the method used for script evaluatio
 Available options:
 
 * **basePath**: Absolute or relative base path to all JavaScript files *(required)*
-* **flatten**: Flag to indicate if a flattened module list should be generated*(optional, value: true, default: false)*
-* **invert**: Flag to indicate if an inverted module list should be generated*(optional, value: true, default: false)*
+* **flatten**: Flag to indicate if a flattened module list should be generated *(optional, value: true, default: false)*
+* **invert**: Flag to indicate if an inverted module list should be generated *(optional, value: true, default: false)*
 * **analysis**: List or single string of code analysis types to perform *(optional, values: all/missing/circular/cases/paths/duplicates, default: null)*
 * **output**: Output type *(optional, values: json/plain/browser/dot, default: json)*
 * **exclude**: List or single string to match against files and directories. Matches are excluded from evaluation. *(optional, default: null)*
