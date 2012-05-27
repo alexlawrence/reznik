@@ -13,25 +13,23 @@ var getAllFilenames = function(options, currentPath) {
     var filenames = [];
     fs.readdir(options.basePath + '/' + currentPath, function(error, items) {
         items = mapToNames(items, options.basePath, currentPath);
-        items = filter(items, exclude);
+        items = filter(items, exclude, options.fileEnding);
         if (items.length == 0) {
             deferred.resolve(filenames);
         }
         items.forEach(function(item, index) {
             fs.lstat(item.fullName, function(error, stats) {
                 if (stats.isDirectory()) {
-                    recursiveDeferreds.push(
-                        getAllFilenames(options, item.name).then(function(nestedFilenames) {
-                            filenames = filenames.concat(nestedFilenames);
-                        })
-                    );
+                    recursiveDeferreds.push(getAllFilenames(options, item.name).then(function(nestedFilenames) {
+                        filenames = filenames.concat(nestedFilenames);
+                    }));
                 }
                 else if (matchesFileEnding(item.name, options.fileEnding)) {
                     filenames.push(item.name);
                 }
 
-                if (index == items.length -1) {
-                    when(recursiveDeferreds).then(function() {
+                if (index == items.length - 1) {
+                    when.apply({}, recursiveDeferreds).then(function() {
                         deferred.resolve(filenames);
                     });
                 }

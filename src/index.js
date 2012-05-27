@@ -33,6 +33,6 @@ if (commandLineOptions.basePath) {
 }
 
 module.exports.run = run;
-module.exports.version = '1.2.6';
+module.exports.version = '1.2.7';
 
 

@@ -4,27 +4,39 @@ var testMethod = require('../../src/filesystem/matchesFileEnding.js');
 
 describe('filesystem/matchesFileEnding', function() {
 
-    it('should return true when given no ending', function() {
+    describe('when given no ending', function() {
 
-        var result = testMethod('filename.js');
+        it('should return true', function() {
 
-        expect(result).toBeTruthy();
+            var result = testMethod('filename.js');
 
-    });
+            expect(result).toBeTruthy();
 
-    it('should return false when given ending does not match ending of given filename', function() {
-
-        var result = testMethod('filename.js', 'txt');
-
-        expect(result).toBeFalsy();
+        });
 
     });
 
-    it('should return true when given ending matches ending of given filename', function() {
+    describe('when given an ending and a filename without that ending', function() {
 
-        var result = testMethod('filename.js', 'js');
+        it('should return false', function() {
 
-        expect(result).toBeTruthy();
+            var result = testMethod('filename.js', 'txt');
+
+            expect(result).toBeFalsy();
+
+        });
+
+    });
+
+    describe('when given an ending and a filename with that ending', function() {
+
+        it('should return true', function() {
+
+            var result = testMethod('filename.js', 'js');
+
+            expect(result).toBeTruthy();
+
+        });
 
     });
 
