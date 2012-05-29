@@ -60,11 +60,11 @@ var executeAnalysis = function(evaluationResult, options) {
 var executeTransformation = function(evaluationResult, options) {
     if (options.flatten) {
         executeAndIgnoreErrors(function() {
-            evaluationResult.modulesFlattened = flattenModuleList(evaluationResult.modules);
+            evaluationResult.scriptsFlattened = flattenModuleList(evaluationResult.scripts);
         });
     }
     if (options.invert) {
-        evaluationResult.modulesInverted = invertModuleList(evaluationResult.modules);
+        evaluationResult.scriptsInverted = invertModuleList(evaluationResult.scripts);
     }
 };
 
