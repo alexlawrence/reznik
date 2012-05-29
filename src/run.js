@@ -3,8 +3,8 @@
 var getAllFilenames = require('./filesystem/getAllFilenames.js');
 var fileEvaluation = require('./fileEvaluation.js');
 var analysisRegistry = require('./analysis/analysisRegistry.js');
-var flattenModuleList = require('./transformation/flattenScriptsList.js');
-var invertModuleList = require('./transformation/invertScriptsList.js');
+var flattenScriptsList = require('./transformation/flattenScriptsList.js');
+var invertScriptsList = require('./transformation/invertScriptsList.js');
 var executeAndIgnoreErrors = require('./common/executeAndIgnoreErrors.js');
 var reportingRegistry = require('./reporting/reportingRegistry.js');
 var executionMethod = require(typeof phantom !== 'undefined' ?
@@ -60,11 +60,11 @@ var executeAnalysis = function(evaluationResult, options) {
 var executeTransformation = function(evaluationResult, options) {
     if (options.flatten) {
         executeAndIgnoreErrors(function() {
-            evaluationResult.scriptsFlattened = flattenModuleList(evaluationResult.scripts);
+            evaluationResult.scriptsFlattened = flattenScriptsList(evaluationResult.scripts);
         });
     }
     if (options.invert) {
-        evaluationResult.scriptsInverted = invertModuleList(evaluationResult.scripts);
+        evaluationResult.scriptsInverted = invertScriptsList(evaluationResult.scripts);
     }
 };
 
