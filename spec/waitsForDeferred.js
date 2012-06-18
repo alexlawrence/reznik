@@ -1,6 +1,6 @@
 'use strict';
 
-var waitForDeferred = function(deferred) {
+var waitsForDeferred = function(deferred) {
     return {
         then: function(callback) {
             var resolved = false, args;
@@ -18,4 +18,4 @@ var waitForDeferred = function(deferred) {
     };
 };
 
-module.exports = waitForDeferred;
+module.exports = waitsForDeferred;
