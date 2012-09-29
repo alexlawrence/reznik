@@ -1,49 +1,25 @@
 #reznik
 
-Code analysis for [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) projects.
+reznik evaluates [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) modules and outputs their dependencies.
+The resulting tree can be flattened to see implicit dependencies and it can also be inverted.
+Possible output formats are JSON, dot, plain text and a viewable module browser.
 
-###Motivation
+###Code checks
 
-When working with AMD there are mainly two possibilities for production environments:
+The evaluated code can be checked for:
 
-1. Load modules asynchronously on demand with script loaders such as [require.js](https://github.com/jrburke/requirejs)
-2. Combine modules into one file or multiple bundles with build tools like [r.js](https://github.com/jrburke/r.js)
+- duplicate module ids
+- circular module dependencies
+- missing module dependencies
+- case mismatches between file names and module IDs (module IDs are case sensitive while server file names are not)
+- non anonymous module IDs which differ from the file name but have no loader config (currently only require.js supported)
 
-Both strategies work perfectly fine. reznik was written to fit another (third) use case.
-The goal is to be able to resolve individual dependencies for runtime script combining on the server side.
-Whenever scripts are requested by an application all their dependencies can be included dynamically.
+###Evaluation
 
-###Features
-
-Despite the original motivation this module delivers some useful code analysis features for AMD projects.
-
-####Module list
-
-reznik generates a list of all modules and require() calls and their individual dependencies.
-This list can be flattened to see implicit dependencies and it can also be inverted.
-Possible output formats are JSON, dot, plain text (optimized for own use case) and a module browser.
-
-####Code checks
-
-The evaluation results can be analyzed in order to find:
-
-- Duplicate module ids
-- Circular module dependencies
-- Missing module dependencies
-- Case mismatches between file names and module IDs (module IDs are case sensitive while server file names are not)
-- Non anonymous module IDs which differ from the file name but have no loader configuration (currently only require.js supported)
-
-###Environment
-
-reznik was developed in Node.js but can also be executed in [PhantomJS](http://www.phantomjs.org/) (>= 1.3.0).
-Although the Node environment can execute any JavaScript code it does not exactly behave like a browser
-nor does it have a document or window object by default.
-Instead of faking a browser context for Node this module was made to be compatible with PhantomJS.
-
+Instead of parsing JavaScript with regular expressions reznik actually executes the code using either NodeJS or PhantomJS.
 In both environments each individual file evaluation is aborted silently upon encountering any script error.
-This behaviour is intended as reznik does not care about errors in the evaluated code.
+When executed within NodeJS all define() and require() calls preceded by any browser specific code are not detected.
 
-When executed with Node.js all define() and require() calls preceded by any browser specific code are not detected.
 Example:
 
 ```javascript
@@ -57,7 +33,7 @@ Example:
 }());
 ```
 
-Therefore the recommended environment is PhantomJS.
+Therefore the recommended execution environment is PhantomJS.
 
 **Note:** This module is intended to be executed as a synchronous build step.
 Although reznik itself works asynchronously the method used for script evaluation is synchronous.
@@ -80,11 +56,11 @@ Available options:
 * **exclude**: List or single string to match against files and directories. Matches are excluded from evaluation. *(optional, default: null)*
 * **help**: Display the help
 
-Example PhantomJS call generating a module browser including a flattened module list which is output to a HTML file:
+Example PhantomJS execution generating a module browser including a flattened module list which is output to a HTML file:
 
     phantomjs reznik/src/phantomAdapter.js -basePath=reznik/example -flatten=true -output=browser > browser.html
 
-Example Node.js call executing all code analysis and generating a JSON output excluding all spec files:
+Example NodeJS execution executing all code analysis and generating a JSON output excluding all spec files:
 
     node reznik -basePath=reznik/example -analysis=all -output=json -exclude=spec.js
 

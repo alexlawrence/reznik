@@ -1,4 +1,4 @@
-reznik - Code analysis for AMD projects
+reznik - Dependency analysis for AMD projects
 
 Copyright 2012, Alex Lawrence
 Licensed under the MIT license.

@@ -17,7 +17,7 @@
         }
     ],
     "name": "reznik",
-    "description": "Code analysis for AMD projects",
+    "description": "Dependency analysis for AMD projects",
     "version": "1.2.7",
     "homepage": "http://www.github.com/alexlawrence/reznik",
     "main" : "./src/index.js",
