@@ -1,12 +1,12 @@
 #reznik
 
-reznik evaluates [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) modules and outputs their dependencies.
-The resulting tree can be flattened to see implicit dependencies and it can also be inverted.
+reznik analyzes dependencies for [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) modules.
+The resulting module tree can be flattened to see implicit dependencies and it can be inverted.
 Possible output formats are JSON, dot, plain text and a viewable module browser.
 
 ###Code checks
 
-The evaluated code can be checked for:
+The evaluated modules can be checked for:
 
 - duplicate module ids
 - circular module dependencies
@@ -16,27 +16,10 @@ The evaluated code can be checked for:
 
 ###Evaluation
 
-Instead of parsing JavaScript with regular expressions reznik actually executes the code using either NodeJS or PhantomJS.
-In both environments each individual file evaluation is aborted silently upon encountering any script error.
+Instead of parsing JavaScript reznik actually executes the code using either NodeJS or PhantomJS.
+In both environments each file evaluation is aborted silently upon encountering any script error.
 When executed within NodeJS all define() and require() calls preceded by any browser specific code are not detected.
-
-Example:
-
-```javascript
-(function() {
-
-    var body = document.getElementsByTagName('body').item(0);
-    define('someModule', function() {
-        return {};
-    });
-
-}());
-```
-
 Therefore the recommended execution environment is PhantomJS.
-
-**Note:** This module is intended to be executed as a synchronous build step.
-Although reznik itself works asynchronously the method used for script evaluation is synchronous.
 
 ###Restrictions
 
