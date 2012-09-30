@@ -1,8 +1,7 @@
 #reznik
 
-reznik analyzes dependencies for [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) modules.
-The resulting module tree can be flattened to see implicit dependencies and it can be inverted.
-Possible output formats are JSON, dot, plain text and a viewable module browser.
+reznik analyzes dependencies for [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) modules and can output the results
+as JSON, dot, plain text or as an HTML based module browser.
 
 ###Code checks
 
@@ -16,10 +15,10 @@ The evaluated modules can be checked for:
 
 ###Evaluation
 
-Instead of parsing JavaScript reznik actually executes the code using either NodeJS or PhantomJS.
-In both environments each file evaluation is aborted silently upon encountering any script error.
-When executed within NodeJS all define() and require() calls preceded by any browser specific code are not detected.
-Therefore the recommended execution environment is PhantomJS.
+Instead of parsing JavaScript reznik actually executes code using either NodeJS or PhantomJS.
+In both environments each individual file evaluation is aborted silently upon encountering any script error.
+When executed in NodeJS all define() and require() calls preceded by any browser specific code are not detected.
+Therefore the recommended execution environment is PhantomJS (see command line usage).
 
 ###Restrictions
 
@@ -39,18 +38,18 @@ Available options:
 * **exclude**: List or single string to match against files and directories. Matches are excluded from evaluation. *(optional, default: null)*
 * **help**: Display the help
 
-Example PhantomJS execution generating a module browser including a flattened module list which is output to a HTML file:
+Example PhantomJS call generating a module browser including a flattened module list which is output to an HTML file:
 
     phantomjs reznik/src/phantomAdapter.js -basePath=reznik/example -flatten=true -output=browser > browser.html
 
-Example NodeJS execution executing all code analysis and generating a JSON output excluding all spec files:
+Example NodeJS call executing every code analysis and generating a JSON output excluding all spec files:
 
     node reznik -basePath=reznik/example -analysis=all -output=json -exclude=spec.js
 
 ###Module usage
 
-When required in Node.js reznik exposes the method *run(options)*.
-The options object accepts the same arguments as the command line does.
+When required in Node.js reznik exposes only the method *run(options)*.
+The options object can consist of the same arguments as the command line does.
 The return value is a [promise](http://wiki.commonjs.org/wiki/Promises/A)
 which delivers the evaluation results by default as an object.
 
