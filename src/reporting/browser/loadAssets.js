@@ -1,7 +1,7 @@
 'use strict';
 
 var fs = require('fs');
-var Deferred = require('../../../node_modules/Deferred/index.js');
+var Deferred = require('Deferred');
 
 var loadAssets = new Deferred();
 var path = __dirname + '/assets/';

@@ -9,9 +9,9 @@ var findAbsoluteIdsWithoutPaths = function(evaluationResult) {
     var paths = evaluationResult.configuration.paths || {};
     forEachModule(evaluationResult.scripts, function(module) {
         var idWithEnding = module.id + fileEnding;
-        if (idWithEnding.toLowerCase() != module.filename.toLowerCase()) {
+        if (idWithEnding.toLowerCase() !== module.filename.toLowerCase()) {
             var filename = resolveFilename(module.id, paths);
-            if (filename != module.filename) {
+            if (filename !== module.filename) {
                 errors.push('id and filename mismatch in ' + module.filename);
             }
         }
@@ -20,10 +20,11 @@ var findAbsoluteIdsWithoutPaths = function(evaluationResult) {
 
 var resolveFilename = function(id, paths) {
     for (var key in paths) {
-        if (paths.hasOwnProperty(key) && id.indexOf(key) == 0) {
+        if (paths.hasOwnProperty(key) && id.indexOf(key) === 0) {
             return id.replace(key, paths[key]) + fileEnding;
         }
     }
+    return '';
 };
 
 module.exports = findAbsoluteIdsWithoutPaths;

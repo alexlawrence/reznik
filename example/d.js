@@ -1,4 +1,4 @@
-// this will only work when reznik is executed with PhantomJS
+// this will break
 var div = document.createElement('div');
 var href = window.location.href;
 

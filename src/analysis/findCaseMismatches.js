@@ -7,7 +7,7 @@ var findCaseMismatches = function(evaluationResult) {
     forEachModule(scripts, function(script) {
         var idWithEnding = script.id + '.js';
         var filename = script.filename;
-        if ((idWithEnding.toLowerCase() == filename.toLowerCase()) && (idWithEnding != filename)) {
+        if ((idWithEnding.toLowerCase() === filename.toLowerCase()) && (idWithEnding !== filename)) {
             errors.push('id and filename case mismatch in ' + script.filename);
         }
     });

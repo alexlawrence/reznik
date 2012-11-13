@@ -18,7 +18,7 @@
     ],
     "name": "reznik",
     "description": "Dependency analysis for AMD modules",
-    "version": "1.2.7",
+    "version": "1.3.0",
     "homepage": "http://www.github.com/alexlawrence/reznik",
     "main" : "./src/index.js",
     "repository": {
@@ -32,7 +32,8 @@
     "dependencies": {
         "Deferred": ">= 0.1.1",
         "node.extend": ">= 1.0.0",
-        "tmpl": ">= 1.0.1"
+        "tmpl": ">= 1.0.1",
+        "optimist": "*"
     },
     "devDependencies": {
         "jasmine-node": ">= 1.0.23",

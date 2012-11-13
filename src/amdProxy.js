@@ -1,6 +1,6 @@
 'use strict';
 
-var extend = require('../node_modules/node.extend/index.js');
+var extend = require('node.extend');
 var getIdFromFilename = require('./common/getModuleIdFromFilename.js');
 
 var scripts = [], errors = [], idFromFilename = '', filename = '', configuration = {};

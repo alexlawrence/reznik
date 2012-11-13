@@ -5,7 +5,7 @@ var forEachProperty = require('../iteration/forEachProperty.js');
 var renderPlain = function(result) {
     var output = '';
     forEachProperty(result, function(value, property) {
-        if (property == 'configuration') {
+        if (property === 'configuration') {
             return;
         }
         output += renderScriptsDataOrInformation(value, property);

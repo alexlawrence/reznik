@@ -7,7 +7,7 @@ var cloneScriptWithoutDependencies = function(script) {
         dependencies: [],
         anonymous: script.anonymous,
         type: script.type
-    }
+    };
 };
 
 module.exports = cloneScriptWithoutDependencies;

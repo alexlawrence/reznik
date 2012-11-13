@@ -11,7 +11,7 @@ var forEachDependencyRecursive = function(scripts, callback) {
                 throw new Error('circular dependency in ' + script.filename);
             }
             dependencyId = allDependencyIds.pop();
-            dependency = firstOrNull(scripts, function(x) { return x.id == dependencyId; });
+            dependency = firstOrNull(scripts, function(x) { return x.id === dependencyId; });
             if (dependency && dependency.dependencies) {
                 allDependencyIds = allDependencyIds.concat(dependency.dependencies);
             }

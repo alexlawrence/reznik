@@ -1,7 +1,7 @@
 'use strict';
 
 var fs = require('fs');
-var Deferred = require('../../node_modules/Deferred/index.js');
+var Deferred = require('Deferred');
 var matchesFileEnding = require('./matchesFileEnding.js');
 var when = Deferred.when;
 
@@ -14,7 +14,7 @@ var getAllFilenames = function(options, currentPath) {
     fs.readdir(options.basePath + '/' + currentPath, function(error, items) {
         items = mapToNames(items, options.basePath, currentPath);
         items = filter(items, exclude, options.fileEnding);
-        if (items.length == 0) {
+        if (items.length === 0) {
             deferred.resolve(filenames);
         }
         items.forEach(function(item, index) {
@@ -28,7 +28,7 @@ var getAllFilenames = function(options, currentPath) {
                     filenames.push(item.name);
                 }
 
-                if (index == items.length - 1) {
+                if (index === items.length - 1) {
                     when.apply({}, recursiveDeferreds).then(function() {
                         deferred.resolve(filenames);
                     });
@@ -46,7 +46,7 @@ var mapToNames = function(items, basePath, currentPath) {
         return {
             name: name,
             fullName: fullName
-        }
+        };
     });
 };
 

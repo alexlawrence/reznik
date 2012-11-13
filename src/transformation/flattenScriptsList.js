@@ -9,7 +9,7 @@ var flattenScriptsList = function(scripts) {
         return cloneScriptWithoutDependencies(script);
     });
     forEachDependencyRecursive(scripts, function(script, dependencyId) {
-        var scriptFlattened = firstOrNull(scriptsFlattened, function(x) { return x.filename == script.filename; });
+        var scriptFlattened = firstOrNull(scriptsFlattened, function(x) { return x.filename === script.filename; });
         if (scriptFlattened && scriptFlattened.dependencies.indexOf(dependencyId) === -1) {
             scriptFlattened.dependencies.push(dependencyId);
         }

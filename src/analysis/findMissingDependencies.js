@@ -7,7 +7,7 @@ var findMissingDependencies = function(evaluationResult) {
     scripts.forEach(function(script) {
         script.dependencies.forEach(function(dependencyId) {
             var dependency = firstOrNull(scripts, function(x) {
-                return x.type == 'module' && x.id == dependencyId;
+                return x.type === 'module' && x.id === dependencyId;
             });
             if (!dependency) {
                 errors.push('missing dependency ' + dependencyId + ' required in ' + script.filename);

@@ -7,6 +7,7 @@ var firstOrNull = function(array, matches) {
             result = value;
             return true;
         }
+        return false;
     });
     return result;
 };

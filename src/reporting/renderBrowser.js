@@ -1,7 +1,7 @@
 'use strict';
 
-var template = require('../../node_modules/tmpl/lib/tmpl.js');
-var Deferred = require('../../node_modules/Deferred/index.js');
+var template = require('tmpl');
+var Deferred = require('Deferred');
 
 var loadAssets = require('./browser/loadAssets.js');
 
@@ -57,7 +57,7 @@ var renderScripts = function(scripts, title) {
         output += template(listTitleTemplate, {cssClass: 'scriptsTreeTitle ' + title, value: title});
         scripts.forEach(function(script) {
             var dependenciesOutput = '', scriptOutput = '';
-            var displayName = script.type == 'module' ? script.id : 'require()';
+            var displayName = script.type === 'module' ? script.id : 'require()';
             script.dependencies.forEach(function(dependencyId) {
                 dependenciesOutput += template(listItemTemplate, {cssClass: 'dependency', value: dependencyId});
             });
