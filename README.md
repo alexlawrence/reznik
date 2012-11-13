@@ -3,6 +3,8 @@
 reznik analyzes dependencies for [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) modules and outputs the results
 as JSON, dot, plain text or as an HTML based module browser.
 
+**Important:** Version 1.3.0 drops PhantomJS support.
+
 ###Code checks
 
 The evaluated modules can be checked for:
