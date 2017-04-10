@@ -1,11 +1,11 @@
-#reznik
+# reznik
 
 reznik analyzes dependencies for [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) modules and outputs the results
 as JSON, dot, plain text or as an HTML based module browser.
 
 **Important:** Version 1.3.0 drops PhantomJS support.
 
-###Code checks
+### Code checks
 
 The evaluated modules can be checked for:
 
@@ -15,30 +15,30 @@ The evaluated modules can be checked for:
 - case mismatches between file names and module IDs (module IDs are case sensitive while server file names are not)
 - non anonymous module IDs which differ from the file name but have no loader config (currently only require.js supported)
 
-###Evaluation
+### Evaluation
 
 Instead of parsing JavaScript with regular expressions reznik executes and intercepts code using node´s vm module.
 Each individual file evaluation is aborted silently upon encountering any script error.
 
-###Restrictions
+### Restrictions
 
 - **Infinite loops in module code will cause the evaluation to freeze**
 - Module factories are not evaluated, therefore nested require() calls are not detected
 - Loader plugins are unsupported and will produce evaluation errors (ignoring them may be implemented at some point)
 - define() and require() calls preceded by any browser specific code are not detected
 
-###Command line usage
+### Command line usage
 
 Enter ```node reznik --help``` to see a detailed usage description.
 
-###Module usage
+### Module usage
 
 When required as a module reznik exposes only one method: *run(options)*.
 The options object accepts the same arguments as the command line does.
 The return value is a [promise](http://wiki.commonjs.org/wiki/Promises/A)
 which delivers the evaluation results by default as an object.
 
-####Example JSON output
+#### Example JSON output
 
 ```javascript
 {
